@@ -138,16 +138,24 @@
     @include m.title(
       rgb(var(--secondary)),
       4rem,
-      2.5vw,
-      6.5rem,
+      4vw,
+      5.5rem,
       700,
       1,
       $after: false
     );
 
-    h1 > * {
-      all: inherit;
-      margin-top: 0;
+    h1 {
+      font-family: var(--font-secondary);
+      font-size: clamp(4rem, 4vw, 5.5rem);
+      font-weight: 700;
+      line-height: 1;
+      color: rgb(var(--secondary-light));
+
+      * {
+        font-size: inherit;
+        color: currentColor;
+      }
     }
 
     em,
