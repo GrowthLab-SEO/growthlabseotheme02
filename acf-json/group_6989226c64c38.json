@@ -47,7 +47,7 @@
             "name": "",
             "aria-label": "",
             "type": "accordion",
-            
+            "instructions": "Enclose text in \"strong\" HTML tags to highlight it.",
             "required": 0,
             "conditional_logic": [
                 [
@@ -331,6 +331,23 @@
             "delay": 0
         },
         {
+            "key": "field_6aa333a349c3e",
+            "label": "CTA Link",
+            "name": "cta_link",
+            "aria-label": "",
+            "type": "link",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "return_format": "array",
+            "allow_in_bindings": 0
+        },
+        {
             "key": "field_6989236a74955",
             "label": "Image",
             "name": "image",
@@ -376,5 +393,7 @@
     "description": "",
     "show_in_rest": 0,
     "display_title": "",
-    "modified": 1770599060
+    "allow_ai_access": false,
+    "ai_description": "",
+    "modified": 1789082026
 }

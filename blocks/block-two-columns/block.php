@@ -38,6 +38,12 @@ if (get_field('toggle_block')):
                 <div class="two-columns__col">
                     <div class="formatted-text two-columns__content">
                         <?= $text_content ?? "" ?>
+
+                        <?php if ($cta_link && isset($cta_link) && !empty($cta_link["url"])): ?>
+                            <a href="<?= $cta_link["url"] ?>" target="<?= $cta_link["target"] ?>" class="btn btn--tertiary" aria-label="<?= esc_attr($cta_link["title"]) ?>">
+                                <span><?= $cta_link["title"] ?></span>
+                            </a>
+                        <?php endif ?>
                     </div>
                 </div>
             <?php endif; ?>
