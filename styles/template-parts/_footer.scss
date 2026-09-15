@@ -121,7 +121,7 @@
 
       &__title {
         @include m.title(
-          rgb(var(--text)),
+          rgb(var(--primary)),
           2.2rem,
           3.33vw,
           4.3rem,
