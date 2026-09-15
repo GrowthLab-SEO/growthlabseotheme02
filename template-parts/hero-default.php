@@ -25,7 +25,7 @@ if (!$bg_mobile) $bg_mobile = [];
 $hero_title_tag = $hero_title_tag ?? null;
 $hero_title = $hero_title ?? null;
 
-if ($hero_title === null || $hero_title === "") {
+if ($hero_title === null || $hero_title === "" || !empty($hero_title)) {
     if (is_home()) {
         $hero_title = get_the_title(get_option('page_for_posts'));
     } elseif (is_page() || is_single()) {
