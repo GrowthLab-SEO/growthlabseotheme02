@@ -13,22 +13,22 @@ if (get_field('toggle_block')):
         <?= block_style_attribute($block); ?>
         <?php if (isset($extract_block_from_content) && $extract_block_from_content) echo "data-extract='$place'"; ?>>
 
-        <div class="contact-form__layer">
+        <div class="contact-form-block__layer">
 
-            <div class="contact-form__wrapper <?= $reverse_columns ? "reverse" : "" ?>">
+            <div class="contact-form-block__wrapper <?= $reverse_columns ? "reverse" : "" ?>">
 
-                <?php if (isset($side_image) && $side_image) img_print_picture_tag(img: $side_image, is_cover: true, classes: "contact-form__side-img") ?>
+                <?php if (isset($side_image) && $side_image) img_print_picture_tag(img: $side_image, is_cover: true, classes: "contact-form-block__side-img") ?>
 
-                <div class="contact-form__inner container">
+                <div class="contact-form-block__inner container">
 
                     <?php
                     if (isset($title) && $title) {
-                        print_title($title, $title_tag, "contact-form__title");
+                        print_title($title, $title_tag, "contact-form-block__title");
                     }
 
                     if (isset($main_content) && !empty($main_content)):
                     ?>
-                        <div class="contact-form__content formatted-text tx-center">
+                        <div class="contact-form-block__content formatted-text tx-center">
                             <?= $main_content ?>
                         </div>
                     <?php
