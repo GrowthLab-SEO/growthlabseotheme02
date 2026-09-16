@@ -167,7 +167,7 @@ if (!defined('ABSPATH')) {
     <?php
     $hero_title = get_field("hero_properties", $post_id)["hero_title"] ?? null;
 
-    if ($hero_title === null || $hero_title === "" || !empty($hero_title)) {
+    if ($hero_title === null || $hero_title === "" || empty($hero_title)) {
         if (is_home()) {
             $hero_title = get_the_title(get_option('page_for_posts'));
         } elseif (is_page() || is_single()) {
