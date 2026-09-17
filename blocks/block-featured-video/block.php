@@ -20,7 +20,7 @@ if (get_field('toggle_block')):
             } elseif (isset($youtube_url) && $youtube_url && $is_youtube_video) {
                 $video_id = get_yt_code($youtube_url);
                 $thumb = get_youtube_thumbnail($video_id, 'maxresdefault');
-                echo "<img srcset = '$thumb' class='featured-video__cover lazy-image'>";
+                echo "<img data-src = '$thumb' class='featured-video__cover lazy-image'>";
             }
             ?>
 
