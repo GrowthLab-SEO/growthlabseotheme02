@@ -65,7 +65,7 @@
 
                       <p class="footer-office__item">
                         <?php include get_stylesheet_directory() . '/assets/icons/icon-phone.svg'; ?>
-                        <a href="<?= get_flat_number($office['phone']) ?>" aria-label="<?= esc_attr($office['phone']); ?>"><?= esc_html($office['phone']); ?></a>
+                        <a href="tel:+1<?= get_flat_number($office['phone']) ?>" aria-label="<?= esc_attr($office['phone']); ?>"><?= esc_html($office['phone']); ?></a>
                       </p>
 
                       <?php if ($office['cta_button'] && isset($office['cta_button'])): ?>
