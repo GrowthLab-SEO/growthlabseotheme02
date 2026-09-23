@@ -98,7 +98,8 @@
       align-items: stretch;
       justify-content: center;
       flex-wrap: wrap;
-      gap: var(--sp-xsm);
+      column-gap: var(--sp-xsm);
+      row-gap: var(--sp-sm);
 
       .item-card {
         min-width: 28rem;
