@@ -643,3 +643,54 @@ window.addEventListener("load", () => {
     ? document.addEventListener("DOMContentLoaded", init)
     : init();
 })();
+
+// Default Card Hover Effect
+window.addEventListener("load", () => {
+  const defaultCards = document.querySelectorAll(".default-card.content");
+  if (!defaultCards.length) return;
+
+  let cardController = null;
+
+  cardController = toggleContent(defaultCards, cardController);
+
+  let resizeTimer;
+  window.addEventListener("resize", () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      cardController = toggleContent(defaultCards, cardController);
+    }, 250);
+  });
+});
+
+function toggleContent(defaultCards, oldController) {
+  if (oldController) {
+    oldController.abort();
+  }
+
+  if (window.innerWidth >= 1024) {
+    console.log(window.innerWidth + " >= 1024");
+    defaultCards.forEach((card) => card.classList.remove("show-content"));
+    return null;
+  }
+
+  const newController = new AbortController();
+  const signal = newController.signal;
+
+  defaultCards.forEach((card) => {
+    const con = card.querySelector(".default-card__con");
+
+    card.addEventListener(
+      "click",
+      (e) => {
+        if (con && con.contains(e.target)) return;
+
+        e.preventDefault();
+        card.classList.toggle("show-content");
+        console.log("toggle show-content");
+      },
+      { signal },
+    );
+  });
+
+  return newController;
+}

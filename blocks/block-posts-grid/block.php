@@ -77,6 +77,7 @@ if (get_field('toggle_block')):
                                 "title" => $title ?? '',
                                 "link_url" => $link['url'] ?? '',
                                 "link_target" => $link['target'] ?? '_self',
+                                "content" => $content ?? '',
                             ));
                         }
                     } elseif (isset($query) && $query->have_posts()) {
@@ -137,6 +138,7 @@ if (get_field('toggle_block')):
                                         "title" => get_the_title(),
                                         "link_url" => get_the_permalink(),
                                         "link_target" => '_self',
+                                        "content" => get_the_excerpt(),
                                     ));
                                     break;
                             }
