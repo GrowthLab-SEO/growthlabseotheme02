@@ -19,13 +19,11 @@
     "custom carousel"
   ],
   "acf": {
-       "renderPreview": false,
-
+    "renderPreview": false,
     "renderTemplate": "block.php"
   },
   "supports": {
     "mode": true,
-
     "customClassName": true,
     "alignWide": true,
     "spacing": {

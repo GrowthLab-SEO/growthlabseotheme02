@@ -285,7 +285,7 @@ function growthlabseotheme02_scripts()
         get_template_directory_uri() . '/js/vendor/tom-select/tom-select-min.js',
         array(),
         filemtime(get_template_directory() . '/js/vendor/tom-select/tom-select-min.js'),
-        true
+        ["strategy" => "defer", "in_footer" => true, "fetchpriority" => "high"]
     );
 
     // Main JS scripts.
@@ -294,9 +294,8 @@ function growthlabseotheme02_scripts()
         get_template_directory_uri() . '/js/main-min.js',
         array('growthlabseotheme02-tom-select'),
         filemtime(get_template_directory() . '/js/main-min.js'),
-        true
+        ["strategy" => "defer", "in_footer" => true, "fetchpriority" => "high"]
     );
-    wp_script_add_data('growthlabseotheme02-main-scripts', 'strategy', 'defer');
     wp_localize_script('growthlabseotheme02-main-scripts', 'siteData', [
         'homeURL' => home_url(),
     ]);
@@ -307,9 +306,8 @@ function growthlabseotheme02_scripts()
         get_template_directory_uri() . '/js/picture-optimization-min.js',
         array(),
         filemtime(get_template_directory() . '/js/picture-optimization-min.js'),
-        true
+        ["strategy" => "defer", "in_footer" => true]
     );
-    wp_script_add_data('growthlabseotheme02-picture-optimization', 'strategy', 'defer');
 
     // Third party JS scripts.
     wp_localize_script('growthlabseotheme02-main-scripts', 'splideData', [
@@ -333,9 +331,8 @@ function growthlabseotheme02_scripts()
             get_template_directory_uri() . '/js/posts-filters-min.js',
             array(),
             filemtime(get_template_directory() . '/js/posts-filters-min.js'),
-            true
+            ["strategy" => "defer", "in_footer" => true]
         );
-        wp_script_add_data('growthlabseotheme02-posts-filters', 'defer', true);
         wp_localize_script(
             'growthlabseotheme02-posts-filters',
             'postsFiltersData',
