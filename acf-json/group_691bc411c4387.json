@@ -3,6 +3,26 @@
     "title": "Post Type - Team Member",
     "fields": [
         {
+            "key": "field_6ab6a29d15ebc",
+            "label": "First Name",
+            "name": "first_name",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "",
+            "required": false,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "placeholder": "",
+            "prepend": "",
+            "append": ""
+        },
+        {
             "key": "field_698d55267fc82",
             "label": "Headshot",
             "name": "headshot",
@@ -137,5 +157,7 @@
     "description": "",
     "show_in_rest": 0,
     "display_title": "",
-    "modified": 1770871255
+    "allow_ai_access": false,
+    "ai_description": "",
+    "modified": 1790354103
 }

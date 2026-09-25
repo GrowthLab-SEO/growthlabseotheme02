@@ -111,6 +111,7 @@ if (get_field('toggle_block')):
                                                 "picture" => $headshot,
                                                 "title" => get_the_title(),
                                                 "title_tag" => $items_title_tag ?? 'h3',
+                                                "first_name" => $first_name,
                                                 "role" => $role,
                                                 "content" => get_the_excerpt(),
                                                 "link_url" => get_the_permalink(),

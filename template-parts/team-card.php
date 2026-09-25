@@ -2,9 +2,9 @@
 if (!defined('ABSPATH')) {
     exit;
 }
-    $options = get_field_options("options");
+$options = get_field_options("options");
 
-    ?>
+?>
 <div class="team-card <?= $args["classes"] ?>">
     <div class="team-card__wrapper">
 
@@ -28,8 +28,8 @@ if (!defined('ABSPATH')) {
 
             <?php if ($args['link_url']): ?>
                 <div class="team-card__btn">
-                    <a href="<?= $args['link_url'] ?>" target="<?= $args['link_target'] ?>" class="btn btn--tertiary" aria-label="Meet <?= esc_attr($args['title']) ?>">
-                        <span>MEET</span>
+                    <a href="<?= $args['link_url'] ?>" target="<?= $args['link_target'] ?>" class="btn btn--tertiary" aria-label="Meet <?= esc_attr($args['first_name']) ?>">
+                        <span>MEET <?= $args['first_name'] && !empty($args['first_name']) ? $args['first_name'] : '' ?></span>
                     </a>
                 </div>
             <?php endif ?>
