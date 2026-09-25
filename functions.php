@@ -306,7 +306,7 @@ function growthlabseotheme02_scripts()
         get_template_directory_uri() . '/js/picture-optimization-min.js',
         array(),
         filemtime(get_template_directory() . '/js/picture-optimization-min.js'),
-        ["strategy" => "defer", "in_footer" => true]
+        ["strategy" => "async", "in_footer" => true]
     );
 
     // Third party JS scripts.
