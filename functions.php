@@ -311,7 +311,7 @@ function growthlabseotheme02_scripts()
         get_template_directory_uri() . '/js/vendor/tom-select/tom-select-min.js',
         array(),
         filemtime(get_template_directory() . '/js/vendor/tom-select/tom-select-min.js'),
-        ["strategy" => "async", "in_footer" => true, "fetchpriority" => "high"]
+        ["strategy" => "defer", "in_footer" => true, "fetchpriority" => "high"]
     );
 
     wp_enqueue_script(
@@ -319,7 +319,7 @@ function growthlabseotheme02_scripts()
         get_template_directory_uri() . '/js/styled-select-fields-min.js',
         array('growthlabseotheme02-tom-select'),
         filemtime(get_template_directory() . '/js/styled-select-fields-min.js'),
-        ["strategy" => "async", "in_footer" => true]
+        ["strategy" => "defer", "in_footer" => true, "fetchpriority" => "high"]
     );
 
     // Load specific template stylesheet
