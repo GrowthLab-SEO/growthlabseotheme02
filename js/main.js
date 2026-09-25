@@ -33,14 +33,6 @@ document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll(".sidebar").forEach((el) => {
     if (!el.querySelector("*")) el.classList.add("is-empty");
   });
-
-  document
-    .querySelectorAll("select:not(.posts-filters__select)")
-    .forEach((el) => {
-      new TomSelect(el, {
-        controlInput: null,
-      });
-    });
 });
 
 function eventListeners() {

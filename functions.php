@@ -279,22 +279,13 @@ function growthlabseotheme02_scripts()
     // Gravity Forms - remove maps
     wp_dequeue_script('gform_gravityforms_maps');
 
-    //Tom Select
-    wp_enqueue_script(
-        'growthlabseotheme02-tom-select',
-        get_template_directory_uri() . '/js/vendor/tom-select/tom-select-min.js',
-        array(),
-        filemtime(get_template_directory() . '/js/vendor/tom-select/tom-select-min.js'),
-        ["strategy" => "defer", "in_footer" => true, "fetchpriority" => "high"]
-    );
-
     // Main JS scripts.
     wp_enqueue_script(
         'growthlabseotheme02-main-scripts',
         get_template_directory_uri() . '/js/main-min.js',
         array('growthlabseotheme02-tom-select'),
         filemtime(get_template_directory() . '/js/main-min.js'),
-        ["strategy" => "async", "in_footer" => true, "fetchpriority" => "high"]
+        ["strategy" => "defer", "in_footer" => true, "fetchpriority" => "high"]
     );
     wp_localize_script('growthlabseotheme02-main-scripts', 'siteData', [
         'homeURL' => home_url(),
@@ -313,6 +304,23 @@ function growthlabseotheme02_scripts()
     wp_localize_script('growthlabseotheme02-main-scripts', 'splideData', [
         'url' => get_template_directory_uri() . '/js/vendor/splide/splide-min.js',
     ]);
+
+    //Tom Select
+    wp_enqueue_script(
+        'growthlabseotheme02-tom-select',
+        get_template_directory_uri() . '/js/vendor/tom-select/tom-select-min.js',
+        array(),
+        filemtime(get_template_directory() . '/js/vendor/tom-select/tom-select-min.js'),
+        ["strategy" => "defer", "in_footer" => true, "fetchpriority" => "high"]
+    );
+
+    wp_enqueue_script(
+        'growthlabseotheme02-styled-select-fields',
+        get_template_directory_uri() . '/js/styled-select-fields.js',
+        array('growthlabseotheme02-tom-select'),
+        filemtime(get_template_directory() . '/js/styled-select-fields.js'),
+        ["strategy" => "defer", "in_footer" => true]
+    );
 
     // Load specific template stylesheet
     if (is_page() || is_single()) {
