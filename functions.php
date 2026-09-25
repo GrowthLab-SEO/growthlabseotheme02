@@ -283,7 +283,7 @@ function growthlabseotheme02_scripts()
     wp_enqueue_script(
         'growthlabseotheme02-main-scripts',
         get_template_directory_uri() . '/js/main-min.js',
-        array('growthlabseotheme02-tom-select'),
+        array(),
         filemtime(get_template_directory() . '/js/main-min.js'),
         ["strategy" => "defer", "in_footer" => true, "fetchpriority" => "high"]
     );
