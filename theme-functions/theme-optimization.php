@@ -185,7 +185,7 @@ add_filter('the_content', function ($content) {
             $height = $height_match[1] ?? '450';
 
             return sprintf(
-                '<div id="%s" class="gmap-lazy" data-src="%s" style="width:%s;height:%s;"></div>',
+                '<div id="%s" class="gmap-lazy" data-src="%s" style="width:%spx;height:%spx;"></div>',
                 $map_id,
                 esc_attr($src),
                 esc_attr($width),
