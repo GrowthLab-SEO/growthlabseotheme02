@@ -215,6 +215,10 @@
 
   &__btn {
     width: fit-content;
+
+    span {
+      text-transform: uppercase;
+    }
   }
 
   &__separator {
