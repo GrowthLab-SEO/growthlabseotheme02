@@ -243,12 +243,6 @@ function inline_main_critical_css()
     if (file_exists($splide_css_file)) {
         $critical_css .= "\n/* Splide Critical CSS */\n" . file_get_contents($splide_css_file);
     }
-    // Add Tom Select critical CSS only when selects are present
-    $tom_select_css_file = get_template_directory() . '/styles/vendor/tom-select/tom-select-min.css';
-    if (file_exists($tom_select_css_file)) {
-        $critical_css .= "\n/* Tom Select Critical CSS */\n" . file_get_contents($tom_select_css_file);
-    }
-
     // Add block critical CSS if any
     if (!empty($block_critical_css)) {
         $critical_css .= "\n/* Block Critical CSS */\n" . $block_critical_css;
@@ -305,19 +299,10 @@ function growthlabseotheme02_scripts()
         'url' => get_template_directory_uri() . '/js/vendor/splide/splide-min.js',
     ]);
 
-    //Tom Select
-    wp_register_script(
-        'growthlabseotheme02-tom-select',
-        get_template_directory_uri() . '/js/vendor/tom-select/tom-select-min.js',
-        array(),
-        filemtime(get_template_directory() . '/js/vendor/tom-select/tom-select-min.js'),
-        ["strategy" => "defer", "in_footer" => true, "fetchpriority" => "high"]
-    );
-
     wp_enqueue_script(
         'growthlabseotheme02-styled-select-fields',
         get_template_directory_uri() . '/js/styled-select-fields-min.js',
-        array('growthlabseotheme02-tom-select'),
+        array(),
         filemtime(get_template_directory() . '/js/styled-select-fields-min.js'),
         ["strategy" => "defer", "in_footer" => true, "fetchpriority" => "high"]
     );

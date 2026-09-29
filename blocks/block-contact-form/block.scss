@@ -43,8 +43,9 @@ aside {
       input,
       textarea,
       select,
-      .option,
-      .item
+      .styled-select__trigger,
+      .styled-select__trigger span,
+      .styled-select__option
     ) {
       color: rgb(var(--secondary));
     }
