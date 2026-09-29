@@ -285,6 +285,15 @@ function growthlabseotheme02_scripts()
         'homeURL' => home_url(),
     ]);
 
+    // Select Styles
+    wp_enqueue_script(
+        'growthlabseotheme02-styled-select-fields',
+        get_template_directory_uri() . '/js/styled-select-fields-min.js',
+        array(),
+        filemtime(get_template_directory() . '/js/styled-select-fields-min.js'),
+        ["strategy" => "defer", "in_footer" => true]
+    );
+
     // Picture Optimization scripts.
     wp_enqueue_script(
         'growthlabseotheme02-picture-optimization',
@@ -298,14 +307,6 @@ function growthlabseotheme02_scripts()
     wp_localize_script('growthlabseotheme02-main-scripts', 'splideData', [
         'url' => get_template_directory_uri() . '/js/vendor/splide/splide-min.js',
     ]);
-
-    wp_enqueue_script(
-        'growthlabseotheme02-styled-select-fields',
-        get_template_directory_uri() . '/js/styled-select-fields-min.js',
-        array(),
-        filemtime(get_template_directory() . '/js/styled-select-fields-min.js'),
-        ["strategy" => "defer", "in_footer" => true, "fetchpriority" => "high"]
-    );
 
     // Load specific template stylesheet
     if (is_page() || is_single()) {
