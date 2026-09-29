@@ -279,7 +279,7 @@ function growthlabseotheme02_scripts()
         get_template_directory_uri() . '/js/main-min.js',
         array(),
         filemtime(get_template_directory() . '/js/main-min.js'),
-        ["strategy" => "defer", "in_footer" => true, "fetchpriority" => "high"]
+        ["strategy" => "defer", "in_footer" => true]
     );
     wp_localize_script('growthlabseotheme02-main-scripts', 'siteData', [
         'homeURL' => home_url(),
