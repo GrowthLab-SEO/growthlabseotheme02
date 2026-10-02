@@ -194,7 +194,9 @@ if (!defined('ABSPATH')) {
 
     if (!is_404()) {
 
-        switch (get_field('hero_style')) {
+        $hero_style = is_home() || is_archive() ? 'default' : get_field('hero_style', $post_id) ?? 'default';
+
+        switch ($hero_style) {
             case 'home':
                 get_template_part('template-parts/hero', 'homepage', $args);
                 break;
