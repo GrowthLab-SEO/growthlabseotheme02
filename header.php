@@ -193,7 +193,10 @@ if (!defined('ABSPATH')) {
     );
 
     if (!is_404()) {
-        switch (get_field('hero_style', $post_id)) {
+
+        $id = is_home() || is_archive() ? get_option('page_for_posts') : $post_id;
+
+        switch (get_field('hero_style', $id)) {
             case 'home':
                 get_template_part('template-parts/hero', 'homepage', $args);
                 break;
