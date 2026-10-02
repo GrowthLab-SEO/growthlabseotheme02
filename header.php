@@ -174,6 +174,8 @@ if (!defined('ABSPATH')) {
             $hero_title = get_the_title($id);
         } elseif (is_post_type_archive()) {
             $hero_title = post_type_archive_title('', false);
+        } elseif (is_category()) {
+            $hero_title = single_cat_title('', false);
         } elseif (is_tax()) {
             $hero_title = single_term_title('', false);
         }
