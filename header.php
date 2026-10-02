@@ -170,14 +170,14 @@ if (!defined('ABSPATH')) {
     if ($hero_title === null || $hero_title === "" || empty($hero_title)) {
         if (is_home()) {
             $hero_title = get_the_title(get_option('page_for_posts'));
-        } elseif (is_page() || is_single()) {
-            $hero_title = get_the_title($id);
         } elseif (is_post_type_archive()) {
             $hero_title = post_type_archive_title('', false);
         } elseif (is_category()) {
             $hero_title = single_cat_title('', false);
         } elseif (is_tax()) {
             $hero_title = single_term_title('', false);
+        } elseif (is_page() || is_single()) {
+            $hero_title = get_the_title($id);
         }
 
         $hero_title = "<h1>$hero_title</h1>";

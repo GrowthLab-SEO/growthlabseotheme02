@@ -3,42 +3,20 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-//Default Properties
-foreach ($args as $field => $content) $$field = $content;
-
 //Internal Fields
 if (get_field('hero_properties') !== null && !empty(get_field('hero_properties'))) foreach (get_field('hero_properties') as $key => $value) $$key = $value;
-$cta_button = isset($hero_cta_button) && $hero_cta_button ? $hero_cta_button : $hero_cta_button_default;
+$cta_button = isset($hero_cta_button) && $hero_cta_button ? $hero_cta_button : $args['hero_cta_button_default'];
 
 //Hero pictures
 if (isset($hero_pictures)) foreach ($hero_pictures as $type => $picture) $$type = $picture;
 
-$bg_desktop = isset($background_desktop) && $background_desktop ? $background_desktop :  $hero_image_desktop_default;
-$bg_tablet = isset($background_tablet) && $background_tablet ? $background_tablet :  $hero_image_tablet_default;
-$bg_mobile = isset($background_mobile) && $background_mobile ? $background_mobile :  $hero_image_mobile_default;
+$bg_desktop = isset($background_desktop) && $background_desktop ? $background_desktop :  $args['hero_image_desktop_default'];
+$bg_tablet = isset($background_tablet) && $background_tablet ? $background_tablet :  $args['hero_image_tablet_default'];
+$bg_mobile = isset($background_mobile) && $background_mobile ? $background_mobile :  $args['hero_image_mobile_default'];
 
 if (!$bg_desktop) $bg_desktop = [];
 if (!$bg_tablet) $bg_tablet = [];
 if (!$bg_mobile) $bg_mobile = [];
-
-//Title Values
-$hero_title_tag = $hero_title_tag ?? null;
-$hero_title = $hero_title ?? null;
-
-if ($hero_title === null || $hero_title === "" || !empty($hero_title)) {
-    if (is_home()) {
-        $hero_title = get_the_title(get_option('page_for_posts'));
-    } elseif (is_page() || is_single()) {
-        $hero_title = get_the_title($id);
-    } elseif (is_post_type_archive()) {
-        $hero_title = post_type_archive_title('', false);
-    } elseif (is_tax()) {
-        $hero_title = single_term_title('', false);
-    }
-
-    $hero_title = "<h1>$hero_title</h1>";
-}
-
 ?>
 <section id="hero" class="hero">
 
@@ -48,7 +26,7 @@ if ($hero_title === null || $hero_title === "" || !empty($hero_title)) {
         <div class="hero__content tx-center">
 
             <div class="hero__title">
-                <?= $hero_title ?>
+                <?= $args['hero_title'] ?>
             </div>
 
             <?php if ($cta_button): ?>
