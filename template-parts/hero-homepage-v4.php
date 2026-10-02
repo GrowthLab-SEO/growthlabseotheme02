@@ -4,7 +4,6 @@ if (!defined('ABSPATH')) {
 }
 
 //Internal Fields
-foreach (get_field('hero_properties') as $key => $value) $$key = $value;
 $cta_button = isset($hero_cta_button) && $hero_cta_button ? $hero_cta_button :   $args['hero_cta_button_default'];
 $cta_button_2 = isset($hero_cta_button_2) && $hero_cta_button_2 ? $hero_cta_button_2 : null;
 

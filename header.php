@@ -177,7 +177,7 @@ if (!defined('ABSPATH')) {
         } elseif (is_tax()) {
             $hero_title = single_term_title('', false);
         } elseif (is_page() || is_single()) {
-            $hero_title = get_the_title($id);
+            $hero_title = get_the_title($post_id);
         }
 
         $hero_title = "<h1>$hero_title</h1>";
@@ -194,9 +194,7 @@ if (!defined('ABSPATH')) {
 
     if (!is_404()) {
 
-        $id = is_home() || is_archive() ? get_option('page_for_posts') : $post_id;
-
-        switch (get_field('hero_style', $id)) {
+        switch (get_field('hero_style')) {
             case 'home':
                 get_template_part('template-parts/hero', 'homepage', $args);
                 break;
