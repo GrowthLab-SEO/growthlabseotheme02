@@ -45,7 +45,7 @@ section {
   z-index: 1;
   content-visibility: auto;
 
-  &:not(#hero) {
+  &:not(.hero) {
     contain-intrinsic-size: auto 700px;
   }
 }
