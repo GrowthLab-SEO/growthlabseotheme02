@@ -29,6 +29,34 @@ if (get_field('toggle_block')):
         $args['orderby'] = 'meta_value_num';
     }
 
+    switch ($grid_type) {
+        case 'case-result':
+            $selected_posts = $select_results_posts ?? [];
+            break;
+
+        case 'team':
+            $selected_posts = $select_team_members_posts ?? [];
+            break;
+
+        case 'post':
+            $selected_posts = $select_blog_posts ?? [];
+            break;
+
+        case 'testimonial':
+            $selected_posts = $select_testimonials_posts ?? [];
+            break;
+
+        default:
+            $selected_posts = [];
+            break;
+    }
+
+    if (isset($show_all) && !$show_all) {
+        $args['post__in'] = !empty($selected_posts) ? $selected_posts : [0];
+        $args['posts_per_page'] = -1;
+        $args['orderby'] = 'post__in';
+    }
+
     if ($grid_type === "custom" && $select_or_create_items) {
         $args['post_type'] = "any";
         $args['post__in'] = $select_posts;
