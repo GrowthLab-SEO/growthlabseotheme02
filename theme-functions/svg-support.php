@@ -59,17 +59,23 @@ function growthlab_get_svg_dimensions($file)
         return false;
     }
 
+    // Read attributes from the root <svg> tag only, so child attributes like stroke-width are ignored
+    if (!preg_match('/<svg\b[^>]*>/i', $svg_content, $svg_tag)) {
+        return false;
+    }
+    $svg_tag = $svg_tag[0];
+
     $width = 0;
     $height = 0;
 
-    if (preg_match('/\bwidth=["\']?([0-9\.]+)(px)?["\']?/i', $svg_content, $match)) {
+    if (preg_match('/[\s"\']width\s*=\s*["\']\s*([0-9.]+)(px)?\s*["\']/i', $svg_tag, $match)) {
         $width = floatval($match[1]);
     }
-    if (preg_match('/\bheight=["\']?([0-9\.]+)(px)?["\']?/i', $svg_content, $match)) {
+    if (preg_match('/[\s"\']height\s*=\s*["\']\s*([0-9.]+)(px)?\s*["\']/i', $svg_tag, $match)) {
         $height = floatval($match[1]);
     }
 
-    if (($width === 0 || $height === 0) && preg_match('/viewBox=["\']?([0-9\.\s]+)["\']?/i', $svg_content, $match)) {
+    if (($width <= 0 || $height <= 0) && preg_match('/viewBox\s*=\s*["\']([^"\']+)["\']/i', $svg_tag, $match)) {
         $parts = preg_split('/[\s,]+/', trim($match[1]));
         if (count($parts) === 4) {
             $width = floatval($parts[2]);
@@ -126,39 +132,15 @@ function growthlab_svg_image_downsize($out, $id, $size)
         return $out;
     }
 
-    $file = get_attached_file($id);
-    if (empty($file) || !file_exists($file) || !is_readable($file)) {
-        return false;
-    }
-
-    $svg_content = file_get_contents($file);
-    if ($svg_content === false) {
-        return false;
-    }
-
-    $width = 0;
-    $height = 0;
-    if (preg_match('/\bwidth=["\']?([0-9\.]+)(px)?["\']?/i', $svg_content, $match)) {
-        $width = floatval($match[1]);
-    }
-    if (preg_match('/\bheight=["\']?([0-9\.]+)(px)?["\']?/i', $svg_content, $match)) {
-        $height = floatval($match[1]);
-    }
-
-    if (($width === 0 || $height === 0) && preg_match('/viewBox=["\']?([0-9\.\s]+)["\']?/i', $svg_content, $match)) {
-        $parts = preg_split('/[\s,]+/', trim($match[1]));
-        if (count($parts) === 4) {
-            $width = floatval($parts[2]);
-            $height = floatval($parts[3]);
-        }
-    }
-
-    if ($width <= 0 || $height <= 0) {
-        return false;
-    }
-
     $url = wp_get_attachment_url($id);
-    return array($url, $width, $height, true);
+    if (!$url) {
+        return false;
+    }
+
+    // SVGs without readable dimensions are still returned (0x0), otherwise WordPress drops the image entirely
+    $dimensions = growthlab_get_svg_dimensions(get_attached_file($id)) ?: array(0, 0);
+
+    return array($url, $dimensions[0], $dimensions[1], false);
 }
 add_filter('image_downsize', 'growthlab_svg_image_downsize', 10, 3);
 
