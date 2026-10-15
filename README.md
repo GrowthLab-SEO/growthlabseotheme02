@@ -6,8 +6,8 @@
 
 ## 📋 System Requirements
 
-- **PHP:** 8.1 or higher (compatible up to PHP 8.3)
-- **WordPress:** 6.0 or higher (tested up to 6.7)
+- **PHP:** 8.3 or higher
+- **WordPress:** 6.9 or higher (tested up to 7.1)
 - **MySQL:** 5.7 or higher
 - **Node.js:** 16.0 or higher (for asset building)
 - **npm:** 7.0 or higher
