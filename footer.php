@@ -101,7 +101,7 @@
               </div>
 
               <div class="contact-form__form">
-                <?php gravity_form($contact_form, display_title: false, display_description: false); ?>
+                <?php render_gravity_form($contact_form, display_title: false, display_description: false); ?>
               </div>
 
             </div>

@@ -302,6 +302,15 @@ if (!function_exists('print_title')) {
     }
 }
 
+// Render a Gravity Forms form only if the plugin is active
+if (!function_exists('render_gravity_form')) {
+    function render_gravity_form(...$args)
+    {
+        if (!function_exists('gravity_form')) return;
+        return gravity_form(...$args);
+    }
+}
+
 if (!function_exists('dd')) {
     function dd($data)
     {

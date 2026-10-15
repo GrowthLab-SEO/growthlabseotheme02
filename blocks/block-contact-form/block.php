@@ -40,7 +40,7 @@ if (get_field('toggle_block')):
                         <div class="form-box">
 
                             <div class="form-box__form">
-                                <?php gravity_form($contact_form, display_title: false, display_description: false); ?>
+                                <?php render_gravity_form($contact_form, display_title: false, display_description: false); ?>
                             </div>
 
                         </div>
