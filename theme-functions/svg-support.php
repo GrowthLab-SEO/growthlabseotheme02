@@ -9,48 +9,160 @@ function add_file_types_to_uploads($file_types)
 }
 add_filter('upload_mimes', 'add_file_types_to_uploads');
 
-function wp_check_svg($file)
+// Sanitize SVG markup: keeps drawing elements, classes, gradients and filters, but strips
+// scripts, event handlers, external references and unsafe CSS.
+// Returns the cleaned markup, or false if the file is not a valid SVG or cannot be made safe.
+function growthlab_sanitize_svg_markup(string $markup): string|false
 {
-    $filetype = wp_check_filetype($file['name']);
-
-    $ext = $filetype['ext'];
-    $type = $filetype['type'];
-
-    // Check if uploaded file is an SVG
-    if ($type !== 'image/svg+xml' || $ext !== 'svg') {
-        return $file;
+    // Reject empty and compressed (svgz) files
+    if (trim($markup) === '' || str_starts_with($markup, "\x1f\x8b")) {
+        return false;
     }
 
-    // Ensure the file is uploaded by an authorized user
-    if (!current_user_can('upload_files')) {
-        return $file;
+    // Entity declarations enable XXE and "billion laughs" attacks
+    if (stripos($markup, '<!ENTITY') !== false) {
+        return false;
     }
 
-    // Use WP_Filesystem to read the file contents
-    global $wp_filesystem;
-    if (empty($wp_filesystem)) {
-        require_once(ABSPATH . '/wp-admin/includes/file.php');
-        WP_Filesystem();
-    }
+    $allowed_tags = [
+        'svg', 'g', 'defs', 'symbol', 'use', 'title', 'desc', 'style', 'switch', 'view',
+        'path', 'rect', 'circle', 'ellipse', 'line', 'polyline', 'polygon', 'image',
+        'text', 'tspan', 'textpath',
+        'lineargradient', 'radialgradient', 'stop', 'pattern', 'clippath', 'mask', 'marker',
+        'filter', 'feblend', 'fecolormatrix', 'fecomponenttransfer', 'fecomposite', 'feconvolvematrix',
+        'fediffuselighting', 'fedisplacementmap', 'fedistantlight', 'fedropshadow', 'feflood',
+        'fefunca', 'fefuncb', 'fefuncg', 'fefuncr', 'fegaussianblur', 'femerge', 'femergenode',
+        'femorphology', 'feoffset', 'fepointlight', 'fespecularlighting', 'fespotlight', 'fetile',
+        'feturbulence',
+        'animate', 'animatetransform', 'animatemotion', 'mpath',
+    ];
 
-    $content = $wp_filesystem->get_contents($file['tmp_name']);
-
-    // Use DOMDocument to parse the SVG file
     $doc = new DOMDocument();
-    $doc->loadXML($content);
+    $use_errors = libxml_use_internal_errors(true);
+    // LIBXML_NONET blocks network access; entities are never substituted (no LIBXML_NOENT)
+    $loaded = $doc->loadXML($markup, LIBXML_NONET);
+    libxml_clear_errors();
+    libxml_use_internal_errors($use_errors);
 
-    // Check if the file contains any <script> tags
-    $scripts = $doc->getElementsByTagName('script');
+    if (!$loaded || !$doc->documentElement || strtolower($doc->documentElement->localName) !== 'svg') {
+        return false;
+    }
 
-    if ($scripts->length > 0) {
-        // The file contains <script> tags, which is not allowed
+    if ($doc->doctype) {
+        $doc->removeChild($doc->doctype);
+    }
+
+    $xpath = new DOMXPath($doc);
+
+    // Remove comments and processing instructions (e.g. xml-stylesheet)
+    foreach (iterator_to_array($xpath->query('//comment() | //processing-instruction()')) as $node) {
+        $node->parentNode->removeChild($node);
+    }
+
+    foreach (iterator_to_array($xpath->query('//*')) as $element) {
+        // Skip nodes already detached together with a removed ancestor
+        if (!$element->parentNode) {
+            continue;
+        }
+
+        $tag = strtolower($element->localName);
+
+        if (!in_array($tag, $allowed_tags, true)) {
+            $element->parentNode->removeChild($element);
+            continue;
+        }
+
+        // Animations must not rewrite links or event handlers
+        if (str_starts_with($tag, 'animate')) {
+            $target = strtolower(trim($element->getAttribute('attributeName')));
+            if (str_ends_with($target, 'href') || str_starts_with($target, 'on')) {
+                $element->parentNode->removeChild($element);
+                continue;
+            }
+        }
+
+        if ($tag === 'style' && !growthlab_is_safe_svg_css($element->textContent)) {
+            $element->parentNode->removeChild($element);
+            continue;
+        }
+
+        foreach (iterator_to_array($element->attributes) as $attr) {
+            $name = strtolower($attr->localName);
+            $value = strtolower(preg_replace('/[\s\x00-\x1f]+/', '', html_entity_decode($attr->value, ENT_QUOTES | ENT_HTML5)));
+
+            $unsafe = str_starts_with($name, 'on')
+                || ($name === 'href' && !growthlab_is_safe_svg_href($tag, $value))
+                || ($name === 'style' && !growthlab_is_safe_svg_css($attr->value))
+                || preg_match('/(java|vb)script:|data:text\/html|expression\(/', $value);
+
+            if ($unsafe) {
+                $element->removeAttributeNode($attr);
+            }
+        }
+    }
+
+    return $doc->saveXML($doc->documentElement);
+}
+
+// Only internal references (#id) are allowed, plus embedded raster images inside <image>
+function growthlab_is_safe_svg_href(string $tag, string $href): bool
+{
+    if (str_starts_with($href, '#')) {
+        return true;
+    }
+
+    return in_array($tag, ['image', 'feimage'], true)
+        && (bool) preg_match('/^data:image\/(png|jpe?g|gif|webp);/', $href);
+}
+
+// Blocks CSS that can load external resources or execute code
+function growthlab_is_safe_svg_css(string $css): bool
+{
+    $normalized = strtolower(preg_replace('/[\s\x00-\x1f]+/', '', $css));
+
+    if (preg_match('/@import|expression\(|javascript:|vbscript:|behavior:|-moz-binding/', $normalized)) {
+        return false;
+    }
+
+    preg_match_all('/url\(([\'"]?)(.*?)\)/', $normalized, $urls);
+    foreach ($urls[2] as $url) {
+        if (!str_starts_with($url, '#') && !preg_match('/^data:image\/(png|jpe?g|gif|webp);/', $url)) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+// Sanitize SVG files before WordPress stores them; unsafe or invalid files are rejected
+function growthlab_sanitize_svg_upload($file)
+{
+    if (!empty($file['error']) || empty($file['tmp_name'])) {
         return $file;
     }
 
-    // The SVG file is safe, so return the original data
+    // Detect SVGs by extension and by content, so a renamed SVG is also sanitized
+    $is_svg = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION)) === 'svg'
+        || (function_exists('mime_content_type') && mime_content_type($file['tmp_name']) === 'image/svg+xml');
+
+    if (!$is_svg) {
+        return $file;
+    }
+
+    $markup = file_get_contents($file['tmp_name']);
+    $clean = $markup === false ? false : growthlab_sanitize_svg_markup($markup);
+
+    if ($clean === false) {
+        $file['error'] = __('This SVG file is invalid or unsafe and could not be uploaded.', 'growthlabseotheme02');
+        return $file;
+    }
+
+    file_put_contents($file['tmp_name'], $clean);
+
     return $file;
 }
-add_filter('wp_handle_upload_prefilter', 'wp_check_svg');
+add_filter('wp_handle_upload_prefilter', 'growthlab_sanitize_svg_upload');
+add_filter('wp_handle_sideload_prefilter', 'growthlab_sanitize_svg_upload');
 
 // Image to SVG
 function image_to_svg(array|string $image, string $classes = '')
@@ -187,52 +299,3 @@ function check_content_images($content)
 }
 
 add_filter('the_content', 'check_content_images');
-
-function sanitize_svg($file)
-{
-    if (empty($file['tmp_name'])) {
-        return $file;
-    }
-
-    $filetype = wp_check_filetype($file['name']);
-
-    if ($filetype['type'] !== 'image/svg+xml') {
-        return $file;
-    }
-
-    // Verify permissions
-    if (!current_user_can('upload_files')) {
-        $file['error'] = __('Sorry, you are not allowed to upload SVG files.', 'growthlab');
-        return $file;
-    }
-
-    // Allowed elements and attributes list
-    $allowed_tags = array('svg', 'path', 'rect', 'circle', 'g', 'polygon');
-    $allowed_attrs = array('viewBox', 'width', 'height', 'fill', 'stroke', 'd', 'x', 'y');
-
-    // Load and sanitize SVG
-    $content = file_get_contents($file['tmp_name']);
-    $doc = new DOMDocument();
-    $doc->loadXML($content, LIBXML_NOERROR | LIBXML_NOWARNING);
-
-    // Remove disallowed elements
-    $elements = $doc->getElementsByTagName('*');
-    for ($i = $elements->length - 1; $i >= 0; $i--) {
-        $element = $elements->item($i);
-        if (!in_array($element->tagName, $allowed_tags)) {
-            $element->parentNode->removeChild($element);
-        }
-
-        // Remove disallowed attributes
-        foreach (iterator_to_array($element->attributes) as $attr) {
-            if (!in_array($attr->nodeName, $allowed_attrs)) {
-                $element->removeAttribute($attr->nodeName);
-            }
-        }
-    }
-
-    // Save sanitized SVG
-    file_put_contents($file['tmp_name'], $doc->saveXML());
-
-    return $file;
-}
