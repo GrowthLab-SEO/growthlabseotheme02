@@ -7,9 +7,10 @@ function growthlab_allow_svg_uploads($file_types)
 }
 add_filter('upload_mimes', 'growthlab_allow_svg_uploads');
 
+// Only files named *.svg are accepted as SVG, so SVG content can't be stored under another extension (e.g. .html)
 function growthlab_allow_svg_filetype($data, $file, $filename, $mimes, $real_mime)
 {
-    if (preg_match('/\.svg$/i', $filename) || strtolower($real_mime) === 'image/svg+xml') {
+    if (preg_match('/\.svg$/i', $filename)) {
         $override = array(
             'ext' => 'svg',
             'type' => 'image/svg+xml',
