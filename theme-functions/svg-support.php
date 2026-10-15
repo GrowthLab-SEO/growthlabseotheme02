@@ -1,13 +1,165 @@
 <?php
 // Enable SVG uploads
-function add_file_types_to_uploads($file_types)
+function growthlab_allow_svg_uploads($file_types)
 {
-    $new_filetypes = array();
-    $new_filetypes['svg'] = 'image/svg+xml';
-    $file_types = array_merge($file_types, $new_filetypes);
+    $file_types['svg'] = 'image/svg+xml';
     return $file_types;
 }
-add_filter('upload_mimes', 'add_file_types_to_uploads');
+add_filter('upload_mimes', 'growthlab_allow_svg_uploads');
+
+function growthlab_allow_svg_filetype($data, $file, $filename, $mimes, $real_mime)
+{
+    if (preg_match('/\.svg$/i', $filename) || strtolower($real_mime) === 'image/svg+xml') {
+        $override = array(
+            'ext' => 'svg',
+            'type' => 'image/svg+xml',
+            'proper_filename' => $filename,
+            0 => 'svg',
+            1 => 'image/svg+xml',
+            2 => false,
+            3 => 'svg',
+        );
+
+        $data = array_merge((array) $data, $override);
+    }
+
+    return $data;
+}
+add_filter('wp_check_filetype_and_ext', 'growthlab_allow_svg_filetype', 10, 5);
+
+function growthlab_allow_svg_image_mime($mime, $file)
+{
+    if (strtolower(pathinfo($file, PATHINFO_EXTENSION)) === 'svg') {
+        return 'image/svg+xml';
+    }
+
+    return $mime;
+}
+add_filter('wp_get_image_mime', 'growthlab_allow_svg_image_mime', 10, 2);
+
+function growthlab_allow_svg_as_displayable_image($result, $path)
+{
+    if ($result === false && strtolower(pathinfo($path, PATHINFO_EXTENSION)) === 'svg') {
+        return true;
+    }
+
+    return $result;
+}
+add_filter('file_is_displayable_image', 'growthlab_allow_svg_as_displayable_image', 10, 2);
+
+function growthlab_get_svg_dimensions($file)
+{
+    if (empty($file) || !file_exists($file) || !is_readable($file)) {
+        return false;
+    }
+
+    $svg_content = file_get_contents($file);
+    if ($svg_content === false) {
+        return false;
+    }
+
+    $width = 0;
+    $height = 0;
+
+    if (preg_match('/\bwidth=["\']?([0-9\.]+)(px)?["\']?/i', $svg_content, $match)) {
+        $width = floatval($match[1]);
+    }
+    if (preg_match('/\bheight=["\']?([0-9\.]+)(px)?["\']?/i', $svg_content, $match)) {
+        $height = floatval($match[1]);
+    }
+
+    if (($width === 0 || $height === 0) && preg_match('/viewBox=["\']?([0-9\.\s]+)["\']?/i', $svg_content, $match)) {
+        $parts = preg_split('/[\s,]+/', trim($match[1]));
+        if (count($parts) === 4) {
+            $width = floatval($parts[2]);
+            $height = floatval($parts[3]);
+        }
+    }
+
+    if ($width <= 0 || $height <= 0) {
+        return false;
+    }
+
+    return array($width, $height);
+}
+
+function growthlab_prepare_svg_attachment_for_js($response, $attachment, $meta)
+{
+    if (isset($response['mime']) && $response['mime'] === 'image/svg+xml') {
+        $response['type'] = 'image';
+        $response['subtype'] = 'svg+xml';
+        if (empty($response['url']) && !empty($response['id'])) {
+            $response['url'] = wp_get_attachment_url($response['id']);
+        }
+
+        $dimensions = false;
+        if (!empty($response['id'])) {
+            $file = get_attached_file($response['id']);
+            $dimensions = growthlab_get_svg_dimensions($file);
+        }
+
+        if ($dimensions) {
+            $response['width'] = $dimensions[0];
+            $response['height'] = $dimensions[1];
+            $response['sizes'] = [
+                'full' => [
+                    'url' => $response['url'],
+                    'width' => $dimensions[0],
+                    'height' => $dimensions[1],
+                    'orientation' => $dimensions[0] >= $dimensions[1] ? 'landscape' : 'portrait',
+                ],
+            ];
+        } else {
+            $response['sizes'] = [];
+        }
+    }
+
+    return $response;
+}
+add_filter('wp_prepare_attachment_for_js', 'growthlab_prepare_svg_attachment_for_js', 10, 3);
+
+function growthlab_svg_image_downsize($out, $id, $size)
+{
+    $mime = get_post_mime_type($id);
+    if ($mime !== 'image/svg+xml') {
+        return $out;
+    }
+
+    $file = get_attached_file($id);
+    if (empty($file) || !file_exists($file) || !is_readable($file)) {
+        return false;
+    }
+
+    $svg_content = file_get_contents($file);
+    if ($svg_content === false) {
+        return false;
+    }
+
+    $width = 0;
+    $height = 0;
+    if (preg_match('/\bwidth=["\']?([0-9\.]+)(px)?["\']?/i', $svg_content, $match)) {
+        $width = floatval($match[1]);
+    }
+    if (preg_match('/\bheight=["\']?([0-9\.]+)(px)?["\']?/i', $svg_content, $match)) {
+        $height = floatval($match[1]);
+    }
+
+    if (($width === 0 || $height === 0) && preg_match('/viewBox=["\']?([0-9\.\s]+)["\']?/i', $svg_content, $match)) {
+        $parts = preg_split('/[\s,]+/', trim($match[1]));
+        if (count($parts) === 4) {
+            $width = floatval($parts[2]);
+            $height = floatval($parts[3]);
+        }
+    }
+
+    if ($width <= 0 || $height <= 0) {
+        return false;
+    }
+
+    $url = wp_get_attachment_url($id);
+    return array($url, $width, $height, true);
+}
+add_filter('image_downsize', 'growthlab_svg_image_downsize', 10, 3);
 
 // Sanitize SVG markup: keeps drawing elements, classes, gradients and filters, but strips
 // scripts, event handlers, external references and unsafe CSS.
