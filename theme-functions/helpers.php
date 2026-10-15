@@ -436,38 +436,53 @@ if (!function_exists('get_youtube_thumbnail')) {
     }
 }
 
+// [phonenumber] shortcode: prints the main phone number from the site options as a tel: link.
+// All attributes are escaped because any user who can edit posts (including contributors) can use it.
 function phonenumber($atts, $content = null)
 {
-    extract(shortcode_atts(array(
+    $atts = shortcode_atts(array(
         'target' => '_self',
         'link_id' => '',
         'link_class' => '',
         'wrapper' => '',
         'text' => ''
-    ), $atts));
+    ), $atts, 'phonenumber');
 
     $options = get_current_language_options();
+    $phone = $options['main_phone_number'] ?? '';
 
-    $phone = $options['main_phone_number'] ?? "";
+    // Fall back to the "text" attribute when no phone number is set in the options
+    $link_text = $phone ?: $atts['text'];
+    $link_number = get_flat_number($link_text);
 
-    if ($phone != '') {
-        $linktext = $phone;
-        $linkhref = get_flat_number($phone);
-    } else {
-        $linktext = $text ?: '';
-        $linkhref = get_flat_number($phone) ?: ($linktext ?: "");
+    if (!$link_number) {
+        return '';
     }
 
-    $output = '';
-    if ($wrapper != '') :
-        $output .= "<$wrapper class='$link_class' id='$link_id'>";
-        $link_class = '';
-        $link_id = '';
-    endif;
-    $output .= "<a href='tel:+1$linkhref' target='$target' id='$link_id' class='$link_class'>$linktext</a>";
-    if ($wrapper != '') :
-        $output .= "</$wrapper>";
-    endif;
-    return $output;
+    $allowed_wrappers = array('span', 'div', 'p', 'strong', 'em', 'small', 'li', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6');
+    $wrapper = strtolower(trim($atts['wrapper']));
+    $wrapper = in_array($wrapper, $allowed_wrappers, true) ? $wrapper : '';
+
+    $target = in_array($atts['target'], array('_self', '_blank', '_parent', '_top'), true) ? $atts['target'] : '_self';
+
+    // id and class go on the wrapper when there is one, otherwise on the link
+    $id_class = '';
+    if ($atts['link_id'] !== '') {
+        $id_class .= ' id="' . esc_attr($atts['link_id']) . '"';
+    }
+    if ($atts['link_class'] !== '') {
+        $id_class .= ' class="' . esc_attr($atts['link_class']) . '"';
+    }
+
+    $link = sprintf(
+        '<a href="%s" target="%s"%s%s>%s</a>',
+        esc_url('tel:+1' . $link_number, array('tel')),
+        esc_attr($target),
+        $target === '_blank' ? ' rel="noopener"' : '',
+        $wrapper ? '' : $id_class,
+        esc_html($link_text)
+    );
+
+    return $wrapper ? "<$wrapper$id_class>$link</$wrapper>" : $link;
 }
 add_shortcode('phonenumber', 'phonenumber');
