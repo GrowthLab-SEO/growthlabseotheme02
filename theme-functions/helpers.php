@@ -293,12 +293,30 @@ if (!function_exists('get_flat_number')) {
     }
 }
 
+// Wraps a title in a heading/paragraph tag. The tag is limited to a safe list (falling back to h1 for
+// hero titles and p otherwise) and the title keeps only post-safe HTML, so ACF values can't inject scripts.
+if (!function_exists('get_wrapped_title')) {
+    function get_wrapped_title($title, $tag = 'p', $classes = '', $is_hero = false)
+    {
+        if (!$title) return;
+
+        $allowed_tags = array('h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'span', 'div');
+        $tag = strtolower(trim((string) $tag));
+        if (!in_array($tag, $allowed_tags, true)) {
+            $tag = $is_hero ? 'h1' : 'p';
+        }
+
+        $class_attr = $classes ? ' class="' . esc_attr($classes) . '"' : '';
+
+        return "<$tag$class_attr>" . wp_kses_post($title) . "</$tag>";
+    }
+}
+
 if (!function_exists('print_title')) {
     function print_title($title, $tag = 'p', $classes = '', $is_hero = false)
     {
         if (!$title) return;
-        $tag = $tag ?? ($is_hero ? 'h1' : 'p');
-        echo "<$tag class='$classes'>" . $title . "</$tag>";
+        echo get_wrapped_title($title, $tag, $classes, $is_hero);
     }
 }
 
