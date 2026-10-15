@@ -37,7 +37,7 @@ if (!defined('ABSPATH')) {
             <?php if ($args['link_url']): ?>
                 <a href="<?= $args['link_url'] ?>" target="<?= $args['link_target'] ?>" class="post-card__link" aria-label="Read more about <?= esc_attr($args['title']) ?>">
                     <span>Read More
-                        <?php include get_template_directory() . "\assets\icons\icon-circle-arrow.svg" ?>
+                        <?php include get_template_directory() . "/assets/icons/icon-circle-arrow.svg" ?>
                     </span>
                 </a>
             <?php endif ?>
