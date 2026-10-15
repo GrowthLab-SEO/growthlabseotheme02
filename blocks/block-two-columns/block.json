@@ -3,7 +3,6 @@
   "title": "Two Columns",
 
   "style": ["file:./block-min.css"],
-  "script": ["file:./block-min.js"],
   "category": "growthlabseotheme02-blocks",
   "icon": "block-default",
   "keywords": [
