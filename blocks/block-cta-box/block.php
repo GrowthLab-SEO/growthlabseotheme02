@@ -5,15 +5,17 @@ if (!defined('ABSPATH')) {
 
 if (get_field('toggle_block')):
     foreach (get_fields() as $key => $value) $$key = $value;
+    $box_style = get_valid_field_choice('box_style', $box_style ?? '');
+    $background_type = get_valid_field_choice('background_type', $background_type ?? '');
 ?>
 
     <section<?= get_block_id_attribute($block_id ?? '') ?>
         class="block cta-box 
         <?= esc_attr($box_style) ?>
         <?= !empty($block['className']) ? ' ' . esc_attr($block['className']) : '' ?>
-        <?= $background_type ?? "dark" ?>"
+        <?= esc_attr($background_type ?? "dark") ?>"
         <?= block_style_attribute($block); ?>
-        <?php if (isset($extract_block_from_content) && $extract_block_from_content) echo "data-extract='$place'"; ?>>
+        <?= get_block_extract_attribute($extract_block_from_content ?? false, $place ?? '') ?>>
 
         <?php
         if (isset($background_image) && $background_image && isset($background_type) && $background_type === 'image') img_print_picture_tag(img: $background_image, is_cover: true, classes: "cta-box__bg bg-image gradient-overlay");

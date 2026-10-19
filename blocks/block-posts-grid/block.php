@@ -5,6 +5,7 @@ if (!defined('ABSPATH')) {
 
 if (get_field('toggle_block')):
     foreach (get_fields() as $key => $value) $$key = $value;
+    $grid_type = get_valid_field_choice('grid_type', $grid_type ?? '');
 
     $paged = (get_query_var('paged')) ? get_query_var('paged') : 1;
     if (is_front_page()) {
@@ -86,7 +87,7 @@ if (get_field('toggle_block')):
     <section<?= get_block_id_attribute($block_id ?? '') ?>
         class="block posts-grid<?= !empty($block['className']) ? ' ' . esc_attr($block['className']) : '' ?>"
         <?= block_style_attribute($block); ?>
-        <?php if (isset($extract_block_from_content) && $extract_block_from_content) echo "data-extract='$place'"; ?>>
+        <?= get_block_extract_attribute($extract_block_from_content ?? false, $place ?? '') ?>>
 
         <?php
         if (isset($background_image) && $background_image) img_print_picture_tag(img: $background_image, is_cover: true, classes: "posts-grid__bg bg-image gradient-overlay");
@@ -107,7 +108,7 @@ if (get_field('toggle_block')):
 
             <div class="posts-grid__feed">
 
-                <div class="posts-grid__grid  <?= $grid_type ?>">
+                <div class="posts-grid__grid  <?= esc_attr($grid_type) ?>">
 
                     <?php
                     if ($uses_custom_items) {

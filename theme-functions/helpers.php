@@ -339,6 +339,40 @@ if (!function_exists('print_block_notice')) {
     }
 }
 
+// Returns $value when it is one of the choices of an ACF select/radio/button group field, otherwise the field's
+// default value ('' when it has none). Choices are read from the field definition in the current block or post,
+// so adding an option in ACF needs no code change. Use "group.sub_field" for fields inside a group.
+if (!function_exists('get_valid_field_choice')) {
+    function get_valid_field_choice($field_name, $value)
+    {
+        $path = explode('.', $field_name);
+        $field = get_field_object(array_shift($path), false, false, false);
+
+        foreach ($path as $sub_name) {
+            $sub_fields = is_array($field) ? ($field['sub_fields'] ?? []) : [];
+            $field = current(array_filter($sub_fields, fn($sub) => ($sub['name'] ?? '') === $sub_name)) ?: null;
+        }
+
+        $choices = is_array($field) && is_array($field['choices'] ?? null) ? $field['choices'] : [];
+        if (is_scalar($value) && $value !== '' && array_key_exists((string) $value, $choices)) {
+            return (string) $value;
+        }
+
+        $default = $field['default_value'] ?? '';
+        return is_scalar($default) && array_key_exists((string) $default, $choices) ? (string) $default : '';
+    }
+}
+
+// Returns the data-extract attribute that main.js uses to move a block before/after the content, or '' when disabled
+if (!function_exists('get_block_extract_attribute')) {
+    function get_block_extract_attribute($enabled, $place)
+    {
+        if (!$enabled) return '';
+        $place = get_valid_field_choice('place', $place);
+        return $place !== '' ? ' data-extract="' . esc_attr($place) . '"' : '';
+    }
+}
+
 // Render a Gravity Forms form only if the plugin is active
 if (!function_exists('render_gravity_form')) {
     function render_gravity_form(...$args)

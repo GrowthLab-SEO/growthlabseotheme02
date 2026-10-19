@@ -10,7 +10,7 @@ if (get_field('toggle_block')):
     <section<?= get_block_id_attribute($block_id ?? '') ?>
         class="block faq <?php if (!$background_image && !isset($$background_image) && !$lightdark_background) echo "bg-gradient"; ?><?= !empty($block['className']) ? ' ' . esc_attr($block['className']) : '' ?>"
        <?= block_style_attribute($block); ?>
-        <?php if (isset($extract_block_from_content) && $extract_block_from_content) echo "data-extract='$place'"; ?>>
+        <?= get_block_extract_attribute($extract_block_from_content ?? false, $place ?? '') ?>>
 
         <?php
         if (isset($background_image) && $background_image) img_print_picture_tag(img: $background_image, is_cover: true, classes: "faq__bg bg-image gradient-overlay");

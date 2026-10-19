@@ -10,7 +10,7 @@ if (get_field('toggle_block')):
     <section<?= get_block_id_attribute($block_id ?? '') ?>
         class="block locations<?= !empty($block['className']) ? ' ' . esc_attr($block['className']) : '' ?>"
         <?= block_style_attribute($block); ?>
-        <?php if (isset($extract_block_from_content) && $extract_block_from_content) echo "data-extract='$place'"; ?>>
+        <?= get_block_extract_attribute($extract_block_from_content ?? false, $place ?? '') ?>>
 
         <div class="locations__wrapper container">
 

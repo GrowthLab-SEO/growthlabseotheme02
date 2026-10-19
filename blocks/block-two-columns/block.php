@@ -5,6 +5,7 @@ if (!defined('ABSPATH')) {
 
 if (get_field('toggle_block')):
     foreach (get_fields() as $key => $value) $$key = $value;
+    $background_type = get_valid_field_choice('background_type', $background_type ?? '');
     $reverse =  $reverse_order ? "reverse" : "";
 ?>
 
@@ -19,7 +20,7 @@ if (get_field('toggle_block')):
         <?= !empty($block['className']) ? ' ' . esc_attr($block['className']) : '' ?>
         "
         <?= block_style_attribute($block); ?>
-        <?php if (isset($extract_block_from_content) && $extract_block_from_content) echo "data-extract='$place'"; ?>>
+        <?= get_block_extract_attribute($extract_block_from_content ?? false, $place ?? '') ?>>
 
         <?php
         if ($show_top_separator) get_template_part("template-parts/logo", "separator", ["classes" => "two-columns__separator $reverse"]);

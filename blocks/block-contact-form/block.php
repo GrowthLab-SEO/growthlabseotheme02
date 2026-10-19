@@ -5,12 +5,13 @@ if (!defined('ABSPATH')) {
 
 if (get_field('toggle_block')):
     foreach (get_fields() as $key => $value) $$key = $value;
+    $background_style = get_valid_field_choice('background_style', $background_style ?? '');
 ?>
 
     <section<?= get_block_id_attribute($block_id ?? '') ?>
         class="block contact-form-block <?= esc_attr(isset($background_style) && $background_style ? $background_style : 'light') ?><?= !empty($block['className']) ? ' ' . esc_attr($block['className']) : '' ?>"
         <?= block_style_attribute($block); ?>
-        <?php if (isset($extract_block_from_content) && $extract_block_from_content) echo "data-extract='$place'"; ?>>
+        <?= get_block_extract_attribute($extract_block_from_content ?? false, $place ?? '') ?>>
 
         <div class="contact-form-block__layer">
 

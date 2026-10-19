@@ -60,7 +60,7 @@ if (get_field('toggle_block')):
         <?= esc_attr($carousel_type) ?><?= !empty($block['className']) ? ' ' . esc_attr($block['className']) : '' ?>
         "
         <?= block_style_attribute($block); ?>
-        <?php if (isset($extract_block_from_content) && $extract_block_from_content) echo "data-extract='$place'"; ?>>
+        <?= get_block_extract_attribute($extract_block_from_content ?? false, $place ?? '') ?>>
 
         <?php
         if (isset($background_image) && $background_image) img_print_picture_tag(img: $background_image, is_cover: true, classes: "posts-carousel__bg bg-image gradient-overlay");
