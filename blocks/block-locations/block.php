@@ -7,8 +7,7 @@ if (get_field('toggle_block')):
     foreach (get_fields() as $key => $value) $$key = $value;
 ?>
 
-    <section
-        id="<?= esc_attr($block_id ?? '') ?>"
+    <section<?= get_block_id_attribute($block_id ?? '') ?>
         class="block locations<?= !empty($block['className']) ? ' ' . esc_attr($block['className']) : '' ?>"
         <?= block_style_attribute($block); ?>
         <?php if (isset($extract_block_from_content) && $extract_block_from_content) echo "data-extract='$place'"; ?>>
@@ -29,9 +28,9 @@ if (get_field('toggle_block')):
                 <?php
                 if ($show_all_locations) {
                     $options = get_current_language_options();
-                    $locations = $options['offices'];
+                    $locations = !empty($options['offices']) ? $options['offices'] : [];
                 } else {
-                    $locations = $offices;
+                    $locations = !empty($offices) ? $offices : [];
                 }
                 if (!empty($locations)):
                 ?>
@@ -53,9 +52,9 @@ if (get_field('toggle_block')):
                 endif;
                 ?>
 
-                <?php if ($cta_link && count($locations) === 1): ?>
-                    <a href="<?= $cta_link['url'] ?>" target="<?= $cta_link['target'] ?>" class="cta-btn btn btn--secondary" aria-label="<?= esc_attr($cta_link['title']) ?>">
-                        <span><?= $cta_link['title'] ?></span>
+                <?php if (!empty($cta_link['url']) && count($locations) === 1): ?>
+                    <a href="<?= esc_url($cta_link['url']) ?>" target="<?= esc_attr($cta_link['target']) ?>" class="cta-btn btn btn--secondary" aria-label="<?= esc_attr($cta_link['title']) ?>">
+                        <span><?= esc_html($cta_link['title']) ?></span>
                     </a>
                 <?php endif; ?>
 
