@@ -339,18 +339,18 @@ function image_to_svg(array|string $image, string $classes = '')
         // Normalize path for Windows and Unix
         $image_path = wp_normalize_path($image_path);
 
-        // Detailed debug log
-        error_log(sprintf('image_to_svg: url="%s" baseurl="%s" basedir="%s" path="%s"', $img_url, $baseurl, $basedir, $image_path));
+        // Failures are only logged when WP_DEBUG is on
+        $debug = defined('WP_DEBUG') && WP_DEBUG;
 
         if (!file_exists($image_path) || !is_readable($image_path)) {
-            error_log('SVG Image path is missing or not readable: ' . $image_path);
+            if ($debug) error_log('SVG Image path is missing or not readable: ' . $image_path);
             return '';
         }
 
         if (mime_content_type($image_path) === "image/svg+xml") {
             $svg_content = @file_get_contents($image_path);
             if ($svg_content === false) {
-                error_log('Could not read SVG file: ' . $image_path);
+                if ($debug) error_log('Could not read SVG file: ' . $image_path);
                 return '';
             }
 
@@ -367,7 +367,7 @@ function image_to_svg(array|string $image, string $classes = '')
             esc_attr($image['title'] ?? ''),
         );
     } catch (Exception $e) {
-        error_log('SVG Processing Error: ' . $e->getMessage());
+        if (defined('WP_DEBUG') && WP_DEBUG) error_log('SVG Processing Error: ' . $e->getMessage());
         return '';
     }
 }
