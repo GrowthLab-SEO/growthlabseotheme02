@@ -80,6 +80,16 @@ if (get_field('toggle_block')):
         return;
     }
 
+    // Each paginated grid gets its own page parameter, so paginating one grid doesn't paginate the others
+    $page_arg = '';
+    if (!$uses_custom_items && (int) $args['posts_per_page'] > 0) {
+        $page_arg = get_posts_grid_page_arg();
+        if ($page_arg !== '') {
+            $paged = max(1, absint($_GET[$page_arg] ?? 1));
+            $args['paged'] = $paged;
+        }
+    }
+
     $query = $uses_custom_items ? null : new WP_Query($args);
 ?>
 
@@ -199,6 +209,7 @@ if (get_field('toggle_block')):
                     get_template_part('template-parts/posts', 'pagination', array(
                         'paged' => $paged,
                         'query' => $query,
+                        'page_arg' => $page_arg,
                         'classes' => 'case-results__pagination'
                     ));
                 }

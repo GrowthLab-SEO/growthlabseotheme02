@@ -7,6 +7,7 @@ $args = wp_parse_args($args, array(
     'classes' => '',
     'paged' => max(1, (int) get_query_var('paged', 1)),
     'query' => null,
+    'page_arg' => '', // Custom page query arg (e.g. 'grid-2-page'); empty uses paged
     'prev_text' => null,
     'next_text' => null,
     'mid_size' => 2,
@@ -35,7 +36,7 @@ $next_arrow = '
             <span class="arrow__placeholder">Next</span>
         ';
 
-$pagination = paginate_links(array(
+$pagination_args = array(
     'format' => '?paged=%#%',
     'current' => max(1, $paged),
     'total' => $query->max_num_pages,
@@ -45,7 +46,16 @@ $pagination = paginate_links(array(
     'add_args' => array(),
     'mid_size' => (int) $args['mid_size'],
     'end_size' => (int) $args['end_size'],
-));
+);
+
+// Paginate with a custom query arg, keeping the current URL and its other query args (e.g. other grids' pages)
+$page_arg = sanitize_key($args['page_arg']);
+if ($page_arg !== '') {
+    $pagination_args['base'] = add_query_arg($page_arg, '%#%', remove_query_arg($page_arg));
+    $pagination_args['format'] = '';
+}
+
+$pagination = paginate_links($pagination_args);
 
 $container_classes = esc_attr($args['classes']);
 ?>
