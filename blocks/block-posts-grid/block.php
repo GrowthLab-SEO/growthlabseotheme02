@@ -51,24 +51,39 @@ if (get_field('toggle_block')):
             break;
     }
 
-    if (isset($show_all) && !$show_all) {
-        $args['post__in'] = !empty($selected_posts) ? $selected_posts : [0];
+    // "Show all" only applies to post type grids; custom grids always use their own selection or items
+    if ($grid_type === "custom") {
+        $show_all = false;
+    }
+
+    $shows_selection = isset($show_all) && !$show_all;
+
+    if ($shows_selection) {
+        $args['post__in'] = !empty($selected_posts) ? array_map('intval', (array) $selected_posts) : [];
         $args['posts_per_page'] = -1;
         $args['orderby'] = 'post__in';
     }
 
-    if ($grid_type === "custom" && $select_or_create_items) {
+    if ($grid_type === "custom" && !empty($select_or_create_items)) {
         $args['post_type'] = "any";
-        $args['post__in'] = $select_posts;
+        $args['post__in'] = !empty($select_posts) ? array_map('intval', (array) $select_posts) : [];
         $args['orderby'] = 'post__in';
     }
 
-    $query = new WP_Query($args);
+    // Custom grid built from the repeater instead of selected posts
+    $uses_custom_items = $grid_type === "custom" && empty($select_or_create_items);
+
+    // Without selected posts or custom items the grid is not rendered; editors see a notice instead
+    if ($uses_custom_items ? empty($custom_grid) : ($shows_selection && empty($args['post__in']))) {
+        print_block_notice(__('Posts Grid: no posts selected or created. This notice is only visible to editors.', 'growthlabseotheme02'));
+        return;
+    }
+
+    $query = $uses_custom_items ? null : new WP_Query($args);
 ?>
 
 
-    <section
-        id="<?= esc_attr($block_id ?? '') ?>"
+    <section<?= get_block_id_attribute($block_id ?? '') ?>
         class="block posts-grid<?= !empty($block['className']) ? ' ' . esc_attr($block['className']) : '' ?>"
         <?= block_style_attribute($block); ?>
         <?php if (isset($extract_block_from_content) && $extract_block_from_content) echo "data-extract='$place'"; ?>>
@@ -95,7 +110,7 @@ if (get_field('toggle_block')):
                 <div class="posts-grid__grid  <?= $grid_type ?>">
 
                     <?php
-                    if (isset($custom_grid) && !empty($custom_grid) && !$select_or_create_items && $grid_type === "custom") {
+                    if ($uses_custom_items) {
                         foreach ($custom_grid as $item) {
                             foreach ($item as $field => $data) $$field = $data;
 
@@ -108,7 +123,7 @@ if (get_field('toggle_block')):
                                 "content" => $content ?? '',
                             ));
                         }
-                    } elseif (isset($query) && $query->have_posts()) {
+                    } elseif ($query && $query->have_posts()) {
                         while ($query->have_posts()) {
                             $query->the_post();
 
@@ -177,7 +192,7 @@ if (get_field('toggle_block')):
                 </div>
 
                 <?php
-                if ($query->max_num_pages > 1) {
+                if ($query && $query->max_num_pages > 1) {
                     get_template_part('template-parts/posts', 'pagination', array(
                         'paged' => $paged,
                         'query' => $query,
