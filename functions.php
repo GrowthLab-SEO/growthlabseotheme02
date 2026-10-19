@@ -33,6 +33,7 @@ $includes = [
     'theme-functions/svg-support.php',
     'theme-functions/picture-optimization.php',
     'theme-functions/tiny-mce.php',
+    'theme-functions/security-functions.php',
 ];
 
 foreach ($includes as $file) {
