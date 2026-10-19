@@ -7,8 +7,7 @@ if (get_field('toggle_block')):
     foreach (get_fields() as $key => $value) $$key = $value;
 ?>
 
-    <section
-        id="<?= esc_attr($block_id ?? '') ?>"
+    <section<?= get_block_id_attribute($block_id ?? '') ?>
         class="block cta-box 
         <?= esc_attr($box_style) ?>
         <?= !empty($block['className']) ? ' ' . esc_attr($block['className']) : '' ?>
@@ -60,8 +59,8 @@ if (get_field('toggle_block')):
                                 $btn_style = $i === 0 ? "tertiary" : "primary";
                                 if (!empty($cta_link['title']) && !empty($cta_link['url'])):
                             ?>
-                                    <a href="<?= $cta_link['url'] ?>" target="<?= $cta_link['target'] ?>" class="btn btn--<?= $btn_style ?>" aria-label="<?= esc_attr($cta_link['title']) ?>">
-                                        <span><?= $cta_link['title'] ?></span>
+                                    <a href="<?= esc_url($cta_link['url']) ?>" target="<?= esc_attr($cta_link['target']) ?>" class="btn btn--<?= $btn_style ?>" aria-label="<?= esc_attr($cta_link['title']) ?>">
+                                        <span><?= esc_html($cta_link['title']) ?></span>
                                     </a>
                             <?php
                                     $i++;

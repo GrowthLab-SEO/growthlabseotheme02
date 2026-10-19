@@ -320,6 +320,16 @@ if (!function_exists('print_title')) {
     }
 }
 
+// Returns the escaped id attribute for a block wrapper (with a leading space), or an empty string when no id is set
+if (!function_exists('get_block_id_attribute')) {
+    function get_block_id_attribute($block_id)
+    {
+        $block_id = trim((string) $block_id);
+        return $block_id !== '' ? ' id="' . esc_attr($block_id) . '"' : '';
+    }
+}
+
+
 // Render a Gravity Forms form only if the plugin is active
 if (!function_exists('render_gravity_form')) {
     function render_gravity_form(...$args)

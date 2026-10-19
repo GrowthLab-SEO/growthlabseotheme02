@@ -7,8 +7,7 @@ if (get_field('toggle_block')):
     foreach (get_fields() as $key => $value) $$key = $value;
 ?>
 
-    <section
-        id="<?= esc_attr($block_id ?? '') ?>"
+    <section<?= get_block_id_attribute($block_id ?? '') ?>
         class="
         block 
         content-intro
@@ -69,13 +68,13 @@ if (get_field('toggle_block')):
 
                     <div class="inner-cta-box__buttons">
                         <?php if ($cta_link && isset($cta_link) && !empty($cta_link["url"])): ?>
-                            <a href="<?= $cta_link["url"] ?>" target="<?= $cta_link["target"] ?>" class="btn btn--tertiary" aria-label="<?= esc_attr($cta_link["title"]) ?>">
-                                <span><?= $cta_link["title"] ?></span>
+                            <a href="<?= esc_url($cta_link["url"]) ?>" target="<?= esc_attr($cta_link["target"]) ?>" class="btn btn--tertiary" aria-label="<?= esc_attr($cta_link["title"]) ?>">
+                                <span><?= esc_html($cta_link["title"]) ?></span>
                             </a>
                         <?php endif ?>
                         <?php if ($cta_link_2 && isset($cta_link_2) && !empty($cta_link_2["url"])): ?>
-                            <a href="<?= $cta_link_2["url"] ?>" target="<?= $cta_link_2["target"] ?>" class="btn btn--primary" aria-label="<?= esc_attr($cta_link_2["title"]) ?>">
-                                <span><?= $cta_link_2["title"] ?></span>
+                            <a href="<?= esc_url($cta_link_2["url"]) ?>" target="<?= esc_attr($cta_link_2["target"]) ?>" class="btn btn--primary" aria-label="<?= esc_attr($cta_link_2["title"]) ?>">
+                                <span><?= esc_html($cta_link_2["title"]) ?></span>
                             </a>
                         <?php endif ?>
                     </div>

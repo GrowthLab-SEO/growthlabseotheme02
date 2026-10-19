@@ -7,7 +7,7 @@ if (!defined('ABSPATH')) {
 <div class="location-card accordion <?= isset($args['classes']) ? $args['classes'] : '' ?>">
     <?php
     $tp_url = $location['target_page_url'];
-    $city = $tp_url ? "<a href='$tp_url' target='_blank' aria-label='" . esc_attr($location['city']) . "'>" : '';
+    $city = $tp_url ? "<a href='" . esc_url($tp_url) . "' target='_blank' aria-label='" . esc_attr($location['city']) . "'>" : '';
     $city .= $location['city'];
     $city .= $tp_url ? "</a>" : '';
     ?>
@@ -35,8 +35,8 @@ if (!defined('ABSPATH')) {
                     <p class="location-card__address"><?= $location['address'] ?></p>
 
                     <?php if (!empty($location['cta_button']) && $location['cta_button']['url']): ?>
-                        <a href="<?= $location['cta_button']['url'] ?>" class="location-card__cta" aria-label="<?= esc_attr($location['cta_button']['title']) ?>">
-                            <?= $location['cta_button']['title'] ?>
+                        <a href="<?= esc_url($location['cta_button']['url']) ?>" class="location-card__cta" aria-label="<?= esc_attr($location['cta_button']['title']) ?>">
+                            <?= esc_html($location['cta_button']['title']) ?>
                         </a>
                     <?php endif ?>
 

@@ -7,8 +7,7 @@ if (get_field('toggle_block')):
     foreach (get_fields() as $key => $value) $$key = $value;
 ?>
 
-    <section
-        id="<?= esc_attr($block_id ?? '') ?>"
+    <section<?= get_block_id_attribute($block_id ?? '') ?>
         class="block faq <?php if (!$background_image && !isset($$background_image) && !$lightdark_background) echo "bg-gradient"; ?><?= !empty($block['className']) ? ' ' . esc_attr($block['className']) : '' ?>"
        <?= block_style_attribute($block); ?>
         <?php if (isset($extract_block_from_content) && $extract_block_from_content) echo "data-extract='$place'"; ?>>
@@ -100,8 +99,8 @@ if (get_field('toggle_block')):
 
                 <?php if ($cta_link): ?>
                     <div class="faq__btn">
-                        <a href="<?= $cta_link['url'] ?>" target="<?= $cta_link['target'] ?>" class="btn btn--secondary" aria-label="<?= esc_attr($cta_link['title']) ?>">
-                            <span><?= $cta_link['title'] ?></span>
+                        <a href="<?= esc_url($cta_link['url']) ?>" target="<?= esc_attr($cta_link['target']) ?>" class="btn btn--secondary" aria-label="<?= esc_attr($cta_link['title']) ?>">
+                            <span><?= esc_html($cta_link['title']) ?></span>
                         </a>
                     </div>
                 <?php endif ?>

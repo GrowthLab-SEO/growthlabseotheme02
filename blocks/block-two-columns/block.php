@@ -8,8 +8,7 @@ if (get_field('toggle_block')):
     $reverse =  $reverse_order ? "reverse" : "";
 ?>
 
-    <section
-        id="<?= esc_attr($block_id ?? '') ?>"
+    <section<?= get_block_id_attribute($block_id ?? '') ?>
         class="
         block 
         two-columns
@@ -40,8 +39,8 @@ if (get_field('toggle_block')):
                         <?= $text_content ?? "" ?>
 
                         <?php if ($cta_link && isset($cta_link) && !empty($cta_link["url"])): ?>
-                            <a href="<?= $cta_link["url"] ?>" target="<?= $cta_link["target"] ?>" class="btn btn--tertiary" aria-label="<?= esc_attr($cta_link["title"]) ?>">
-                                <span><?= $cta_link["title"] ?></span>
+                            <a href="<?= esc_url($cta_link["url"]) ?>" target="<?= esc_attr($cta_link["target"]) ?>" class="btn btn--tertiary" aria-label="<?= esc_attr($cta_link["title"]) ?>">
+                                <span><?= esc_html($cta_link["title"]) ?></span>
                             </a>
                         <?php endif ?>
                     </div>
