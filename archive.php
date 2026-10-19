@@ -23,6 +23,7 @@ $post_id = get_option('page_for_posts');
                         "picture" => get_the_post_thumbnail_url(),
                         "meta" => get_the_date(),
                         "title" => get_the_title(),
+                        "title_tag" => get_current_language_options()["posts_default_title_tag"] ?? "p",
                         "excerpt" => get_the_excerpt(),
                         "link_url" => get_the_permalink(),
                         "link_target" => '_self',
