@@ -180,13 +180,13 @@
     format("woff2");
 }
 
-// Asegurar que las fuentes estén disponibles en el iframe
+// Make sure the fonts are available inside the iframe
 body#tinymce,
 .mce-content-body {
   font-family: "Mona Sans", sans-serif;
 }
 
-// TinyMCE necesita que estas familias estén definidas para poder aplicarlas
+// TinyMCE needs these families to be defined in order to apply them
 body,
 p,
 h1,
@@ -204,7 +204,7 @@ h6 {
   }
 }
 
-// Soporte directo para cuando TinyMCE aplica inline styles
+// Direct support for when TinyMCE applies inline styles
 *[style*="font-family: roboto serif"],
 *[style*="font-family: 'roboto serif'"] {
   font-family: "Roboto Serif", serif !important;
@@ -215,7 +215,7 @@ h6 {
   font-family: "Mona Sans", sans-serif !important;
 }
 
-// Clases auxiliares (opcional)
+// Helper classes (optional)
 .mona-sans {
   font-family: "Mona Sans", sans-serif;
 }

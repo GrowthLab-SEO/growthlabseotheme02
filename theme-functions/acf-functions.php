@@ -444,7 +444,7 @@ $acf_sync = function () use ($_theme_dir) {
             $synced++;
         }
 
-        // ─── Taxonomías ───────────────────────────────────────────────────────
+        // ─── Taxonomies ───────────────────────────────────────────────────────
         $tax_rows = $wpdb->get_results(
             "SELECT MIN(ID) as ID, post_name FROM {$wpdb->posts}
              WHERE post_type = 'acf-taxonomy'

@@ -13,13 +13,13 @@
 // Theme text domain global
 $GLOBALS['theme_text_domain'] = 'growthlabseotheme02';
 
-// Definir breakpoints personalizados para este tema
+// Define custom breakpoints for this theme
 $GLOBALS['breakpoints'] = [
     'mobile' => '0px',
-    'tablet' => '768px',   // diferente al default
+    'tablet' => '768px',   // differs from the default
     'ldpi'   => '1024px',
-    'mdpi'   => '1280px',  // diferente al default
-    'hdpi'   => '1920px',  // diferente al default
+    'mdpi'   => '1280px',  // differs from the default
+    'hdpi'   => '1920px',  // differs from the default
 ];
 
 
@@ -166,13 +166,13 @@ add_filter('wp_theme_json_data_theme', function ($theme_json) {
 
     $data = $theme_json->get_data();
 
-    // ─── DESACTIVAR CSS GLOBAL NO DESEADO ───────────────────────────────────
+    // ─── DISABLE UNWANTED GLOBAL CSS ────────────────────────────────────────
     $data['settings']['color']['defaultPalette']            = false;
     $data['settings']['color']['defaultGradients']          = false;
     $data['settings']['typography']['defaultFontSizes']     = false;
     $data['settings']['spacing']['defaultSpacingSizes']     = false;
 
-    // ─── PALETA DE COLORES ───────────────────────────────────────────────────
+    // ─── COLOR PALETTE ───────────────────────────────────────────────────────
     $data['settings']['color']['palette'] = [
         ['name' => __('Primary Color',        get_text_domain()), 'slug' => 'primary-color',        'color' => get_theme_mod('primary_color',        $default_colors['primary']['default'])],
         ['name' => __('Primary Color Dark',   get_text_domain()), 'slug' => 'primary-color-dark',   'color' => get_theme_mod('primary_color_dark',   $default_colors['primary']['dark'])],
@@ -582,15 +582,15 @@ function import_theme_images_to_folder()
     }
 }
 
-// Forzar que las secciones de widgets permanezcan disponibles
+// Force the widget sections to stay available
 add_action('customize_register', function ($wp_customize) {
-    // Verificar y forzar panel de widgets
+    // Check and force the widgets panel
     $widgets_panel = $wp_customize->get_panel('widgets');
     if ($widgets_panel) {
         $widgets_panel->active_callback = '__return_true';
     }
 
-    // Forzar que las secciones específicas siempre estén activas
+    // Force the specific sections to always be active
     $sidebar_default = $wp_customize->get_section('sidebar-widgets-sidebar-default');
     if ($sidebar_default) {
         $sidebar_default->active_callback = '__return_true';
@@ -602,24 +602,24 @@ add_action('customize_register', function ($wp_customize) {
     }
 }, 999);
 
-// Prevenir que el Customizer oculte secciones de widgets dinámicamente
+// Prevent the Customizer from dynamically hiding widget sections
 add_action('customize_controls_print_footer_scripts', function () {
 ?>
     <script>
         (function($) {
             wp.customize.bind('ready', function() {
-                // Forzar que los paneles de widgets permanezcan visibles
+                // Force the widget panels to stay visible
                 var widgetsPanel = wp.customize.panel('widgets');
                 if (widgetsPanel) {
                     widgetsPanel.active.set(true);
 
-                    // Prevenir que se oculte
+                    // Prevent it from being hidden
                     widgetsPanel.active.validate = function() {
                         return true;
                     };
                 }
 
-                // Forzar secciones específicas
+                // Force specific sections
                 ['sidebar-widgets-sidebar-default', 'sidebar-widgets-sidebar-blog'].forEach(function(sectionId) {
                     var section = wp.customize.section(sectionId);
                     if (section) {

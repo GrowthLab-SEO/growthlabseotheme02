@@ -3,14 +3,14 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-// ── Categorías ────────────────────────────────────────────────────────────────
+// ── Categories ────────────────────────────────────────────────────────────────
 $categories = get_categories(array(
     'hide_empty' => true,
     'orderby'    => 'name',
     'order'      => 'ASC',
 ));
 
-// ── Rango de fechas (primer y último post publicado) ──────────────────────────
+// ── Date range (first and last published post) ────────────────────────────────
 $oldest_post = get_posts(array(
     'numberposts' => 1,
     'order'       => 'ASC',

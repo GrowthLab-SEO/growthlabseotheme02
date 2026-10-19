@@ -560,7 +560,7 @@ if (!function_exists('get_yt_code')) {
     }
 }
 
-// Transforma los estilos en línea de font-size a variables CSS personalizadas
+// Converts inline font-size styles into custom CSS variables
 function transform_inline_font_sizes(
     string $html,
     string $font_size_var = '--fs'
@@ -599,7 +599,7 @@ function transform_inline_font_sizes(
 
         $font_size = trim($matches[1]);
 
-        // Elimina el font-size original
+        // Remove the original font-size
         $style = preg_replace(
             '/font-size\s*:\s*[^;]+;?/i',
             '',
@@ -612,7 +612,7 @@ function transform_inline_font_sizes(
             $style .= ';';
         }
 
-        // Agrega la variable y la nueva regla
+        // Add the variable and the new rule
         $style .= sprintf(
             '%s:%s;font-size:calc(var(%s) * var(--font-scale, 1));',
             $font_size_var,

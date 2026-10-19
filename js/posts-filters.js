@@ -1,5 +1,5 @@
 /* posts-filters.js
- * Enqueued via functions.php — depende de postsFiltersData (wp_localize_script)
+ * Enqueued via functions.php — depends on postsFiltersData (wp_localize_script)
  *
  * wp_localize_script( 'posts-filters', 'postsFiltersData', array(
  *     'restUrl' => get_rest_url( null, 'wp/v2' ),
@@ -216,7 +216,7 @@ document.addEventListener("DOMContentLoaded", function () {
       .join("");
   }
 
-  // ── SVGs (mismos que la template part posts-pagination.php) ──────────────
+  // ── SVGs (same as the posts-pagination.php template part) ────────────────
   const SVG_PREV = `
         <svg width="54" height="54" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path fill-rule="evenodd" clip-rule="evenodd" d="M18.75 9.99981C18.75 9.83405 18.6842 9.67508 18.5669 9.55787C18.4497 9.44066 18.2908 9.37481 18.125 9.37481H3.3837L7.3175 5.44231C7.4349 5.32495 7.5008 5.16578 7.5008 4.99981C7.5008 4.83384 7.4349 4.67467 7.3175 4.55731C7.2001 4.43995 7.041 4.37402 6.875 4.37402C6.709 4.37402 6.5499 4.43995 6.4325 4.55731L1.4325 9.55731C1.3743 9.61537 1.3281 9.68434 1.2966 9.76027C1.2651 9.8362 1.2489 9.9176 1.2489 9.99981C1.2489 10.082 1.2651 10.1634 1.2966 10.2394C1.3281 10.3153 1.3743 10.3843 1.4325 10.4423L6.4325 15.4423C6.5499 15.5597 6.709 15.6256 6.875 15.6256C7.041 15.6256 7.2001 15.5597 7.3175 15.4423C7.4349 15.325 7.5008 15.1658 7.5008 14.9998C7.5008 14.8338 7.4349 14.6747 7.3175 14.5573L3.3837 10.6248H18.125C18.2908 10.6248 18.4497 10.559 18.5669 10.4418C18.6842 10.3245 18.75 10.1656 18.75 9.99981Z" fill="currentColor"/>
@@ -230,7 +230,7 @@ document.addEventListener("DOMContentLoaded", function () {
         <span class="arrow__placeholder">Next</span>`;
 
   // ── Render pagination ─────────────────────────────────────────────────────
-  // Replica el markup exacto de template-parts/posts-pagination.php
+  // Replicates the exact markup of template-parts/posts-pagination.php
   function renderPagination() {
     if (!pgWrap) return;
 
@@ -239,7 +239,7 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
-    // Construye los items igual que paginate_links() + el foreach del template
+    // Builds the items the same way as paginate_links() + the template's foreach
     const items = [];
 
     // Prev
@@ -247,7 +247,7 @@ document.addEventListener("DOMContentLoaded", function () {
       items.push({ type: "prev", page: state.page - 1 });
     }
 
-    // Números con dots (mid_size: 2, end_size: 1 — igual que el template)
+    // Numbers with dots (mid_size: 2, end_size: 1 — same as the template)
     const MID = 2;
     const END = 1;
 
@@ -258,7 +258,7 @@ document.addEventListener("DOMContentLoaded", function () {
       if (inEnd || inMid) {
         items.push({ type: p === state.page ? "current" : "number", page: p });
       } else {
-        // Solo añade dots si el item anterior no era ya dots
+        // Only add dots if the previous item was not dots already
         const last = items[items.length - 1];
         if (last && last.type !== "dots") {
           items.push({ type: "dots" });
@@ -271,7 +271,7 @@ document.addEventListener("DOMContentLoaded", function () {
       items.push({ type: "next", page: state.page + 1 });
     }
 
-    // Construye el UL
+    // Build the UL
     const ul = document.createElement("ul");
     ul.className = "pagination pagination-buttons";
 

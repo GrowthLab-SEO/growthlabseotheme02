@@ -219,7 +219,7 @@ strong {
 
 .bg-gradient {
   position: relative;
-  // Background base idéntico al loaded, sin la imagen
+  // Base background identical to the loaded state, without the image
   background: linear-gradient(
     135deg,
     rgba(var(--primary), 1) 0%,
@@ -238,7 +238,7 @@ strong {
   }
 
   &--loaded {
-    // Solo agrega el ::after con la imagen de textura
+    // Only adds the ::after with the texture image
     &::after {
       width: 100%;
       height: 100%;
@@ -738,7 +738,7 @@ iframe {
 /* Video Overlay - Lightbox
 --------------------------------------------------------------- */
 #video-overlay {
-  display: flex; /* siempre flex, la transición no se interrumpe */
+  display: flex; /* always flex, so the transition is not interrupted */
   position: fixed;
   top: 0;
   left: 0;
@@ -777,7 +777,7 @@ iframe {
   height: 100%;
 }
 
-/* Botón cerrar */
+/* Close button */
 #video-overlay .overlay-close {
   position: absolute;
   top: 1rem;

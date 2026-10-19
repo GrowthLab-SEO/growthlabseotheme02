@@ -980,7 +980,7 @@ if (!function_exists('img_generate_cover_picture')) {
             }
         }
 
-        // Acumula dimensiones reales por breakpoint para las custom properties.
+        // Collect the actual dimensions per breakpoint for the custom properties.
         $bp_ratios      = [];
         $non_mobile_bps = array_filter($bp_order, fn($bp) => $bp !== 'mobile');
 
@@ -1065,7 +1065,7 @@ if (!function_exists('img_generate_cover_picture')) {
         $mobile_url  = $mobile_source_fields['urls'][$mobile_size] ?? $mobile_source_fields['url'];
         $mobile_mime = $mobile_source_fields['mime_type'];
 
-        // Guardar dimensiones mobile.
+        // Store the mobile dimensions.
         $bp_ratios['mobile'] = [
             'w' => $mobile_source_fields['meta']['sizes'][$mobile_size]['width']  ?? $mobile_source_fields['width'],
             'h' => $mobile_source_fields['meta']['sizes'][$mobile_size]['height'] ?? $mobile_source_fields['height'],

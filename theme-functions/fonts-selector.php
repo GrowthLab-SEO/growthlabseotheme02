@@ -1,30 +1,30 @@
 <?php
 
-// ─── DEFAULTS DEL TEMA ────────────────────────────────────────────────────────
+// ─── THEME DEFAULTS ───────────────────────────────────────────────────────────
 $default_fonts = [
     'primary'   => 'Mona Sans',
     'secondary' => 'Roboto Serif',
 ];
 
-// ─── FUNCIÓN CENTRAL: lee Font Library + fuentes del tema ────────────────────
+// ─── CORE FUNCTION: reads the Font Library + theme fonts ─────────────────────
 if (! function_exists('theme_get_all_fonts')) {
     /**
-     * Retorna todas las fuentes disponibles combinando:
-     *   1. Fuentes base del tema (hardcoded — siempre presentes).
-     *   2. Fuentes instaladas vía Font Library de WP 7+ (sub-clave 'custom'
-     *      en WP_Theme_JSON_Resolver).
+     * Returns all available fonts by combining:
+     *   1. The theme's base fonts (hardcoded — always present).
+     *   2. Fonts installed through the WP 7+ Font Library ('custom' sub-key
+     *      in WP_Theme_JSON_Resolver).
      *
-     * NO lee la sub-clave 'theme' del resolver para evitar condiciones de
-     * carrera con el filter wp_theme_json_data_theme: en ciertos contextos
-     * (ej. customize_register) ese filter aún no ha corrido y el resolver
-     * devuelve los datos del archivo theme.json en disco.
+     * It does NOT read the resolver's 'theme' sub-key, to avoid race
+     * conditions with the wp_theme_json_data_theme filter: in some contexts
+     * (e.g. customize_register) that filter has not run yet and the resolver
+     * returns the data of the theme.json file on disk.
      *
      * @return array<string, array{ name: string, font_family: string, slug: string }>
-     *   Keyed por slug. Las fuentes custom de la Font Library van primero.
+     *   Keyed by slug. Custom fonts from the Font Library come first.
      */
     function theme_get_all_fonts(): array
     {
-        // 1. Fuentes base del tema — siempre disponibles, keyed por slug
+        // 1. The theme's base fonts — always available, keyed by slug
         $fonts = [
             'primary' => [
                 'name'        => 'Mona Sans',
@@ -38,7 +38,7 @@ if (! function_exists('theme_get_all_fonts')) {
             ],
         ];
 
-        // 2. Fuentes instaladas vía Font Library (solo 'custom')
+        // 2. Fonts installed through the Font Library ('custom' only)
         if (! class_exists('WP_Theme_JSON_Resolver')) {
             return $fonts;
         }
@@ -46,7 +46,7 @@ if (! function_exists('theme_get_all_fonts')) {
         $settings = WP_Theme_JSON_Resolver::get_merged_data()->get_settings();
         $custom   = $settings['typography']['fontFamilies']['custom'] ?? [];
 
-        // Insertar fuentes custom AL INICIO para que aparezcan primero
+        // Insert custom fonts AT THE START so they are listed first
         $custom_fonts = [];
         foreach ($custom as $font) {
             $slug = $font['slug'] ?? sanitize_title($font['name'] ?? '');
@@ -60,7 +60,7 @@ if (! function_exists('theme_get_all_fonts')) {
             ];
         }
 
-        // custom primero, luego las del tema
+        // custom first, then the theme's
         return array_merge($custom_fonts, $fonts);
     }
 }
@@ -86,19 +86,19 @@ if (! function_exists('theme_customize_register_fonts')) {
 if (! function_exists('register_font_setting')) {
     function register_font_setting($wp_customize, $name, $default, $label)
     {
-        // Construir choices desde todas las fuentes disponibles.
-        // Se llama aquí (en customize_register) para que WP_Theme_JSON_Resolver
-        // ya tenga los datos de la DB cargados.
+        // Build the choices from all available fonts.
+        // Called here (in customize_register) so that WP_Theme_JSON_Resolver
+        // already has the DB data loaded.
         $all_fonts = theme_get_all_fonts();
 
-        // Fallback: si por alguna razón no hay fuentes aún, mostrar el default
+        // Fallback: if for some reason there are no fonts yet, show the default
         if (empty($all_fonts)) {
             $choices = [$default => $default];
         } else {
             $choices = [];
             foreach ($all_fonts as $slug => $data) {
-                // Usar el nombre de la fuente como valor guardado (igual que antes)
-                // para mantener compatibilidad con get_theme_mod existente.
+                // Use the font name as the stored value (same as before)
+                // to stay compatible with existing get_theme_mod values.
                 $choices[$data['name']] = $data['name'];
             }
         }
@@ -208,8 +208,8 @@ if (! function_exists('theme_get_default_font_faces_css')) {
 
 if (! function_exists('theme_get_fonts_css')) {
     /**
-     * Genera el bloque :root con las custom properties de fuente.
-     * Usado en wp_head y para live preview del Customizer.
+     * Generates the :root block with the font custom properties.
+     * Used in wp_head and for the Customizer live preview.
      */
     function theme_get_fonts_css(): string
     {
@@ -218,7 +218,7 @@ if (! function_exists('theme_get_fonts_css')) {
         $font_primary   = get_theme_mod('font_primary',   $default_fonts['primary']);
         $font_secondary = get_theme_mod('font_secondary', $default_fonts['secondary']);
 
-        // Buscar el font-family completo (con fallback genérico) si existe en la library
+        // Look up the full font-family (with generic fallback) if it exists in the library
         $all_fonts      = theme_get_all_fonts();
 
         $primary_family   = _theme_resolve_font_family($font_primary,   $all_fonts, 'sans-serif');
@@ -237,21 +237,21 @@ if (! function_exists('theme_get_fonts_css')) {
 
 if (! function_exists('_theme_resolve_font_family')) {
     /**
-     * Dado el nombre de una fuente (guardado en theme_mod), devuelve el
-     * valor CSS completo (con fallback) si está en la librería, o construye
-     * uno sencillo con el fallback genérico recibido.
+     * Given a font name (stored in theme_mod), returns the full CSS value
+     * (with fallback) if it is in the library, or builds a simple one with
+     * the given generic fallback.
      *
      * @internal
      */
     function _theme_resolve_font_family(string $font_name, array $all_fonts, string $generic_fallback): string
     {
-        // Buscar por nombre entre todas las fuentes disponibles
+        // Search by name among all available fonts
         foreach ($all_fonts as $data) {
             if (strtolower($data['name']) === strtolower($font_name)) {
-                return $data['font_family']; // ya incluye fallback genérico desde theme.json / Font Library
+                return $data['font_family']; // already includes the generic fallback from theme.json / Font Library
             }
         }
-        // No encontrada: construir valor seguro
+        // Not found: build a safe value
         return "\"{$font_name}\", {$generic_fallback}";
     }
 }

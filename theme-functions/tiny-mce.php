@@ -1,8 +1,8 @@
 <?php
 
 /**
- * Helper interno — construye el array de colores del tema sanitizado
- * para uso en TinyMCE. No registrar como función pública.
+ * Internal helper — builds the sanitized theme color array
+ * for use in TinyMCE. Do not register as a public function.
  */
 function _theme_get_tinymce_color_map(): array
 {
@@ -51,11 +51,11 @@ function _theme_get_tinymce_color_map(): array
 
 
 /**
- * Helper interno — construye el string font_formats para TinyMCE.
+ * Internal helper — builds the font_formats string for TinyMCE.
  *
- * Orden: fuentes del tema (theme.json) → fuentes custom (Font Library) → sistema.
- * Se llama desde tiny_mce_before_init y acf_wysiwyg_tinymce_settings, contexto
- * en el que WP_Theme_JSON_Resolver ya tiene los datos mergeados correctamente.
+ * Order: theme fonts (theme.json) → custom fonts (Font Library) → system.
+ * Called from tiny_mce_before_init and acf_wysiwyg_tinymce_settings, a context
+ * in which WP_Theme_JSON_Resolver already has the data merged correctly.
  */
 function _theme_get_tinymce_font_formats(): string
 {
@@ -71,7 +71,7 @@ function _theme_get_tinymce_font_formats(): string
                 $name   = $font['name']       ?? '';
                 $family = $font['fontFamily'] ?? $name;
                 if (! $name || isset($seen[$name])) continue;
-                // TinyMCE font_formats no admite comillas dobles en el valor CSS
+                // TinyMCE font_formats does not allow double quotes in the CSS value
                 // "Mona Sans", sans-serif → Mona Sans,sans-serif
                 $family = str_replace('"', '', $family);
                 $seen[$name] = true;
