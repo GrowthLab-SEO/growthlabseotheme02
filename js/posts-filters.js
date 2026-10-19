@@ -57,10 +57,20 @@ document.addEventListener("DOMContentLoaded", function () {
     return String(n).padStart(2, "0");
   }
 
+  // Parse in an inert document so markup from the API never executes
   function stripHTML(html) {
-    const div = document.createElement("div");
-    div.innerHTML = html;
-    return div.textContent.trim();
+    const doc = new DOMParser().parseFromString(html, "text/html");
+    return (doc.body.textContent || "").trim();
+  }
+
+  // Escape a value for safe use in HTML text and attribute contexts
+  function escapeHtml(value) {
+    return String(value ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
   }
 
   function monthNumber(name) {
@@ -145,24 +155,31 @@ document.addEventListener("DOMContentLoaded", function () {
     grid.innerHTML = posts
       .map((post) => {
         const date = new Date(post.date);
-        const dateStr = date.toLocaleDateString("en-US", {
-          month: "long",
-          day: "numeric",
-          year: "numeric",
-        });
+        const dateStr = escapeHtml(
+          date.toLocaleDateString("en-US", {
+            month: "long",
+            day: "numeric",
+            year: "numeric",
+          }),
+        );
 
-        const title = post.title?.rendered ?? "";
-        const excerpt = stripHTML(post.excerpt?.rendered ?? "").slice(0, 200);
-        const link = post.link ?? "#";
+        // Decode the rendered title to plain text, then escape every value
+        const title = escapeHtml(stripHTML(post.title?.rendered ?? ""));
+        const excerpt = escapeHtml(
+          stripHTML(post.excerpt?.rendered ?? "").slice(0, 200),
+        );
+        const link = escapeHtml(post.link ?? "#");
 
-        const featuredUrl =
-          post._embedded?.["wp:featuredmedia"]?.[0]?.source_url ?? "";
+        const featuredUrl = escapeHtml(
+          post._embedded?.["wp:featuredmedia"]?.[0]?.source_url ?? "",
+        );
+        const defaultImage = escapeHtml(DEFAULT_IMAGE);
 
         let pictureHTML;
         if (featuredUrl) {
           pictureHTML = `<img class="post-card__pic" src="${featuredUrl}" alt="${title}" loading="lazy">`;
         } else if (DEFAULT_IMAGE) {
-          pictureHTML = `<img class="post-card__pic" src="${DEFAULT_IMAGE}" alt="${title}" loading="lazy">`;
+          pictureHTML = `<img class="post-card__pic" src="${defaultImage}" alt="${title}" loading="lazy">`;
         } else {
           pictureHTML = `<div class="post-card__pic post-card__pic--placeholder"></div>`;
         }
