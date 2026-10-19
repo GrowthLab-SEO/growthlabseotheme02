@@ -8,7 +8,7 @@ if (get_field('toggle_block')):
 ?>
 
     <section<?= get_block_id_attribute($block_id ?? '') ?>
-        class="block faq <?php if (!$background_image && !isset($$background_image) && !$lightdark_background) echo "bg-gradient"; ?><?= !empty($block['className']) ? ' ' . esc_attr($block['className']) : '' ?>"
+        class="block faq <?php if (!$background_image && !$lightdark_background) echo "bg-gradient"; ?><?= !empty($block['className']) ? ' ' . esc_attr($block['className']) : '' ?>"
        <?= block_style_attribute($block); ?>
         <?= get_block_extract_attribute($extract_block_from_content ?? false, $place ?? '') ?>>
 
@@ -59,27 +59,25 @@ if (get_field('toggle_block')):
                     <?php
                     if (isset($faq_sections) && !empty($faq_sections)) :
                         foreach ($faq_sections as $section) :
-                            foreach ($section as $element => $content) $$element = $content;
                     ?>
 
                             <div class="faq__section">
                                 <?php
-                                print_title($heading, $heading_tag, "faq__heading");
+                                print_title($section['heading'] ?? '', $section['heading_tag'] ?? 'p', "faq__heading");
                                 ?>
 
                                 <?php
-                                if (isset($faq_items) && !empty($faq_items)) :
-                                    foreach ($faq_items as $item) :
-                                        foreach ($item as $key => $faq) $$key = $faq;
+                                if (!empty($section['faq_items'])) :
+                                    foreach ($section['faq_items'] as $item) :
                                 ?>
 
                                         <div class="faq__item accordion">
                                             <div class="faq__question accordion__heading">
-                                                <?php print_title($question, $question_tag); ?>
+                                                <?php print_title($item['question'] ?? '', $item['question_tag'] ?? 'p'); ?>
                                             </div>
                                             <div class="faq__answer accordion__content">
                                                 <div class="formatted-text accordion__inner">
-                                                    <?= $answer ?>
+                                                    <?= $item['answer'] ?? '' ?>
                                                 </div>
                                             </div>
                                         </div>

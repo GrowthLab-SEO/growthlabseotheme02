@@ -29,12 +29,12 @@ if (get_field('toggle_block')):
                 </div>
             <?php endif ?>
 
-            <?php foreach (get_field("columns") as $column => $col) $$column = $col; ?>
+            <?php $columns = is_array($columns ?? null) ? $columns : []; ?>
 
-            <?php if (isset($featured_image) && $featured_image): ?>
+            <?php if (!empty($columns['featured_image'])): ?>
                 <div class="col col--image">
                     <?php img_print_picture_tag(
-                        img: $featured_image,
+                        img: $columns['featured_image'],
                         max_size: "content",
                         min_size: "featured-small",
                         classes: "col__image"
@@ -45,37 +45,37 @@ if (get_field('toggle_block')):
 
             <div class="col">
                 <?php
-                if (isset($pretitle) && $pretitle) print_title($pretitle, $pretitle_tag, "col__pretitle pretitle");
-                if (isset($title) && $title)  print_title($title, $title_tag, "col__title");
+                if (!empty($columns['pretitle'])) print_title($columns['pretitle'], $columns['pretitle_tag'] ?? 'p', "col__pretitle pretitle");
+                if (!empty($columns['title']))  print_title($columns['title'], $columns['title_tag'] ?? 'p', "col__title");
                 ?>
                 <div class="col__content formatted-text">
-                    <?= $content ?? "" ?>
+                    <?= $columns['content'] ?? "" ?>
                 </div>
             </div>
 
             <?php
-            foreach (get_field("cta_box") as $box => $data) $$box = $data;
-            if (isset($cta_link) && !empty($cta_link["url"]) || isset($cta_link_2) && !empty($cta_link_2["url"]) || isset($content) && $content):
+            $cta_box = is_array($cta_box ?? null) ? $cta_box : [];
+            if (!empty($cta_box['cta_link']["url"]) || !empty($cta_box['cta_link_2']["url"]) || !empty($cta_box['content'])):
             ?>
                 <div class="inner-cta-box">
 
-                    <?php if ($content && isset($content)): ?>
+                    <?php if (!empty($cta_box['content'])): ?>
                         <?php get_template_part("template-parts/logo", "separator", ["classes" => "inner-cta-box__separator"]); ?>
 
                         <div class="inner-cta-box__content formatted-text">
-                            <?= $content ?>
+                            <?= $cta_box['content'] ?>
                         </div>
                     <?php endif ?>
 
                     <div class="inner-cta-box__buttons">
-                        <?php if ($cta_link && isset($cta_link) && !empty($cta_link["url"])): ?>
-                            <a href="<?= esc_url($cta_link["url"]) ?>" target="<?= esc_attr($cta_link["target"]) ?>" class="btn btn--tertiary" aria-label="<?= esc_attr($cta_link["title"]) ?>">
-                                <span><?= esc_html($cta_link["title"]) ?></span>
+                        <?php if (!empty($cta_box['cta_link']["url"])): ?>
+                            <a href="<?= esc_url($cta_box['cta_link']["url"]) ?>" target="<?= esc_attr($cta_box['cta_link']["target"]) ?>" class="btn btn--tertiary" aria-label="<?= esc_attr($cta_box['cta_link']["title"]) ?>">
+                                <span><?= esc_html($cta_box['cta_link']["title"]) ?></span>
                             </a>
                         <?php endif ?>
-                        <?php if ($cta_link_2 && isset($cta_link_2) && !empty($cta_link_2["url"])): ?>
-                            <a href="<?= esc_url($cta_link_2["url"]) ?>" target="<?= esc_attr($cta_link_2["target"]) ?>" class="btn btn--primary" aria-label="<?= esc_attr($cta_link_2["title"]) ?>">
-                                <span><?= esc_html($cta_link_2["title"]) ?></span>
+                        <?php if (!empty($cta_box['cta_link_2']["url"])): ?>
+                            <a href="<?= esc_url($cta_box['cta_link_2']["url"]) ?>" target="<?= esc_attr($cta_box['cta_link_2']["target"]) ?>" class="btn btn--primary" aria-label="<?= esc_attr($cta_box['cta_link_2']["title"]) ?>">
+                                <span><?= esc_html($cta_box['cta_link_2']["title"]) ?></span>
                             </a>
                         <?php endif ?>
                     </div>

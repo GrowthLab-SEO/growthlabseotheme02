@@ -44,23 +44,22 @@ if (get_field('toggle_block')):
                                 <?php
                                 foreach ($items as $item) :
                                     if (!empty($item)):
-                                        foreach ($item as $field => $content) $$field = $content;
                                 ?>
 
                                         <div class="item-card splide__slide">
                                             <div class="item-card__inner">
                                                 <div class="item-card__icon">
-                                                    <?php img_print_picture_tag(img: $icon, classes: 'item-card__icon-img', max_size: "thumbnail") ?>
+                                                    <?php img_print_picture_tag(img: $item['icon'] ?? '', classes: 'item-card__icon-img', max_size: "thumbnail") ?>
                                                 </div>
 
                                                 <?php
-                                                $item_title_html = $title;
-                                                if ($title && isset($link) && $link) $item_title_html = "<a href='" . esc_url($link["url"]) . "' target='" . esc_attr($link["target"]) . "' class='item-card__link'>" . $title . "</a>";
-                                                print_title($item_title_html, $title_tag, "item-card__title");
+                                                $item_title_html = $item['title'] ?? '';
+                                                if (!empty($item['title']) && !empty($item['link'])) $item_title_html = "<a href='" . esc_url($item['link']["url"]) . "' target='" . esc_attr($item['link']["target"]) . "' class='item-card__link'>" . $item['title'] . "</a>";
+                                                print_title($item_title_html, $item['title_tag'] ?? 'p', "item-card__title");
                                                 ?>
 
-                                                <?php if (isset($content) && $content): ?>
-                                                    <p class="item-card__description"><?= $content ?></p>
+                                                <?php if (!empty($item['content'])): ?>
+                                                    <p class="item-card__description"><?= $item['content'] ?></p>
                                                 <?php endif; ?>
                                             </div>
                                         </div>

@@ -30,23 +30,22 @@ if (get_field('toggle_block')):
                 if (!$is_a_menu && $items && count($items) > 0):
 
                     foreach ($items as $item):
-                        foreach ($item as $item_key => $item_value) $$item_key = $item_value;
                 ?>
 
                         <li class="box">
                             <div class="box__wrapper">
                                 <div class="box__inner">
 
-                                    <?php if ($title || $text_content): ?>
+                                    <?php if (!empty($item['title']) || !empty($item['text_content'])): ?>
 
                                         <div class="box__content formatted-text">
 
                                             <?php
-                                            $box_title_html = $title;
-                                            if ($title && $title_link) $box_title_html = "<a href='" . esc_url($title_link['url']) . "' target='" . esc_attr($title_link['target']) . "' aria-label='" . esc_attr($title) . "'>" . $title . "</a>";
-                                            print_title($box_title_html, $title_tag, "box__title");
+                                            $box_title_html = $item['title'] ?? '';
+                                            if (!empty($item['title']) && !empty($item['title_link'])) $box_title_html = "<a href='" . esc_url($item['title_link']['url']) . "' target='" . esc_attr($item['title_link']['target']) . "' aria-label='" . esc_attr($item['title']) . "'>" . $item['title'] . "</a>";
+                                            print_title($box_title_html, $item['title_tag'] ?? 'p', "box__title");
                                             ?>
-                                            <?= $text_content; ?>
+                                            <?= $item['text_content'] ?? ''; ?>
 
                                         </div>
 
