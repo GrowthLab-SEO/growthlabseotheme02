@@ -4,7 +4,7 @@ if (!defined('ABSPATH')) {
 }
 
 if (get_field('toggle_block')):
-    foreach (get_fields() as $key => $value) $$key = $value;
+    foreach (get_block_fields($block) as $key => $value) $$key = $value;
     $background_style = get_valid_field_choice('background_style', $background_style ?? '');
 ?>
 

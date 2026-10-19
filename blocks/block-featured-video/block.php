@@ -4,7 +4,7 @@ if (!defined('ABSPATH')) {
 }
 
 if (get_field('toggle_block')):
-    foreach (get_fields() as $key => $value) $$key = $value;
+    foreach (get_block_fields($block) as $key => $value) $$key = $value;
 ?>
 
     <section<?= get_block_id_attribute($block_id ?? '') ?>

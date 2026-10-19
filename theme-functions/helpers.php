@@ -373,6 +373,56 @@ if (!function_exists('get_block_extract_attribute')) {
     }
 }
 
+// Returns the current block's ACF values with every field of its field groups present. Fields that were never saved
+// (e.g. added after the block was created) get their ACF default value, so templates can keep extracting them into
+// variables without undefined variable warnings. Empty defaults are null, so isset() checks keep working as before.
+if (!function_exists('get_block_fields')) {
+    function get_block_fields($block)
+    {
+        $values = get_fields() ?: [];
+        $block_name = is_array($block) ? ($block['name'] ?? '') : (string) $block;
+        if ($block_name === '' || !function_exists('acf_get_field_groups')) return $values;
+
+        static $defaults_by_block = [];
+        if (!isset($defaults_by_block[$block_name])) {
+            $defaults = [];
+            foreach (acf_get_field_groups(['block' => $block_name]) as $group) {
+                foreach (acf_get_fields($group) ?: [] as $field) {
+                    // Tabs, messages and accordions have no name and hold no value
+                    if (!empty($field['name'])) $defaults[$field['name']] = get_acf_field_default($field);
+                }
+            }
+            $defaults_by_block[$block_name] = $defaults;
+        }
+
+        return array_merge($defaults_by_block[$block_name], $values);
+    }
+}
+
+// Default value of an ACF field as the template expects it: [] for multi-value fields, the sub field defaults for groups,
+// a boolean for true/false fields, and null when the field has no default
+if (!function_exists('get_acf_field_default')) {
+    function get_acf_field_default($field)
+    {
+        $type = $field['type'] ?? '';
+
+        if (in_array($type, ['repeater', 'flexible_content', 'gallery', 'relationship', 'checkbox'], true)) return [];
+
+        if ($type === 'group') {
+            $group = [];
+            foreach ($field['sub_fields'] ?? [] as $sub_field) {
+                if (!empty($sub_field['name'])) $group[$sub_field['name']] = get_acf_field_default($sub_field);
+            }
+            return $group;
+        }
+
+        $default = $field['default_value'] ?? null;
+        if ($type === 'true_false') return (bool) $default;
+
+        return is_scalar($default) && $default !== '' ? $default : null;
+    }
+}
+
 // Render a Gravity Forms form only if the plugin is active
 if (!function_exists('render_gravity_form')) {
     function render_gravity_form(...$args)

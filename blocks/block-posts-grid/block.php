@@ -4,7 +4,7 @@ if (!defined('ABSPATH')) {
 }
 
 if (get_field('toggle_block')):
-    foreach (get_fields() as $key => $value) $$key = $value;
+    foreach (get_block_fields($block) as $key => $value) $$key = $value;
     $grid_type = get_valid_field_choice('grid_type', $grid_type ?? '');
 
     $paged = (get_query_var('paged')) ? get_query_var('paged') : 1;
