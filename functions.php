@@ -230,6 +230,69 @@ function wpdocs_excerpt_more($more)
 add_filter('excerpt_more', 'wpdocs_excerpt_more');
 
 /**
+ * Whether the current request renders a Splide carousel: a carousel block in the current post
+ * (or in a reusable block it references) or in a block widget of an active sidebar.
+ *
+ * @return bool
+ */
+function growthlabseotheme02_request_uses_splide()
+{
+    static $uses_splide = null;
+    if ($uses_splide !== null) return $uses_splide;
+
+    // Blocks whose markup uses Splide
+    $splide_blocks = apply_filters('growthlabseotheme02_splide_blocks', array(
+        'acf/logos-carousel',
+        'acf/posts-carousel',
+        'acf/selling-points',
+    ));
+
+    $content_has_splide = function ($content) use ($splide_blocks) {
+        foreach ($splide_blocks as $block_name) {
+            if (has_block($block_name, $content)) return true;
+        }
+        return false;
+    };
+
+    $uses_splide = false;
+
+    // Current post blocks (parsed once per request), including reusable blocks
+    foreach (get_current_post_blocks(true) as $block) {
+        if (in_array($block['blockName'], $splide_blocks, true)) {
+            $uses_splide = true;
+            break;
+        }
+        if ($block['blockName'] === 'core/block' && !empty($block['attrs']['ref'])) {
+            $reusable = get_post((int) $block['attrs']['ref']);
+            if ($reusable && $content_has_splide($reusable->post_content)) {
+                $uses_splide = true;
+                break;
+            }
+        }
+    }
+
+    // Block widgets in active sidebars
+    if (!$uses_splide) {
+        $sidebars      = wp_get_sidebars_widgets();
+        $block_widgets = get_option('widget_block', array());
+        unset($sidebars['wp_inactive_widgets']);
+
+        foreach ($sidebars as $widget_ids) {
+            foreach ((array) $widget_ids as $widget_id) {
+                if (!preg_match('/^block-(\d+)$/', (string) $widget_id, $matches)) continue;
+                $content = $block_widgets[$matches[1]]['content'] ?? '';
+                if ($content !== '' && $content_has_splide($content)) {
+                    $uses_splide = true;
+                    break 2;
+                }
+            }
+        }
+    }
+
+    return $uses_splide;
+}
+
+/**
  * Add scripts and styles.
  *
  *
@@ -252,7 +315,7 @@ function inline_main_critical_css()
 
     // Add Splide critical CSS only when carousels are present
     $splide_css_file = get_template_directory() . '/styles/vendor/splide/splide-core.min.css';
-    if (file_exists($splide_css_file)) {
+    if (growthlabseotheme02_request_uses_splide() && file_exists($splide_css_file)) {
         $critical_css .= "\n/* Splide Critical CSS */\n" . file_get_contents($splide_css_file);
     }
     // Add block critical CSS if any
