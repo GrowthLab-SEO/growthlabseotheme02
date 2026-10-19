@@ -406,12 +406,36 @@ if (!function_exists('format_number_abbreviated')) {
     }
 }
 
+// Returns the 11-character ID of a single YouTube video, or false for any URL that is not a video
+// (channels, playlists, search results, the homepage, etc.). Mirrors extractYouTubeID() in main.js
 if (!function_exists('get_yt_code')) {
     function get_yt_code($url = false)
     {
-        if (!$url) return false;
-        preg_match('%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/ ]{11})%i', $url, $match);
-        return $match[1];
+        if (!$url || !is_string($url)) return false;
+
+        $url = trim($url);
+        if (!preg_match('#^[a-z][a-z0-9+.-]*://#i', $url)) $url = 'https://' . ltrim($url, '/');
+
+        $parts = wp_parse_url($url);
+        if (empty($parts['host'])) return false;
+
+        $host = strtolower(preg_replace('/^(www\.|m\.|music\.)/i', '', $parts['host']));
+        $segments = array_values(array_filter(explode('/', $parts['path'] ?? '')));
+        $id = null;
+
+        if ($host === 'youtu.be') {
+            $id = $segments[0] ?? null;                                  // youtu.be/ID
+        } elseif (in_array($host, ['youtube.com', 'youtube-nocookie.com'], true)) {
+            if (($segments[0] ?? '') === 'watch') {
+                parse_str($parts['query'] ?? '', $query);                // youtube.com/watch?v=ID
+                $id = $query['v'] ?? null;
+            } elseif (in_array($segments[0] ?? '', ['embed', 'shorts', 'live', 'v', 'e'], true)) {
+                $id = $segments[1] ?? null;                              // /embed/ID, /shorts/ID, /live/ID
+            }
+        }
+
+        // "videoseries" is the 11-character placeholder used by playlist embeds, not a video
+        return is_string($id) && $id !== 'videoseries' && preg_match('/^[A-Za-z0-9_-]{11}$/', $id) ? $id : false;
     }
 }
 

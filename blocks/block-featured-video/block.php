@@ -14,26 +14,34 @@ if (get_field('toggle_block')):
 
         <div class="featured-video__wrapper">
             <?php
+            // A YouTube URL that isn't a single video (channel, playlist, search...) has no ID and can't be played
+            $is_youtube_video = !empty($is_youtube_video);
+            $video_id = $is_youtube_video && !empty($youtube_url) ? get_yt_code($youtube_url) : false;
+            $has_video = $is_youtube_video ? (bool) $video_id : !empty($video);
+
             if (isset($cover_image) && $cover_image) {
                 img_print_picture_tag(img: $cover_image, is_cover: true, classes: "featured-video__cover");
-            } elseif (isset($youtube_url) && $youtube_url && $is_youtube_video) {
-                $video_id = get_yt_code($youtube_url);
+            } elseif ($video_id) {
                 $thumb = get_youtube_thumbnail($video_id, 'maxresdefault');
-                echo "<img data-src = '$thumb' class='featured-video__cover lazy-image'>";
+                echo "<img data-src='" . esc_url($thumb) . "' alt='' class='featured-video__cover lazy-image'>";
+            }
+
+            if ($is_youtube_video && !empty($youtube_url) && !$video_id) {
+                print_block_notice(__('Featured Video: the YouTube URL is not a single video (channel, playlist or page URLs are not supported). This notice is only visible to editors.', 'growthlabseotheme02'));
             }
             ?>
 
             <?php
-            if ((isset($youtube_url) && $youtube_url) || (isset($video) && $video)) :
+            if ($has_video) :
             ?>
                 <button
                     type="button"
                     class="featured-video__btn"
                     <?php
                     if ($is_youtube_video) {
-                        echo "data-videourl='$youtube_url'";
+                        echo "data-videourl='" . esc_url($youtube_url) . "'";
                     } else {
-                        echo "data-videoid='$video'";
+                        echo "data-videoid='" . esc_url($video) . "'";
                     }
                     ?>
                     data-mode="<?= $enable_lightbox ? 'lightbox' : 'inline' ?>"
