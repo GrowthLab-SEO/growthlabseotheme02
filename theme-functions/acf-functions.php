@@ -298,7 +298,15 @@ if (function_exists('acf_add_options_page') && current_user_can('manage_options'
 if (!function_exists('my_acf_json_save_point')) {
     function my_acf_json_save_point($path)
     {
-        return get_stylesheet_directory() . '/acf-json';
+        // Field groups are saved to the active theme: the child theme's acf-json folder when a child theme is
+        // active. ACF skips folders that don't exist, so create it on the first save.
+        $path = get_stylesheet_directory() . '/acf-json';
+
+        if (!is_dir($path)) {
+            wp_mkdir_p($path);
+        }
+
+        return $path;
     }
 }
 
