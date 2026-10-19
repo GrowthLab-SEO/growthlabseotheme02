@@ -46,8 +46,13 @@ if (!function_exists('register_acf_blocks')) {
 
         // Force a rebuild during local development if the block cache is stale or if
         // the admin requests a cache clear. This helps ensure updated block.json
-        // metadata is picked up immediately.
-        if (is_admin() && (defined('WP_DEBUG') && WP_DEBUG || isset($_GET['clear_block_cache']))) {
+        // metadata is picked up immediately. Manual clears require a valid nonce
+        // (see the admin bar link below).
+        $clear_requested = isset($_GET['clear_block_cache'])
+            && current_user_can('manage_options')
+            && wp_verify_nonce($_GET['_wpnonce'] ?? '', 'clear_block_cache');
+
+        if (is_admin() && (defined('WP_DEBUG') && WP_DEBUG || $clear_requested)) {
             delete_transient($cache_key);
             delete_transient($hash_key);
         }
@@ -95,6 +100,17 @@ add_action('switch_theme', function () {
 });
 
 add_action('init', 'register_acf_blocks', 11);
+
+// Admin bar link to clear the block cache (nonce-protected)
+add_action('admin_bar_menu', function ($wp_admin_bar) {
+    if (!current_user_can('manage_options')) return;
+
+    $wp_admin_bar->add_node(array(
+        'id'    => 'clear-block-cache',
+        'title' => __('Clear block cache', get_text_domain()),
+        'href'  => wp_nonce_url(add_query_arg('clear_block_cache', '1', admin_url()), 'clear_block_cache'),
+    ));
+}, 100);
 
 /**
  * Load block assets only when block is present on the page
