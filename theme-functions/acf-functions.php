@@ -583,17 +583,20 @@ if (is_admin()) {
 if (!function_exists('get_theme_color_palette_for_acf')) {
     function get_theme_color_palette_for_acf()
     {
+        // Use the Customizer colors with the color-scheme.php defaults so both always match
+        global $default_colors;
+
         return array(
-            array('name' => 'Primary Color',    'color' => get_theme_mod('primary_color',         '#15253f')),
-            array('name' => 'Primary Dark',     'color' => get_theme_mod('primary_color_dark',    '#08182f')),
-            array('name' => 'Primary Light',    'color' => get_theme_mod('primary_color_light',   '#2C3D5B')),
-            array('name' => 'Secondary Color',  'color' => get_theme_mod('secondary_color',       '#F4F3EE')),
-            array('name' => 'Secondary Dark',   'color' => get_theme_mod('secondary_color_dark',  '#E7E5DF')),
-            array('name' => 'Secondary Light',  'color' => get_theme_mod('secondary_color_light', '#FFFFFF')),
-            array('name' => 'Tertiary Color',   'color' => get_theme_mod('tertiary_color',        '#BC9061')),
-            array('name' => 'Tertiary Dark',    'color' => get_theme_mod('tertiary_color_dark',   '#9D7A55')),
-            array('name' => 'Tertiary Light',   'color' => get_theme_mod('tertiary_color_light',  '#DCAB77')),
-            array('name' => 'Text Color',       'color' => get_theme_mod('text_color',            '#15253f')),
+            array('name' => 'Primary Color',    'color' => get_theme_mod('primary_color',         $default_colors['primary']['default'])),
+            array('name' => 'Primary Dark',     'color' => get_theme_mod('primary_color_dark',    $default_colors['primary']['dark'])),
+            array('name' => 'Primary Light',    'color' => get_theme_mod('primary_color_light',   $default_colors['primary']['light'])),
+            array('name' => 'Secondary Color',  'color' => get_theme_mod('secondary_color',       $default_colors['secondary']['default'])),
+            array('name' => 'Secondary Dark',   'color' => get_theme_mod('secondary_color_dark',  $default_colors['secondary']['dark'])),
+            array('name' => 'Secondary Light',  'color' => get_theme_mod('secondary_color_light', $default_colors['secondary']['light'])),
+            array('name' => 'Tertiary Color',   'color' => get_theme_mod('tertiary_color',        $default_colors['tertiary']['default'])),
+            array('name' => 'Tertiary Dark',    'color' => get_theme_mod('tertiary_color_dark',   $default_colors['tertiary']['dark'])),
+            array('name' => 'Tertiary Light',   'color' => get_theme_mod('tertiary_color_light',  $default_colors['tertiary']['light'])),
+            array('name' => 'Text Color',       'color' => get_theme_mod('text_color',            $default_colors['text'])),
         );
     }
 }
