@@ -459,6 +459,40 @@ if (!function_exists('get_post_fields_with_defaults')) {
     }
 }
 
+// Returns the parsed blocks of the current singular post ([] elsewhere), parsing its content only once per request.
+// With $flatten, inner blocks are included in the returned list after their parent.
+if (!function_exists('get_current_post_blocks')) {
+    function get_current_post_blocks($flatten = false)
+    {
+        global $post;
+        static $cache = [];
+
+        if (!is_singular() || empty($post->post_content)) return [];
+        if (strpos($post->post_content, '<!-- wp:') === false) return [];
+
+        $key = $post->ID . ($flatten ? ':flat' : '');
+        if (isset($cache[$key])) return $cache[$key];
+
+        if (!isset($cache[$post->ID])) {
+            $cache[$post->ID] = parse_blocks($post->post_content);
+        }
+
+        if ($flatten) {
+            $flat = [];
+            $walk = function ($blocks) use (&$walk, &$flat) {
+                foreach ($blocks as $block) {
+                    $flat[] = $block;
+                    if (!empty($block['innerBlocks'])) $walk($block['innerBlocks']);
+                }
+            };
+            $walk($cache[$post->ID]);
+            $cache[$key] = $flat;
+        }
+
+        return $cache[$key];
+    }
+}
+
 // Returns the pagination query arg for the next paginated posts grid of the request: '' for the first grid (it keeps
 // using paged/page, so existing URLs keep working) and 'grid-N-page' for the following ones
 if (!function_exists('get_posts_grid_page_arg')) {
