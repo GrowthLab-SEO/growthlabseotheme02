@@ -83,7 +83,7 @@ function createStyledSelect(select) {
     select.getAttribute("aria-label") ||
     labels.map((label) => label.textContent.trim()).join(" ") ||
     select.name ||
-    "Selecciona una opción";
+    "Select an option";
   listbox.setAttribute("aria-label", labelText);
 
   function enabledOptionFrom(start, direction) {
@@ -111,7 +111,7 @@ function createStyledSelect(select) {
   function syncValue() {
     const selectedOption = select.options[select.selectedIndex];
     const selectedText = selectedOption?.textContent.trim() || "";
-    value.textContent = selectedText || "Selecciona una opción";
+    value.textContent = selectedText || "Select an option";
     trigger.setAttribute(
       "aria-label",
       selectedText ? `${labelText}: ${selectedText}` : labelText,
