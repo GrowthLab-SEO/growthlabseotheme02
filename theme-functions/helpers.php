@@ -505,29 +505,44 @@ function transform_inline_font_sizes(
     return $dom->saveHTML();
 }
 
+// Returns the best available thumbnail URL for a YouTube video, from $size downwards.
+// The result is cached in a transient, so YouTube is only queried once per video and size instead of on every page view.
 if (!function_exists('get_youtube_thumbnail')) {
     function get_youtube_thumbnail(string $video_id, string $size = 'hqdefault'): string
     {
-        $sizes = ['maxresdefault', 'sddefault', 'hqdefault', 'mqdefault', 'default'];
-        $base  = "https://img.youtube.com/vi/{$video_id}";
+        $base = "https://img.youtube.com/vi/{$video_id}";
+        $cache_key = 'gl_yt_thumb_' . md5($video_id . '|' . $size);
 
-        // Validar desde el tamaño solicitado hacia abajo
+        $cached = get_transient($cache_key);
+        if (is_string($cached) && $cached !== '') return $cached;
+
+        $sizes = ['maxresdefault', 'sddefault', 'hqdefault', 'mqdefault', 'default'];
+
+        // Check from the requested size downwards
         $start = array_search($size, $sizes, true);
         $sizes = array_slice($sizes, $start !== false ? $start : 2);
 
         foreach ($sizes as $s) {
-            $url      = "{$base}/{$s}.jpg";
-            $response = wp_remote_head($url);
+            $url = "{$base}/{$s}.jpg";
+            $response = wp_remote_head($url, array('timeout' => 3));
 
-            if (! is_wp_error($response) && wp_remote_retrieve_response_code($response) === 200) {
-                // YouTube devuelve un placeholder 120×90 para tamaños no disponibles
-                $headers = wp_remote_retrieve_headers($response);
-                $length  = (int) ($headers['content-length'] ?? 0);
-                if ($length > 2000) return $url; // el placeholder pesa ~1.4kb
+            // YouTube is unreachable: stop instead of waiting for every remaining size
+            if (is_wp_error($response)) break;
+
+            if (wp_remote_retrieve_response_code($response) === 200) {
+                // YouTube returns a ~1.4 KB 120x90 placeholder for sizes that don't exist
+                $length = (int) wp_remote_retrieve_header($response, 'content-length');
+                if ($length > 2000) {
+                    set_transient($cache_key, $url, MONTH_IN_SECONDS);
+                    return $url;
+                }
             }
         }
 
-        return "{$base}/hqdefault.jpg"; // fallback seguro
+        // hqdefault always exists; cache this fallback for a shorter time so a temporary failure is retried later
+        $fallback = "{$base}/hqdefault.jpg";
+        set_transient($cache_key, $fallback, DAY_IN_SECONDS);
+        return $fallback;
     }
 }
 
