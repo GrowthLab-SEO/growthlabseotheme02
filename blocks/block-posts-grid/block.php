@@ -63,6 +63,8 @@ if (get_field('toggle_block')):
         $args['post__in'] = !empty($selected_posts) ? array_map('intval', (array) $selected_posts) : [];
         $args['posts_per_page'] = -1;
         $args['orderby'] = 'post__in';
+        // Explicit selections keep their order and must not require a value for the amount meta key
+        unset($args['meta_key']);
     }
 
     if ($grid_type === "custom" && !empty($select_or_create_items)) {
