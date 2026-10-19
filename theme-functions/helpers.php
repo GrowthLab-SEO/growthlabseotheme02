@@ -513,16 +513,6 @@ if (!function_exists('render_gravity_form')) {
     }
 }
 
-if (!function_exists('dd')) {
-    function dd($data)
-    {
-        echo '<pre>';
-        var_dump($data);
-        echo '</pre>';
-        die();
-    }
-}
-
 if (!function_exists('format_number_abbreviated')) {
     function format_number_abbreviated($number)
     {

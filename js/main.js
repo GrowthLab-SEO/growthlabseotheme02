@@ -685,7 +685,6 @@ function toggleContent(defaultCards, oldController) {
   }
 
   if (window.innerWidth >= 1024) {
-    console.log(window.innerWidth + " >= 1024");
     defaultCards.forEach((card) => card.classList.remove("show-content"));
     return null;
   }
@@ -703,7 +702,6 @@ function toggleContent(defaultCards, oldController) {
 
         e.preventDefault();
         card.classList.toggle("show-content");
-        console.log("toggle show-content");
       },
       { signal },
     );
