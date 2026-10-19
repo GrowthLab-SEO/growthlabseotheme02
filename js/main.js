@@ -54,9 +54,9 @@ function eventListeners() {
 
   if (accordionItems) {
     accordionItems.forEach((item) => {
-      item
-        .querySelector(".accordion__heading")
-        .addEventListener("click", toggleAccordion);
+      const heading = item.querySelector(".accordion__heading");
+      heading.setAttribute("aria-expanded", item.classList.contains("open") ? "true" : "false");
+      heading.addEventListener("click", toggleAccordion);
     });
   }
 }
@@ -235,26 +235,19 @@ function lazyLoadBgGradient() {
 
 //Accordion Items
 function toggleAccordion(e) {
-  const header = e.target;
+  const header = e.currentTarget;
+
+  // Only clicks on the heading itself toggle the item; clicks on its text or on links inside it keep their default behavior
+  if (e.target !== header) return;
+
   const content = header.nextElementSibling;
   const inner = content.querySelector(".accordion__inner");
 
-  header.closest(".accordion").classList.toggle("open");
+  const isOpen = header.closest(".accordion").classList.toggle("open");
+  header.setAttribute("aria-expanded", isOpen ? "true" : "false");
 
-  if (content.style.maxHeight) {
-    // Cerrar
-    content.style.maxHeight = null;
-  } else {
-    // Abrir - usa la altura real del contenido
-    content.style.maxHeight = inner.scrollHeight + "px";
-  }
-
-  new ResizeObserver((inner) => {
-    const content = inner.target.closest(".accordion__content");
-    if (content && content.classList.contains("active")) {
-      content.style.maxHeight = entry.target.scrollHeight + "px";
-    }
-  });
+  // Open with the real content height, close by removing the inline max-height
+  content.style.maxHeight = isOpen ? inner.scrollHeight + "px" : null;
 }
 
 //Footer Offices Selector
