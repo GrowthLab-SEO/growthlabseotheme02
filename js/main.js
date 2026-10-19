@@ -427,11 +427,36 @@ window.addEventListener("load", () => {
     }
   }
 
+  // Returns the 11-character ID of a single YouTube video, or null for URLs that are not a video
+  // (channels, playlists, search results, the homepage...). Mirrors get_yt_code() in helpers.php
   function extractYouTubeID(url) {
-    const regex =
-      /(?:youtube(?:-nocookie)?\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/|youtube\.com\/shorts\/)([^"&?/ ]{11})/i;
-    const match = url.match(regex);
-    return match ? match[1] : null;
+    let value = String(url || "").trim();
+    if (!value) return null;
+    if (!/^[a-z][a-z0-9+.-]*:\/\//i.test(value)) value = "https://" + value.replace(/^\/+/, "");
+
+    let parsed;
+    try {
+      parsed = new URL(value);
+    } catch (e) {
+      return null;
+    }
+
+    const host = parsed.hostname.toLowerCase().replace(/^(www\.|m\.|music\.)/, "");
+    const segments = parsed.pathname.split("/").filter(Boolean);
+    let id = null;
+
+    if (host === "youtu.be") {
+      id = segments[0];
+    } else if (host === "youtube.com" || host === "youtube-nocookie.com") {
+      if (segments[0] === "watch") {
+        id = parsed.searchParams.get("v");
+      } else if (["embed", "shorts", "live", "v", "e"].includes(segments[0])) {
+        id = segments[1];
+      }
+    }
+
+    // "videoseries" is the 11-character placeholder used by playlist embeds, not a video
+    return id && id !== "videoseries" && /^[A-Za-z0-9_-]{11}$/.test(id) ? id : null;
   }
 
   function detectSource(trigger, rawValue) {
@@ -575,8 +600,11 @@ window.addEventListener("load", () => {
   // ─── Modo inline ─────────────────────────────────────────────────────────────
 
   function openInline(trigger, source, videoId) {
-    const container = trigger.dataset.target
-      ? document.querySelector(trigger.dataset.target)
+    // Look for the target inside the trigger's own block first, so several video blocks on a page don't clash
+    const target = trigger.dataset.target;
+    const container = target
+      ? trigger.closest(".featured-video")?.querySelector(target) ||
+        document.querySelector(target)
       : null;
 
     if (!container) {
@@ -595,6 +623,10 @@ window.addEventListener("load", () => {
     container.innerHTML = buildPlayer(source, videoId, true);
     container.classList.add("active");
     container.scrollIntoView({ behavior: "smooth", block: "nearest" });
+
+    // The play button was replaced by the player, so move focus to it instead of losing it
+    const player = container.querySelector("iframe, video");
+    if (player) player.focus({ preventScroll: true });
   }
 
   // ─── Init ────────────────────────────────────────────────────────────────────
