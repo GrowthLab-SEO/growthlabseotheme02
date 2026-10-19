@@ -25,23 +25,34 @@ if (get_field('toggle_block')):
 
         default:
             $carousel_type = isset($select_or_create_items) && $select_or_create_items ? "any" : "";
-            $posts = isset($select_or_create_items) && $select_or_create_items ? $select_posts : [];
+            $posts = isset($select_or_create_items) && $select_or_create_items ? ($select_posts ?? []) : [];
             break;
     }
 
-    $args = array(
-        'post_type' => $carousel_type,
-        'posts_per_page' => -1,
-        'post__in' => $posts,
-        'post_status' => 'publish',
-        'orderby' => 'post__in',
-    );
+    // Selected post IDs (empty when nothing was selected) and custom items (only in custom mode without selection)
+    $posts = !empty($posts) ? array_map('intval', (array) $posts) : [];
+    $custom_items = $carousel_type === "" && !empty($custom_carousel) ? $custom_carousel : [];
 
-    $query = new WP_Query($args);
+    // Without selected posts or custom items the carousel is not rendered; editors see a notice instead
+    if (empty($posts) && empty($custom_items)) {
+        print_block_notice(__('Posts Carousel: no posts selected or created. This notice is only visible to editors.', 'growthlabseotheme02'));
+        return;
+    }
+
+    // Only query when posts were selected, so an empty selection never falls back to every post
+    $query = null;
+    if (!empty($posts)) {
+        $query = new WP_Query(array(
+            'post_type' => $carousel_type,
+            'posts_per_page' => count($posts),
+            'post__in' => $posts,
+            'post_status' => 'publish',
+            'orderby' => 'post__in',
+        ));
+    }
 ?>
 
-    <section
-        id="<?= esc_attr($block_id ?? '') ?>"
+    <section<?= get_block_id_attribute($block_id ?? '') ?>
         class="
         block 
         posts-carousel
@@ -68,15 +79,15 @@ if (get_field('toggle_block')):
                 </div>
             <?php endif ?>
 
-            <div class="posts-carousel__carousel" data-type=<?= $carousel_type ?>>
+            <div class="posts-carousel__carousel" data-type="<?= esc_attr($carousel_type) ?>">
 
                 <div class="splide">
                     <div class="splide__track">
                         <div class="splide__list">
 
                             <?php
-                            if (isset($custom_carousel) && !empty($custom_carousel) && !$select_or_create_items && $carousel_type === "") {
-                                foreach ($custom_carousel as $item) {
+                            if (!empty($custom_items)) {
+                                foreach ($custom_items as $item) {
                                     foreach ($item as $field => $data) $$field = $data;
 
                                     get_template_part('template-parts/default', 'card', array(
@@ -89,7 +100,7 @@ if (get_field('toggle_block')):
                                         "content" => $content ?? '',
                                     ));
                                 }
-                            } elseif (isset($query) && $query->have_posts()) {
+                            } elseif ($query && $query->have_posts()) {
                                 while ($query->have_posts()) {
                                     $query->the_post();
 

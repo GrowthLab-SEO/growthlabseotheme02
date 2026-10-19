@@ -329,6 +329,15 @@ if (!function_exists('get_block_id_attribute')) {
     }
 }
 
+// Prints a notice in place of a block's content (e.g. when nothing is selected).
+// Only users who can edit posts see it; visitors get no output.
+if (!function_exists('print_block_notice')) {
+    function print_block_notice($message)
+    {
+        if (!current_user_can('edit_posts')) return;
+        echo '<div class="block-notice container" style="margin-block:2rem;padding:2rem;border:2px dashed currentColor;text-align:center;"><p>' . esc_html($message) . '</p></div>';
+    }
+}
 
 // Render a Gravity Forms form only if the plugin is active
 if (!function_exists('render_gravity_form')) {
