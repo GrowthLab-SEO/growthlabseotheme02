@@ -180,6 +180,17 @@ add_filter('wp_theme_json_data_theme', function ($theme_json) {
         ['name' => __('Text Color',           get_text_domain()), 'slug' => 'text-color',           'color' => get_theme_mod('text_color',           $default_colors['text'])],
     ];
 
+    // ─── FONTS ───────────────────────────────────────────────────────────────
+    // Families come from the Customizer, without theme.json fontFace entries, so bundled fonts are only
+    // declared by theme_get_default_font_faces_css() while they are selected (same as themes 01 and 03)
+    $font_primary   = get_theme_mod('font_primary',   $default_fonts['primary']);
+    $font_secondary = get_theme_mod('font_secondary', $default_fonts['secondary']);
+
+    $data['settings']['typography']['fontFamilies'] = [
+        ['name' => $font_primary,   'slug' => 'primary',   'fontFamily' => "\"{$font_primary}\", sans-serif"],
+        ['name' => $font_secondary, 'slug' => 'secondary', 'fontFamily' => "\"{$font_secondary}\", serif"],
+    ];
+
     $theme_json->update_with($data);
     return $theme_json;
 });

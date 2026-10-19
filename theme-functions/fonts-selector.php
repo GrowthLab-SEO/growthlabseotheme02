@@ -120,6 +120,90 @@ if (! function_exists('register_font_setting')) {
     }
 }
 
+// ─── BUNDLED DEFAULT FONT FILES ──────────────────────────────────────────────
+
+if (! function_exists('theme_get_default_font_faces')) {
+    /**
+     * Font files bundled with the theme (in /fonts), keyed by family name. They are only loaded and
+     * preloaded while the family is selected as the primary or secondary font in the Customizer.
+     */
+    function theme_get_default_font_faces(): array
+    {
+        return [
+            'Roboto Serif' => [
+                ['weight' => '100', 'style' => 'normal', 'file' => 'roboto-serif-v17-latin/roboto-serif-v17-latin-100.woff2', 'display' => 'swap', 'preload' => true],
+                ['weight' => '100', 'style' => 'italic', 'file' => 'roboto-serif-v17-latin/roboto-serif-v17-latin-100italic.woff2', 'display' => 'swap', 'preload' => false],
+                ['weight' => '300', 'style' => 'normal', 'file' => 'roboto-serif-v17-latin/roboto-serif-v17-latin-300.woff2', 'display' => 'swap', 'preload' => false],
+                ['weight' => '300', 'style' => 'italic', 'file' => 'roboto-serif-v17-latin/roboto-serif-v17-latin-300italic.woff2', 'display' => 'swap', 'preload' => false],
+                ['weight' => '400', 'style' => 'normal', 'file' => 'roboto-serif-v17-latin/roboto-serif-v17-latin-regular.woff2', 'display' => 'swap', 'preload' => true],
+                ['weight' => '400', 'style' => 'italic', 'file' => 'roboto-serif-v17-latin/roboto-serif-v17-latin-italic.woff2', 'display' => 'swap', 'preload' => false],
+                ['weight' => '500', 'style' => 'normal', 'file' => 'roboto-serif-v17-latin/roboto-serif-v17-latin-500.woff2', 'display' => 'swap', 'preload' => true],
+                ['weight' => '500', 'style' => 'italic', 'file' => 'roboto-serif-v17-latin/roboto-serif-v17-latin-500italic.woff2', 'display' => 'swap', 'preload' => false],
+                ['weight' => '600', 'style' => 'normal', 'file' => 'roboto-serif-v17-latin/roboto-serif-v17-latin-600.woff2', 'display' => 'swap', 'preload' => true],
+                ['weight' => '600', 'style' => 'italic', 'file' => 'roboto-serif-v17-latin/roboto-serif-v17-latin-600italic.woff2', 'display' => 'swap', 'preload' => false],
+                ['weight' => '700', 'style' => 'normal', 'file' => 'roboto-serif-v17-latin/roboto-serif-v17-latin-700.woff2', 'display' => 'swap', 'preload' => true],
+                ['weight' => '700', 'style' => 'italic', 'file' => 'roboto-serif-v17-latin/roboto-serif-v17-latin-700italic.woff2', 'display' => 'swap', 'preload' => false],
+            ],
+            'Mona Sans' => [
+                ['weight' => '400', 'style' => 'normal', 'file' => 'mona-sans-v4-latin/mona-sans-v4-latin-regular.woff2', 'display' => 'swap', 'preload' => true],
+                ['weight' => '400', 'style' => 'italic', 'file' => 'mona-sans-v4-latin/mona-sans-v4-latin-italic.woff2', 'display' => 'swap', 'preload' => false],
+                ['weight' => '600', 'style' => 'normal', 'file' => 'mona-sans-v4-latin/mona-sans-v4-latin-600.woff2', 'display' => 'swap', 'preload' => true],
+                ['weight' => '600', 'style' => 'italic', 'file' => 'mona-sans-v4-latin/mona-sans-v4-latin-600italic.woff2', 'display' => 'swap', 'preload' => false],
+                ['weight' => '700', 'style' => 'normal', 'file' => 'mona-sans-v4-latin/mona-sans-v4-latin-700.woff2', 'display' => 'swap', 'preload' => true],
+                ['weight' => '700', 'style' => 'italic', 'file' => 'mona-sans-v4-latin/mona-sans-v4-latin-700italic.woff2', 'display' => 'swap', 'preload' => false],
+            ],
+        ];
+    }
+}
+
+if (! function_exists('theme_get_selected_default_font_faces')) {
+    /**
+     * Bundled font families currently selected in the Customizer, with their faces.
+     * Returns an empty array when other fonts (e.g. from the Font Library) are selected.
+     */
+    function theme_get_selected_default_font_faces(): array
+    {
+        global $default_fonts;
+
+        $selected = array_map('strtolower', [
+            (string) get_theme_mod('font_primary',   $default_fonts['primary']),
+            (string) get_theme_mod('font_secondary', $default_fonts['secondary']),
+        ]);
+
+        return array_filter(
+            theme_get_default_font_faces(),
+            fn($family) => in_array(strtolower($family), $selected, true),
+            ARRAY_FILTER_USE_KEY
+        );
+    }
+}
+
+if (! function_exists('theme_get_default_font_faces_css')) {
+    /**
+     * @font-face rules for the selected bundled fonts only.
+     */
+    function theme_get_default_font_faces_css(): string
+    {
+        $base = get_template_directory_uri() . '/fonts/';
+        $css  = '';
+
+        foreach (theme_get_selected_default_font_faces() as $family => $faces) {
+            foreach ($faces as $face) {
+                $css .= sprintf(
+                    '@font-face{font-display:%s;font-family:"%s";font-style:%s;font-weight:%s;src:url("%s") format("woff2");}',
+                    $face['display'],
+                    $family,
+                    $face['style'],
+                    $face['weight'],
+                    esc_url($base . $face['file'])
+                );
+            }
+        }
+
+        return $css;
+    }
+}
+
 // ─── CSS CUSTOM PROPERTIES ───────────────────────────────────────────────────
 
 if (! function_exists('theme_get_fonts_css')) {
@@ -140,7 +224,9 @@ if (! function_exists('theme_get_fonts_css')) {
         $primary_family   = _theme_resolve_font_family($font_primary,   $all_fonts, 'sans-serif');
         $secondary_family = _theme_resolve_font_family($font_secondary, $all_fonts, 'serif');
 
-        $css  = ":root {\n";
+        // Bundled fonts are only declared while they are selected
+        $css  = theme_get_default_font_faces_css();
+        $css .= ":root {\n";
         $css .= "    --font-primary: {$primary_family};\n";
         $css .= "    --font-secondary: {$secondary_family};\n";
         $css .= "}";
@@ -173,3 +259,14 @@ if (! function_exists('_theme_resolve_font_family')) {
 // ─── HOOKS ───────────────────────────────────────────────────────────────────
 
 add_action('customize_register', 'theme_customize_register_fonts');
+
+// The Site Editor's font manager saves a copy of the theme's font families (with every bundled font face) in the
+// global styles, which made WordPress print all bundled fonts whatever the Customizer selection. Drop that copy so
+// only the selected fonts are loaded; fonts installed through the Font Library ('custom') are kept.
+add_filter('wp_theme_json_data_user', function ($theme_json) {
+    $data = $theme_json->get_data();
+    if (!isset($data['settings']['typography']['fontFamilies']['theme'])) return $theme_json;
+
+    unset($data['settings']['typography']['fontFamilies']['theme']);
+    return new WP_Theme_JSON_Data($data, 'custom');
+});
