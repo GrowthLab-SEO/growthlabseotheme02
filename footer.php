@@ -11,6 +11,7 @@
     $post_id = $post ? $post->ID : 0;
 
     $options = get_current_language_options();
+    $options = fill_acf_group_defaults($options, 'options', 'option');
     foreach ($options as $key => $value) $$key = $value;
 
     $phone_number = $contact_phone ?: $main_phone_number;
@@ -20,13 +21,13 @@
     ?>
 
     <?php
-    if (!$form_section['hide_section']):
-      foreach ($form_section as $form_field => $form_content) $$form_field = $form_content;
-      $offices =  isset($show_offices) && $show_offices === "custom" ? $offices : $options['offices'];
+    if (empty($form_section['hide_section'])):
+      // Custom offices from the page form section replace the site offices only when show_offices is "custom"
+      $offices = ($form_section['show_offices'] ?? null) === "custom" ? ($form_section['offices'] ?? null) : $options['offices'];
     ?>
       <section class="contact-form-footer">
 
-        <?php if (!empty($offices) && !$switch_side_map): ?>
+        <?php if (!empty($offices) && empty($form_section['switch_side_map'])): ?>
           <div class="contact-form-footer__offices">
             <ul class="footer-offices-selector">
               <?php foreach ($offices as $office): ?>
@@ -81,9 +82,9 @@
               <?php endforeach; ?>
             </div>
           </div>
-        <?php elseif ($side_image && isset($side_image)): ?>
+        <?php elseif (!empty($form_section['side_image'])): ?>
           <div class="contact-form-footer__side-image">
-            <?php img_print_picture_tag($side_image, is_cover: false, max_size: "cover-desktop", min_size: "cover-mobile", classes: "side-image bg-image") ?>
+            <?php img_print_picture_tag($form_section['side_image'], is_cover: false, max_size: "cover-desktop", min_size: "cover-mobile", classes: "side-image bg-image") ?>
           </div>
         <?php endif; ?>
 
@@ -93,15 +94,15 @@
             <div class="contact-form">
 
               <?php
-              print_title($contact_form_title, $contact_form_title_tag, "contact-form__title tx-center");
+              print_title($form_section['contact_form_title'] ?? '', $form_section['contact_form_title_tag'] ?? null, "contact-form__title tx-center");
               ?>
 
               <div class="contact-form__description formatted-text tx-center">
-                <?php echo wp_kses_post(wpautop($contact_form_description)); ?>
+                <?php echo wp_kses_post(wpautop($form_section['contact_form_description'] ?? '')); ?>
               </div>
 
               <div class="contact-form__form">
-                <?php render_gravity_form($contact_form, display_title: false, display_description: false); ?>
+                <?php render_gravity_form($form_section['contact_form'] ?? null, display_title: false, display_description: false); ?>
               </div>
 
             </div>
@@ -115,35 +116,34 @@
     ?>
 
     <?php
-    if (!$content_section['hide_section']):
-      foreach ($content_section as $content_field => $content_data) $$content_field = $content_data;
+    if (empty($content_section['hide_section'])):
     ?>
 
       <section class="content-info-footer">
         <div class="content-info-footer__wrapper container">
 
-          <?php if (isset($first_column_content) && $first_column_content): ?>
+          <?php if (!empty($content_section['first_column_content'])): ?>
             <div class="content-info-footer__col">
               <div class="formatted-text">
-                <?= $first_column_content && isset($first_column_content) ? $first_column_content : '' ?>
+                <?= $content_section['first_column_content'] ?>
               </div>
             </div>
           <?php endif; ?>
 
-          <?php if (($logo && isset($logo)) || ($cta_button && isset($cta_button))): ?>
+          <?php if (!empty($content_section['logo']) || !empty($content_section['cta_button'])): ?>
 
             <div class="content-info-footer__col--social">
-              <?php if ($logo && isset($logo)) img_print_picture_tag(img: $logo, classes: "footer-logo", max_size: "medium") ?>
+              <?php if (!empty($content_section['logo'])) img_print_picture_tag(img: $content_section['logo'], classes: "footer-logo", max_size: "medium") ?>
 
 
               <div class="content-info-footer__social">
-                <?php get_template_part('template-parts/social', 'networks', ["social_networks" => $select_social_networks ?? null]); ?>
+                <?php get_template_part('template-parts/social', 'networks', ["social_networks" => $content_section['select_social_networks'] ?? null]); ?>
               </div>
 
-              <?php if ($cta_button && isset($cta_button)): ?>
-                <a href="<?= $cta_button['url'] ?>" class="btn btn--primary" target="<?= $cta_button['target'] ?>" aria-label="<?= esc_attr($cta_button['title']) ?>">
+              <?php if (!empty($content_section['cta_button'])): ?>
+                <a href="<?= $content_section['cta_button']['url'] ?>" class="btn btn--primary" target="<?= $content_section['cta_button']['target'] ?>" aria-label="<?= esc_attr($content_section['cta_button']['title']) ?>">
                   <span>
-                    <?= esc_html($cta_button['title']) ?>
+                    <?= esc_html($content_section['cta_button']['title']) ?>
                   </span>
                 </a>
               <?php endif; ?>
@@ -151,10 +151,10 @@
 
           <?php endif; ?>
 
-          <?php if (isset($last_column_content) && $last_column_content): ?>
+          <?php if (!empty($content_section['last_column_content'])): ?>
             <div class="content-info-footer__col">
               <div class="formatted-text">
-                <?= $last_column_content && isset($last_column_content) ? $last_column_content : '' ?>
+                <?= $content_section['last_column_content'] ?>
               </div>
             </div>
           <?php endif; ?>
@@ -165,20 +165,19 @@
     <?php endif; ?>
 
     <?php
-    if (!$copyright_section['hide_section']):
-      foreach ($copyright_section as $copy_field => $copy_content) $$copy_field = $copy_content;
+    if (empty($copyright_section['hide_section'])):
     ?>
       <section class="copyright-footer">
         <div class="copyright-footer__wrapper container">
           <p class="copyright-footer__advertisement">
-            <?= $copyright && isset($copyright) ? $copyright : '' ?>
+            <?= !empty($copyright_section['copyright']) ? $copyright_section['copyright'] : '' ?>
           </p>
 
           <?php
-          if (isset($footer_links_menu) && $footer_links_menu && !empty(wp_get_nav_menus())) {
+          if (!empty($copyright_section['footer_links_menu']) && !empty(wp_get_nav_menus())) {
             wp_nav_menu(
               array(
-                'menu'  => $footer_links_menu,
+                'menu'  => $copyright_section['footer_links_menu'],
                 'container'          => 'nav',
                 'container_class' => 'footer-nav',
                 'menu_class'      => 'footer-nav__menu',

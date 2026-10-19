@@ -1,5 +1,5 @@
 <?php
-foreach (get_fields() as $key => $value) $$key = $value;
+foreach (get_post_fields_with_defaults() as $key => $value) $$key = $value;
 ?>
 <?php get_header(); ?>
 

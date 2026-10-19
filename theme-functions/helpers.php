@@ -423,6 +423,42 @@ if (!function_exists('get_acf_field_default')) {
     }
 }
 
+// Merges an ACF group value (e.g. the site options or hero_properties) over the defaults of its sub fields, so templates
+// can extract it into variables without undefined variable warnings. $selector and $post_id locate the field definition.
+if (!function_exists('fill_acf_group_defaults')) {
+    function fill_acf_group_defaults($value, $selector, $post_id = false)
+    {
+        static $defaults_by_selector = [];
+        if (!isset($defaults_by_selector[$selector]) && function_exists('get_field_object')) {
+            // Posts that never saved the field have no reference to it, so fall back to looking it up by name
+            $field = get_field_object($selector, $post_id, false, false) ?: (function_exists('acf_get_field') ? acf_get_field($selector) : false);
+            $defaults = is_array($field) ? get_acf_field_default($field) : null;
+            if (is_array($defaults) && $defaults) $defaults_by_selector[$selector] = $defaults;
+        }
+
+        return array_merge($defaults_by_selector[$selector] ?? [], is_array($value) ? $value : []);
+    }
+}
+
+// Returns a post's ACF values merged over the defaults of every field group assigned to it (see get_block_fields())
+if (!function_exists('get_post_fields_with_defaults')) {
+    function get_post_fields_with_defaults($post_id = false)
+    {
+        $post_id = $post_id ?: get_the_ID();
+        $values = get_fields($post_id) ?: [];
+        if (!function_exists('acf_get_field_groups')) return $values;
+
+        $defaults = [];
+        foreach (acf_get_field_groups(['post_id' => $post_id]) as $group) {
+            foreach (acf_get_fields($group) ?: [] as $field) {
+                if (!empty($field['name'])) $defaults[$field['name']] = get_acf_field_default($field);
+            }
+        }
+
+        return array_merge($defaults, $values);
+    }
+}
+
 // Render a Gravity Forms form only if the plugin is active
 if (!function_exists('render_gravity_form')) {
     function render_gravity_form(...$args)

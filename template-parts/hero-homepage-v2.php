@@ -4,15 +4,13 @@ if (!defined('ABSPATH')) {
 }
 
 //Internal Fields
-if (get_field('hero_properties') !== null && !empty(get_field('hero_properties'))) foreach (get_field('hero_properties') as $key => $value) $$key = $value;
+foreach (fill_acf_group_defaults(get_field('hero_properties'), 'hero_properties') as $key => $value) $$key = $value;
 $cta_button = isset($hero_cta_button) && $hero_cta_button ? $hero_cta_button : $args['hero_cta_button_default'];
 
-//Hero pictures
-if (isset($hero_pictures)) foreach ($hero_pictures as $type => $picture) $$type = $picture;
-
-$bg_desktop = isset($background_desktop) && $background_desktop ? $background_desktop :  $args['hero_image_desktop_default'];
-$bg_tablet = isset($background_tablet) && $background_tablet ? $background_tablet :  $args['hero_image_tablet_default'];
-$bg_mobile = isset($background_mobile) && $background_mobile ? $background_mobile :  $args['hero_image_mobile_default'];
+//Hero pictures (read from the hero_pictures group)
+$bg_desktop = !empty($hero_pictures['background_desktop']) ? $hero_pictures['background_desktop'] :  $args['hero_image_desktop_default'];
+$bg_tablet = !empty($hero_pictures['background_tablet']) ? $hero_pictures['background_tablet'] :  $args['hero_image_tablet_default'];
+$bg_mobile = !empty($hero_pictures['background_mobile']) ? $hero_pictures['background_mobile'] :  $args['hero_image_mobile_default'];
 
 if (!$bg_desktop) $bg_desktop = [];
 if (!$bg_tablet) $bg_tablet = [];

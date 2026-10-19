@@ -24,6 +24,7 @@ if (!defined('ABSPATH')) {
     $post_id = $post ? $post->ID : 0;
 
     $options = get_current_language_options();
+    $options = fill_acf_group_defaults($options, 'options', 'option');
     foreach ($options as $key => $value) $$key = $value;
 
     $logo_link = $logo_link ?? home_url('/' . get_current_language()['slug']);
