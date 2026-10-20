@@ -532,6 +532,68 @@ if (!function_exists('get_posts_grid_page_arg')) {
     }
 }
 
+// ID of the page whose "Page - Options" fields apply to the current request: the queried post on singular views
+// and the posts page on the blog index. Archives, search results and 404 pages have no such page and return 0.
+if (!function_exists('get_page_options_id')) {
+    function get_page_options_id()
+    {
+        if (is_singular()) return (int) get_queried_object_id();
+        if (is_home()) return (int) get_option('page_for_posts');
+        return 0;
+    }
+}
+
+// Reads a page-level ACF field for the current request (see get_page_options_id()). Returns null when the request
+// has no page, instead of letting ACF fall back to the global $post (the first post of the loop on listings).
+if (!function_exists('get_page_field')) {
+    function get_page_field($selector)
+    {
+        $page_id = get_page_options_id();
+        return $page_id ? get_field($selector, $page_id) : null;
+    }
+}
+
+// Blog index, archives and search results always use the default hero
+if (!function_exists('is_listing_page')) {
+    function is_listing_page()
+    {
+        return is_home() || is_archive() || is_search();
+    }
+}
+
+// The hero title is the page heading. Hero titles come from a WYSIWYG field, so when the editor didn't use an h1 the
+// first paragraph becomes the h1 (the hero styles inherit from the wrapper, so the look doesn't change).
+if (!function_exists('get_hero_heading')) {
+    function get_hero_heading($html)
+    {
+        $html = (string) $html;
+        if ($html === '' || stripos($html, '<h1') !== false) return $html;
+
+        $heading = preg_replace('~<p(\s[^>]*)?>(.*?)</p>~is', '<h1$1>$2</h1>', $html, 1, $count);
+        return $count ? $heading : '<h1>' . $html . '</h1>';
+    }
+}
+
+// Fallback hero title for the current request, used when the page has no custom hero title
+if (!function_exists('get_page_hero_title')) {
+    function get_page_hero_title()
+    {
+        if (is_home()) {
+            $page_id = (int) get_option('page_for_posts');
+            return $page_id ? get_the_title($page_id) : __('Blog', 'growthlabseotheme02');
+        }
+        if (is_search()) {
+            /* translators: %s: search query */
+            return sprintf(__('Search results for: %s', 'growthlabseotheme02'), get_search_query());
+        }
+        if (is_singular()) return get_the_title(get_queried_object_id());
+        if (is_category() || is_tag() || is_tax()) return single_term_title('', false);
+        if (is_post_type_archive()) return post_type_archive_title('', false);
+        if (is_archive()) return get_the_archive_title();
+        return '';
+    }
+}
+
 // Render a Gravity Forms form only if the plugin is active
 if (!function_exists('render_gravity_form')) {
     function render_gravity_form(...$args)

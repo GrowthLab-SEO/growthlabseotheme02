@@ -7,17 +7,14 @@
   <footer id="site-footer" role="contentinfo" class="site-footer">
 
     <?php
-    global $post;
-    $post_id = $post ? $post->ID : 0;
-
     $options = get_current_language_options();
     $options = fill_acf_group_defaults($options, 'options', 'option');
     foreach ($options as $key => $value) $$key = $value;
 
     $phone_number = $contact_phone ?: $main_phone_number;
-    if (get_field('custom_footer')) $form_section = get_field('form_section');
-    if (get_field('custom_footer')) $content_section = get_field('content_section');
-    if (get_field('custom_footer')) $copyright_section = get_field('copyright_section');
+    if (get_page_field('custom_footer')) $form_section = get_page_field('form_section');
+    if (get_page_field('custom_footer')) $content_section = get_page_field('content_section');
+    if (get_page_field('custom_footer')) $copyright_section = get_page_field('copyright_section');
     ?>
 
     <?php

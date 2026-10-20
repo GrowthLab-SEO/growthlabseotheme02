@@ -20,26 +20,26 @@ if (!defined('ABSPATH')) {
     <?php wp_body_open(); ?>
 
     <?php
-    global $post;
-    $post_id = $post ? $post->ID : 0;
-
     $options = get_current_language_options();
     $options = fill_acf_group_defaults($options, 'options', 'option');
     foreach ($options as $key => $value) $$key = $value;
 
-    $logo_link = $logo_link ?? home_url('/' . get_current_language()['slug']);
+    // Per-language options store an empty logo_link when it was never set
+    $logo_link = $logo_link ?: home_url('/' . get_current_language()['slug']);
     $phone_number = $contact_phone ?: $main_phone_number;
 
-    if (get_field('custom_header', $post_id)) {
-        $logo_link = get_field('logo_link', $post_id) ?? '#';
-        $phone_number = get_field("contact_phone", $post_id) ?? null;
-        $top_callout_first_line = get_field("top_callout_first_line", $post_id) ?: '';
-        $top_callout_second_line = get_field("top_callout_second_line", $post_id) ?: '';
-        $cta_button = get_field("cta_button", $post_id) ?? null;
+    if (get_page_field('custom_header')) {
+        $logo_link = get_page_field('logo_link') ?: $logo_link;
+        $phone_number = get_page_field("contact_phone") ?: null;
+        $top_callout_first_line = get_page_field("top_callout_first_line") ?: '';
+        $top_callout_second_line = get_page_field("top_callout_second_line") ?: '';
+        $cta_button = get_page_field("cta_button") ?: null;
     }
+
+    $hero_style = is_listing_page() ? 'default' : (get_page_field('hero_style') ?: 'default');
     ?>
 
-    <header role="banner" class="site-header <?= !is_404() && get_field('hero_style') !== "nohero" && $sticky_header ? "site-header--sticky" : "" ?>">
+    <header role="banner" class="site-header <?= !is_404() && $hero_style !== "nohero" && $sticky_header ? "site-header--sticky" : "" ?>">
 
         <div class="site-header__wrapper">
 
@@ -57,7 +57,7 @@ if (!defined('ABSPATH')) {
             </div>
 
             <?php
-            if (get_field("custom_header", $post_id) || has_nav_menu('main')) {
+            if (get_page_field("custom_header") || has_nav_menu('main' . get_current_language_suffix())) {
                 $menu_args = array(
                     'container'          => 'nav',
                     'container_role'     => 'navigation',
@@ -65,12 +65,14 @@ if (!defined('ABSPATH')) {
                     'menu_class'      => 'main-nav__menu',
                     'items_wrap'      => '<ul class="%2$s">%3$s</ul>',
                     'link_before'          => '<span>',
-                    'link_after'              => '</span>'
+                    'link_after'              => '</span>',
+                    // Never fall back to a list of every page when the menu location is empty
+                    'fallback_cb'          => false
                 );
 
-                if (get_field("custom_header", $post_id)) {
-                    if (get_field("menu", $post_id)) {
-                        $menu_args['menu'] = get_field("menu", $post_id);
+                if (get_page_field("custom_header")) {
+                    if (get_page_field("menu")) {
+                        $menu_args['menu'] = get_page_field("menu");
                     } else {
                         $menu_args = [];
                     }
@@ -166,22 +168,13 @@ if (!defined('ABSPATH')) {
     </header>
 
     <?php
-    $hero_title = !is_home() && !is_archive() ? get_field("hero_properties", $post_id)["hero_title"] ?? null : null;
+    $hero_title = get_page_field("hero_properties")["hero_title"] ?? null;
 
-    if ($hero_title === null || $hero_title === "" || empty($hero_title)) {
-        if (is_home()) {
-            $hero_title = get_the_title(get_option('page_for_posts'));
-        } elseif (is_post_type_archive()) {
-            $hero_title = post_type_archive_title('', false);
-        } elseif (is_category()) {
-            $hero_title = single_cat_title('', false);
-        } elseif (is_tax()) {
-            $hero_title = single_term_title('', false);
-        } elseif (is_page() || is_single()) {
-            $hero_title = get_the_title($post_id);
-        }
-
-        $hero_title = "<h1>$hero_title</h1>";
+    // Without a custom hero title the page title is the page heading
+    if (empty($hero_title)) {
+        $hero_title = '<h1>' . wp_kses_post(get_page_hero_title()) . '</h1>';
+    } else {
+        $hero_title = get_hero_heading($hero_title);
     }
 
 
@@ -194,8 +187,6 @@ if (!defined('ABSPATH')) {
     );
 
     if (!is_404()) {
-
-        $hero_style = is_home() || is_archive() ? 'default' : get_field('hero_style', $post_id) ?? 'default';
 
         switch ($hero_style) {
             case 'home':

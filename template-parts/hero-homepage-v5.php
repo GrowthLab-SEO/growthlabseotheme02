@@ -4,7 +4,7 @@ if (!defined('ABSPATH')) {
 }
 
 //Internal Fields
-foreach (fill_acf_group_defaults(get_field('hero_properties'), 'hero_properties') as $key => $value) $$key = $value;
+foreach (fill_acf_group_defaults(get_page_field('hero_properties'), 'hero_properties') as $key => $value) $$key = $value;
 $cta_button = isset($hero_cta_button) && $hero_cta_button ? $hero_cta_button : $args['hero_cta_button_default'];
 
 //Hero pictures (read from the hero_pictures group)
@@ -26,7 +26,7 @@ if (!$bg_mobile) $bg_mobile = [];
             <div class="hero__title">
                 <?= $args["hero_title"] ?>
             </div>
-            <?php print_title($hero_subtitle, $hero_subtitle_tag, "hero__subtitle", true); ?>
+            <?php print_title($hero_subtitle, $hero_subtitle_tag, "hero__subtitle"); ?>
 
             <?php if ($cta_button): ?>
                 <a href="<?= $cta_button['url'] ?>" target="<?= $cta_button['target'] ?>" class="hero__btn btn btn--tertiary" aria-label="<?= esc_attr($cta_button['title']) ?>">
