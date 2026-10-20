@@ -14,7 +14,7 @@ $options = get_field_options("options");
                 img_print_picture_tag(img: $options["logo_symbol"], classes: "team-card__symbol");
                 img_print_picture_tag(img: $args["picture"], max_size: "content", min_size: "featured-small", classes: "team-card__pic");
             } else {
-                include get_stylesheet_directory() . '/assets/icons/icon-file-image.svg';
+                echo get_theme_svg('assets/icons/icon-file-image.svg');
             }
             ?>
         </div>

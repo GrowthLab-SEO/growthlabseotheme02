@@ -60,12 +60,12 @@
                       </<?= $office["city_tag"] ?>>
 
                       <div class="footer-office__item">
-                        <?php include get_stylesheet_directory() . '/assets/icons/icon-location-outlined.svg'; ?>
+                        <?php echo get_theme_svg('assets/icons/icon-location-outlined.svg'); ?>
                         <p><?= esc_html($office['address']); ?></p>
                       </div>
 
                       <p class="footer-office__item">
-                        <?php include get_stylesheet_directory() . '/assets/icons/icon-phone.svg'; ?>
+                        <?php echo get_theme_svg('assets/icons/icon-phone.svg'); ?>
                         <a href="tel:+1<?= get_flat_number($office['phone']) ?>" aria-label="<?= esc_attr($office['phone']); ?>"><?= esc_html($office['phone']); ?></a>
                       </p>
 

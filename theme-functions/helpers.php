@@ -11,6 +11,26 @@ if (!function_exists('get_text_domain')) {
 }
 
 
+if (!function_exists('get_theme_svg')) {
+    /**
+     * Returns the markup of a static SVG file of the theme (path relative to the theme root, child theme first),
+     * or '' if it does not exist. Contents are cached per request, so icons repeated in loops are read only once.
+     */
+    function get_theme_svg($relative_path)
+    {
+        static $cache = [];
+        if (array_key_exists($relative_path, $cache)) {
+            return $cache[$relative_path];
+        }
+
+        $file = get_theme_file_path($relative_path);
+        $svg  = is_readable($file) ? (string) file_get_contents($file) : '';
+
+        $cache[$relative_path] = $svg;
+        return $svg;
+    }
+}
+
 if (!function_exists('get_field_options')) {
     function get_field_options($field_name, $format_value = true)
     {

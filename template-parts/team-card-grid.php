@@ -11,7 +11,7 @@ if (!defined('ABSPATH')) {
             if (isset($args['picture']) && $args['picture'] && $args['picture'] !== '') {
                 img_print_picture_tag(img: $args["picture"], max_size: "cover-mobile", min_size: "featured-small", classes: "team-card-grid__pic");
             } else {
-                include get_template_directory() . '/assets/icons/icon-file-image.svg';
+                echo get_theme_svg('assets/icons/icon-file-image.svg');
             }
             ?>
 

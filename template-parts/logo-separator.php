@@ -13,7 +13,7 @@ foreach ($args as $key => $value) $$key = $value;
     if ($options["logo_symbol"]) {
         img_print_picture_tag(img: $options["logo_symbol"], max_size: "medium", classes: "logo-separator__logo");
     } else {
-        include get_stylesheet_directory() . '/assets/img/ampersand-symbol.svg';
+        echo get_theme_svg('assets/img/ampersand-symbol.svg');
     } ?>
     <hr>
 </div>

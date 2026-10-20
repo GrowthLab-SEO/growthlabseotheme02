@@ -16,7 +16,7 @@ if (!defined('ABSPATH')) {
     if (isset($args['picture']) && $args['picture'] && $args['picture'] !== '') {
         img_print_picture_tag(img: $args["picture"], max_size: "featured-small", min_size: "featured-small", classes: "default-card__pic");
     } else {
-        include get_stylesheet_directory() . '/assets/icons/icon-file-image.svg';
+        echo get_theme_svg('assets/icons/icon-file-image.svg');
     }
     ?>
 
@@ -47,7 +47,7 @@ if (!defined('ABSPATH')) {
                 if ($args['link_url'] && $args['link_url'] !== '') {
                     echo "<a href=" . $args['link_url'] . " class='default-card__con-link' target=" . $args['link_target'] . " aria-label='" . esc_attr($args['title']) . "'>";
                     echo "<span class='default-card__con-link-text'>LEARN MORE</span>";
-                    include get_stylesheet_directory() . '/assets/icons/icon-arrow-right.svg';
+                    echo get_theme_svg('assets/icons/icon-arrow-right.svg');
                     echo "</a>";
                 }
                 ?>

@@ -129,7 +129,7 @@ if (!defined('ABSPATH')) {
                                 <span class="callout__text callout__text--second"><?= $top_callout_second_line ?></span>
                             <?php endif; ?>
                             <a href="tel:+1<?= get_flat_number($phone_number) ?>" class="callout__phone" aria-label="Call us at <?= esc_attr($phone_number) ?>">
-                                <?php include(get_template_directory() . "/assets/icons/icon-phone.svg") ?>
+                                <?php echo get_theme_svg('assets/icons/icon-phone.svg') ?>
                                 <?= $phone_number ?>
                             </a>
                         </div>
