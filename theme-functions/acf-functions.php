@@ -93,11 +93,14 @@ if (!function_exists('register_acf_blocks')) {
     }
 }
 
-// Clear block cache on theme switch/update
-add_action('switch_theme', function () {
-    delete_transient('theme_block_files_cache_' . get_stylesheet());
-    delete_transient('theme_block_files_hash_'  . get_stylesheet());
-});
+// Clear the block cache on theme switch. switch_theme runs after the switch, so get_stylesheet() is already the new theme: clear the caches of both themes
+add_action('switch_theme', function ($new_name, $new_theme, $old_theme) {
+    foreach (array($new_theme, $old_theme) as $theme) {
+        if (!$theme instanceof WP_Theme) continue;
+        delete_transient('theme_block_files_cache_' . $theme->get_stylesheet());
+        delete_transient('theme_block_files_hash_' . $theme->get_stylesheet());
+    }
+}, 10, 3);
 
 add_action('init', 'register_acf_blocks', 11);
 
