@@ -162,12 +162,13 @@ add_action('wp_enqueue_scripts', function () {
         $blocks_by_type[$type][] = $block_name;
     }
 
-    // Generate combined CSS per type
-    global $block_critical_css;
-    $block_critical_css = '';
+    // Collect the CSS files per type; inline_main_critical_css() reads them only when the
+    // critical CSS isn't cached yet
+    global $block_critical_css_files;
+    $block_critical_css_files = array();
 
     foreach ($blocks_by_type as $type => $block_names) {
-        $type_css = '';
+        $type_files = array();
         foreach ($block_names as $block_name) {
             if (str_starts_with($block_name, 'core/')) continue;
             if (!isset($registered_blocks[$block_name])) continue;
@@ -196,13 +197,12 @@ add_action('wp_enqueue_scripts', function () {
                 }
 
                 if (!empty($css_file) && file_exists($css_file)) {
-                    $type_css .= file_get_contents($css_file) . "\n";
+                    $type_files[] = $css_file;
                 }
             }
         }
-        // Wrap type CSS in a comment for debugging
-        if (!empty($type_css)) {
-            $block_critical_css .= "/* Block type: {$type} */\n" . $type_css;
+        if (!empty($type_files)) {
+            $block_critical_css_files[$type] = $type_files;
         }
     }
 
