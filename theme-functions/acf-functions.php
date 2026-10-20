@@ -178,14 +178,6 @@ add_action('wp_enqueue_scripts', function () {
 
             $block_type = $registered_blocks[$block_name];
             if (!empty($block_type->style)) {
-                // Dequeue the style and the related inline CSS if present.
-                wp_dequeue_style($block_type->style);
-                wp_deregister_style($block_type->style);
-
-                $inline_handle = $block_type->style . '-inline-css';
-                wp_dequeue_style($inline_handle);
-                wp_deregister_style($inline_handle);
-
                 // Read and combine CSS from block folder file (block JSON declares file:./block-min.css)
                 $css_file = null;
                 global $acf_block_dirs;
@@ -194,14 +186,23 @@ add_action('wp_enqueue_scripts', function () {
                 }
 
                 if (empty($css_file) || !file_exists($css_file)) {
-                    // fallback: try from registered style source URL
+                    // Fallback: map the registered style URL to a theme file (read before the style is deregistered)
                     $style_src = wp_styles()->registered[$block_type->style]->src ?? '';
-                    $css_file  = str_replace(get_template_directory_uri(), get_template_directory(), $style_src);
+                    $css_file  = $style_src ? str_replace(get_template_directory_uri(), get_template_directory(), $style_src) : '';
                 }
 
-                if (!empty($css_file) && file_exists($css_file)) {
-                    $type_files[] = $css_file;
-                }
+                // Only theme block CSS can be inlined: other blocks (e.g. from plugins) keep their stylesheet
+                if (empty($css_file) || !file_exists($css_file)) continue;
+
+                $type_files[] = $css_file;
+
+                // Dequeue the style and the related inline CSS: the critical CSS already includes it
+                wp_dequeue_style($block_type->style);
+                wp_deregister_style($block_type->style);
+
+                $inline_handle = $block_type->style . '-inline-css';
+                wp_dequeue_style($inline_handle);
+                wp_deregister_style($inline_handle);
             }
         }
         if (!empty($type_files)) {
