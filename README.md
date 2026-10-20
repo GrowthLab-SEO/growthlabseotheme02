@@ -27,10 +27,13 @@ Base WordPress theme used by GrowthLab SEO for client sites. It is a classic PHP
 
 ## Overview
 
-- **Classic theme + `theme.json`.** Templates are PHP (`header.php`, `footer.php`, `page.php`, `single.php`, `home.php`, `archive.php`, `single-team.php`, `404.php`, `index.php`). `theme.json` sets the layout sizes (content 780px, wide 1240px) and typography options; the color palette and font families are injected at runtime from the Customizer through the `wp_theme_json_data_theme` filter in `functions.php`.
+- **Classic theme + `theme.json`.** Templates are PHP (`header.php`, `footer.php`, `page.php`, `single.php`, `home.php`, `archive.php`, `search.php`, `single-team.php`, `404.php`, `index.php`). `theme.json` sets the layout sizes (content 780px, wide 1240px) and typography options; the color palette and font families are injected at runtime from the Customizer through the `wp_theme_json_data_theme` filter in `functions.php`. The theme declares `appearance-tools` (border, color, spacing and typography controls on core blocks).
 - **ACF PRO blocks.** Every folder in `blocks/` with a `block.json` is registered automatically (see [Blocks](#blocks)). Blocks appear in the "GrowthLab Theme 02 Blocks" inserter category.
-- **ACF data.** Field groups, the custom post types (`case-result`, `team`, `testimonial`) and the "Site Options" options page fields are stored as JSON in `acf-json/`.
-- **Heroes.** `header.php` renders the hero chosen in the page's `hero_style` field (`default`, `home`, `home_2` ... `home_6`, `nohero`), using the templates in `template-parts/hero-*.php`.
+- **ACF data.** Field groups, the custom post types (`case-result`, `team`, `testimonial`) and the "Site Options" options page fields are stored as JSON in `acf-json/`. The Site Options page is registered on `acf/init`.
+- **Page-level fields come from the queried page.** `header.php`, `footer.php` and the templates read the "Page - Options" fields (custom header, hero, footer toggles, Hide Sidebar) with `get_page_field()`: the queried post on singular views and the posts page on the blog index. Archives, search results and 404 pages have no page options, so the first post of the loop never leaks its settings into the page.
+- **Heroes.** `header.php` renders the hero chosen in the page's `hero_style` field (`default`, `home`, `home_2` ... `home_6`, `nohero`), using the templates in `template-parts/hero-*.php`. The blog index, archives and search results always use the default hero, and 404 pages have none. The hero title is always the page's single `h1`: a custom `hero_title` without an `h1` gets its first paragraph turned into one (`get_hero_heading()`), and without a custom title the page, term, archive, author, date or search title is used (`get_page_hero_title()`). Taglines/subtitles use their own tag fields and never fall back to `h1`.
+- **Listings.** `home.php` (blog, with the posts filters), `archive.php` and `search.php` (archive listing plus a "No results found" message) share the same cards and pagination; `index.php` (last fallback) renders the archive listing. Pages and single posts hide their sidebar with their own **Hide Sidebar** field; the blog index, archives and search results follow the posts page's setting (with the sidebar shown, cards use the horizontal layout).
+- **Accessibility basics.** `header.php` prints a translatable "Skip to content" link as the first focusable element (visible on focus), and every template has a single `<main id="main-content">` (404 included). The mobile menu toggles are real `<button>`s (`aria-expanded`/`aria-controls`, Escape closes the menu). FAQ questions and location card cities are exposed as buttons (`role="button"`, `aria-expanded`, `aria-controls`) and respond to Enter and Space; the footer office selector uses buttons with `aria-pressed`.
 
 ### Theme 02 identity
 
@@ -61,7 +64,7 @@ Plugins:
 | Advanced Custom Fields PRO | Required | Blocks (`acf` key in `block.json`), options page (`acf_add_options_page`), repeaters/clone fields, CPT definitions in `acf-json/`. |
 | Gravity Forms | Required for forms | Contact Form block and the footer form section call `render_gravity_form()`. Without the plugin the form is silently skipped. The theme disables Gravity Forms CSS and loads its init scripts in the footer. |
 | ACF field for selecting Gravity Forms forms | Required for forms | The `contact_form` fields in `acf-json/` use the field type `forms`, which is not part of core ACF. Use the add-on the team installs for this on client sites. |
-| LuckyWP ACF Menu Field | Required | Field type `menu` (Content Box Grid "menu" mode, footer links menu). |
+| LuckyWP ACF Menu Field | Required | Field type `menu` (Content Box Grid "menu" mode, footer links menu, the page's custom header menu and the Page - Sidebar menus printed by `sidebar.php` / `sidebar-blog.php`). |
 | An image optimizer that creates `.webp` siblings (for example EWWW Image Optimizer) | Recommended | The picture helpers add a WebP `<source>` only when a file named `image.jpg.webp` exists next to the original. |
 
 Building assets needs **Node.js and npm** (`package.json` declares no `engines` field; use a current LTS).
@@ -108,10 +111,11 @@ Defined in `theme-functions/acf-functions.php`:
 
 ```bash
 npm install
-npx gulp
+npm run build   # build everything once (gulp build)
+npm run watch   # build once, then keep watching (gulp default task, same as npx gulp)
 ```
 
-`gulpfile.js` defines only the **default** task. It runs every build once and then keeps watching, so it does not exit on its own. There are no separate `sass`, `watch`, `images` or `clean` tasks and no npm build script.
+`gulpfile.js` defines two tasks: `build` runs every build once, in parallel, and exits; `default` runs `build` and then keeps watching, so it does not exit on its own. There are no separate `sass`, `images` or `clean` tasks.
 
 | Source | Output | Notes |
 | --- | --- | --- |
@@ -120,14 +124,16 @@ npx gulp
 | `js/**/*.js` | `js/**/*-min.js` + `.map` | Terser. Existing `-min.js` / `.min.js` files are ignored. |
 | `blocks/**/*.js` | `blocks/**/block-min.js` + `.map` | Terser. |
 
-The theme only loads the `-min` files (`block.json` points to `file:./block-min.css` and `file:./block-min.js`). **Compiled files are committed**: always commit the source and its compiled output together.
+Source maps point to the source files, with paths relative to the stylesheet/script folders. The theme only loads the `-min` files (`block.json` points to `file:./block-min.css` and `file:./block-min.js`). **Compiled files are committed**: always commit the source and its compiled output together.
 
 ### Conventions
 
 - **Commit messages:** commitlint-style types, `type: Description`, in English (for example `feat: Add items title tag option to posts grid block`, `fix: ...`, `perf: ...`, `chore: ...`, `docs: ...`). One commit per logical change.
 - **Code comments:** English only.
 - **Escaping:** see [Security notes](#security-notes).
-- **New block:** create `blocks/block-{name}/` with `block.json` (`"name": "acf/{name}"`, `"category": "growthlabseotheme02-blocks"`, `"acf": {"renderTemplate": "block.php"}`, `"style": ["file:./block-min.css"]`), `block.php` and `block.scss` (plus `block.js` if needed), create its field group assigned to the block, and run `npx gulp`. No PHP registration is needed. If the block uses Splide, add it to the `growthlabseotheme02_splide_blocks` filter (see [Media and performance](#media-and-performance)).
+- **Translatable strings:** use the literal `growthlabseotheme02` text domain (not `get_text_domain()`, which translation tools can't read) and `sprintf()` placeholders for dynamic parts. Texts used by the JS files come from PHP: `siteData.i18n` (`main.js`), `styledSelectData` (`styled-select-fields.js`) and `postsFiltersData.i18n` (`posts-filters.js`).
+- **Breakpoints:** `js/main.js` defines the JS breakpoints (mobile 480, tablet 768, ldpi 1024, mdpi 1200, hdpi 1440) and shares them as `window.themeBreakpoints`; the block scripts read them from there and fall back to the same numbers.
+- **New block:** create `blocks/block-{name}/` with `block.json` (`"name": "acf/{name}"`, `"textdomain": "growthlabseotheme02"`, `"category": "growthlabseotheme02-blocks"`, `"acf": {"renderTemplate": "block.php"}`, `"style": ["file:./block-min.css"]`, plus `"viewScript": ["file:./block-min.js"]` if it has a script, so it only runs on the front end), `block.php` and `block.scss` (plus `block.js` if needed), create its field group assigned to the block, and run `npm run build`. No PHP registration is needed. If the block uses Splide, add it to the `growthlabseotheme02_splide_blocks` filter (see [Media and performance](#media-and-performance)).
 - **New theme-functions file:** add it to the `$includes` array in `functions.php`.
 
 ---
@@ -145,7 +151,7 @@ growthlabseotheme02/
 ├── js/
 │   ├── main.js          Menu, accordions, block extraction, lazy maps/backgrounds, video player
 │   ├── picture-optimization.js  Lazy loading for <picture>/<img data-src>
-│   ├── posts-filters.js Blog filters (REST API) on home/archive
+│   ├── posts-filters.js Blog filters (REST API) on the blog index
 │   ├── styled-select-fields.js  Custom styling for <select> fields
 │   └── vendor/          Splide, TinyMCE line-height plugin
 ├── languages/           Translation files (.mo/.po) for the text domain
@@ -196,7 +202,7 @@ All blocks are ACF blocks with `renderPreview: false`, `align: full`, custom cla
 | Selling Points / `acf/selling-points` | `block-selling-points` | Icon cards in a Splide carousel. | `background_type`, items with optional link and title tag, CTA link. |
 | Two Columns / `acf/two-columns` | `block-two-columns` | Text column + image column. | `background_type` (light/dark/img), reverse order, top separator, CTA link. |
 
-Only the three carousel blocks ship a `block.js`. Accordions, video playback and block extraction are handled by `js/main.js`.
+Only the three carousel blocks (Logos Carousel, Posts Carousel, Selling Points) ship a `block.js`, declared as `viewScript` so it only runs on the front end. Accordions, video playback and block extraction are handled by `js/main.js`.
 
 ### Shared block conventions
 
@@ -223,7 +229,9 @@ if (get_field('toggle_block')):
 - **`get_block_extract_attribute($enabled, $place)`** prints `data-extract="before|after"`. On pages using the default template, `main.js` moves those blocks out of the content column to before or after it (full width, outside the sidebar layout).
 - **`get_valid_field_choice($field_name, $value)`** returns the value only if it is one of the field's choices, otherwise the field default. Use it for every select/radio value printed into a class or attribute. Use `group.sub_field` for nested fields.
 - **`print_title($title, $tag, $classes)`** for headings. The tag is limited to h1-h6/p/span/div and the title goes through `wp_kses_post()`.
-- **Escaping.** `esc_url()` for hrefs/srcs, `esc_attr()` for attributes (targets, classes, aria-labels), `esc_html()` for link text and plain values. WYSIWYG/text content fields are echoed as HTML on purpose (see [ACF unsafe HTML](#acf-unsafe-html)).
+- **`block_style_attribute($block)`** turns the editor's spacing settings into a `style` attribute; spacing presets (`var:preset|spacing|40`) become `var(--wp--preset--spacing--40)` through `css_preset_value()`.
+- **Escaping.** `esc_url()` for hrefs/srcs, `esc_attr()` for attributes (targets, classes, aria-labels), `esc_html()` for link text and plain values, `wp_kses_post()` for WYSIWYG/text content fields (they keep their HTML, see [ACF unsafe HTML](#acf-unsafe-html)). Print a link `target` only when it is set, and add `rel="noopener noreferrer"` to `_blank` links.
+- **Icons:** print theme SVGs with `get_theme_svg('assets/icons/{file}.svg')` instead of including the file.
 - **`print_block_notice($message)`** shows a dashed notice to users who can `edit_posts` and prints nothing for visitors. Use it instead of an empty block (Posts Carousel/Grid with no selection, invalid YouTube URL).
 - **Images** go through `img_print_picture_tag()` (see [Media and performance](#media-and-performance)).
 
@@ -235,15 +243,18 @@ if (get_field('toggle_block')):
 
 | Function | Description |
 | --- | --- |
-| `get_text_domain()` | Returns the theme text domain (`$GLOBALS['theme_text_domain']`). |
+| `get_text_domain()` | Returns the theme text domain (`$GLOBALS['theme_text_domain']`). Translation functions use the literal domain instead. |
+| `get_theme_svg($relative_path)` | Markup of a theme SVG file (path relative to the theme root, child theme first), or `''` if it doesn't exist. Cached per request. |
 | `get_field_options($field_name, $format_value = true)` | `get_field($name, 'option')` with a per-request cache. |
 | `block_style_attribute($block = [])` | Builds the escaped ` style="..."` attribute from the block's spacing/style supports. Uses `normalize_spacing_property()`, `normalize_block_spacing()`, `format_spacing_item()`. |
+| `css_preset_value($value)` | Turns an editor preset value (`var:preset\|spacing\|40`) into its CSS variable (`var(--wp--preset--spacing--40)`); other values are returned unchanged. |
 | `filterContentByLanguage($lang = 'es')` | True when the request path is `/{lang}` or starts with `/{lang}/`. |
 | `get_languages_map()` | `[url_language_slug => language]` from the `options_by_language` repeater. |
 | `get_current_language()` | `['slug' => ..., 'language' => ...]` for the current URL; `['slug' => '', 'language' => 'English']` by default. |
 | `get_current_language_suffix()` | `_{slug}` for a secondary language, `''` for the default one. |
 | `get_current_language_options()` | The site options group for the current language (falls back to the default `options`). |
 | `get_flat_number($phone)` | Digits only. |
+| `get_phone_href($phone)` | Escaped `tel:` URL. US numbers (10 digits, or 11 starting with 1) get the `+1` country code once; numbers written with another `+` prefix keep it; anything else is dialed as written. `''` when there are no digits. |
 | `get_wrapped_title($title, $tag = 'p', $classes = '', $is_hero = false)` / `print_title(...)` | Safe heading wrapper (returns / echoes). |
 | `get_block_id_attribute($block_id)` | Escaped ` id` attribute or `''`. |
 | `print_block_notice($message)` | Editor-only notice. |
@@ -253,23 +264,28 @@ if (get_field('toggle_block')):
 | `get_acf_field_default($field)` | Default value of one ACF field as templates expect it. |
 | `fill_acf_group_defaults($value, $selector, $post_id = false)` | Merges a group value (site `options`, `hero_properties`) over its sub field defaults. Used in `header.php`, `footer.php` and the hero templates. |
 | `get_post_fields_with_defaults($post_id = false)` | Post fields with defaults filled in (used by `single-team.php`). |
-| `get_current_post_blocks($flatten = false)` | Parsed blocks of the current singular post, parsed once per request. `$flatten` includes inner blocks. |
+| `get_current_post_blocks()` | Flattened blocks (inner blocks follow their parent) of the current singular post, cached per post. Synced patterns (`core/block`) are expanded once each, so their blocks count as used on the page; falls back to the queried post when a secondary loop changed the global `$post`. `[]` on non-singular requests. |
+| `get_page_options_id()` | ID of the page whose "Page - Options" fields apply: the queried post on singular views, the posts page on the blog index, `0` on archives, search results and 404. |
+| `get_page_field($selector)` | `get_field()` on `get_page_options_id()`, or `null` when the request has no such page. |
+| `is_listing_page()` | True on the blog index, archives and search results (default hero, blog assets). |
+| `get_hero_heading($html)` | Makes sure a hero title has an `h1` (turns the first paragraph into one, or wraps the text). |
+| `get_page_hero_title()` | Fallback hero title: posts page title (or "Blog"), "Search results for: ...", the singular title, term, post type archive or archive title. |
 | `get_posts_grid_page_arg()` | Pagination query arg for the next posts grid (`''` for the first, then `grid-N-page`). |
 | `render_gravity_form(...$args)` | Calls `gravity_form()` only if Gravity Forms is active. |
 | `format_number_abbreviated($number)` | 1500 to `1.5K`, also M and B. |
 | `get_yt_code($url)` | 11-character ID of a single YouTube video, or `false` for channels, playlists, etc. |
 | `get_youtube_thumbnail($video_id, $size = 'hqdefault')` | Best existing thumbnail URL from `$size` down, cached in a transient (a month; the `hqdefault` fallback a day). |
-| `transform_inline_font_sizes($html, $font_size_var = '--fs')` | Rewrites inline `font-size` styles into a CSS variable scaled by `--font-scale`. |
-| `[phonenumber]` shortcode | Main phone number of the current language as a `tel:+1` link. Attributes: `target`, `link_id`, `link_class`, `wrapper`, `text`. |
+| `transform_inline_font_sizes($html, $font_size_var = '--fs')` | Rewrites each inline `font-size` into `--fs: {size}; font-size: calc(var(--fs) * var(--font-scale, 1))`. The fragment is parsed inside a UTF-8 container, so multi-root markup (`<p>...</p><h1>...</h1>`) keeps its structure. Used for the `home_4` hero title. |
+| `[phonenumber]` shortcode | Main phone number of the current language as a `tel:` link built with `get_phone_href()`. Attributes: `target` (`_blank` adds `rel="noopener noreferrer"`), `link_id`, `link_class`, `wrapper`, `text`. |
 
 ### Other files
 
 | Function | File | Description |
 | --- | --- | --- |
 | `img_print_picture_tag(...)` / `img_generate_picture_tag(...)` | `picture-optimization.php` | Responsive `<picture>` (echo / return). Named args: `img`, `mobile_img`, `tablet_img`, `max_size`, `min_size`, `classes`, `id`, `alt_text`, `is_cover`, `img_attr`, `is_priority`. |
-| `image_to_svg($image, $classes = '')` | `svg-support.php` | Inlines a local SVG file inside a `<div>`, or returns an `<img>` for other images. |
+| `image_to_svg($image, $classes = '')` | `svg-support.php` | Inlines a local SVG file inside a `<div>`, or returns an `<img>` for other images. Accepts an ACF image array or a URL; the inlined SVG keeps the image's alt text (`role="img"` + `aria-label`, or `aria-hidden` when decorative). |
 | `theme_get_customizer_css()` | `color-scheme.php` | `:root` block with the color variables. |
-| `hex_to_rgb($hex)` | `color-scheme.php` | `#15253f` to `21, 37, 63`. |
+| `hex_to_rgb($hex, $fallback = '#000000')` | `color-scheme.php` | `#15253f` to `21, 37, 63`. 3-digit colors are expanded; empty or invalid values use `$fallback` (the theme default for the Customizer colors). |
 | `theme_get_all_fonts()` | `fonts-selector.php` | Bundled fonts plus Font Library fonts. |
 | `theme_get_fonts_css()` | `fonts-selector.php` | `@font-face` rules for selected bundled fonts + `--font-primary` / `--font-secondary`. |
 | `theme_get_default_font_faces()` | `fonts-selector.php` | Bundled font files per family. |
@@ -283,7 +299,7 @@ if (get_field('toggle_block')):
 ### Colors (`theme-functions/color-scheme.php`)
 
 - Appearance > Customize > Colors has a setting for each color in `$default_colors`: `primary_color`, `primary_color_dark`, `primary_color_light`, the same for `secondary` and `tertiary`, and `text_color`.
-- The values are printed as RGB triplets in the inlined critical CSS: `--primary`, `--primary-dark`, `--primary-light`, `--secondary*`, `--tertiary*`, `--text`. Use them as `rgb(var(--primary))` or `rgba(var(--primary), .5)`.
+- The values are printed as RGB triplets in the inlined critical CSS: `--primary`, `--primary-dark`, `--primary-light`, `--secondary*`, `--tertiary*`, `--text`. Use them as `rgb(var(--primary))` or `rgba(var(--primary), .5)`. Short (`#fff`) values are expanded and empty or invalid values fall back to the theme default, so the variables are always valid.
 - The same values feed the block editor palette (slugs `primary-color`, `primary-color-dark`, ... `text-color`; core default palettes, gradients, font sizes and spacing sizes are disabled) and the ACF color picker palette, and TinyMCE text colors read `$default_colors`. Change the defaults in `$default_colors` only.
 
 ### Fonts (`theme-functions/fonts-selector.php`)
@@ -291,6 +307,7 @@ if (get_field('toggle_block')):
 - Appearance > Customize > Fonts has **Primary Font** and **Secondary Font** selects. The choices are the two bundled families (Mona Sans, Roboto Serif) plus any font installed through the WordPress Font Library.
 - The selection is output as `--font-primary` / `--font-secondary` and as the `primary` / `secondary` font families in `theme.json`.
 - **Bundled fonts are only declared and preloaded while selected.** `theme_get_default_font_faces_css()` prints `@font-face` rules only for selected bundled families, and `theme-optimization.php` preloads only their faces marked `'preload' => true`. When Font Library fonts are selected, no bundled file is loaded. The `fontFace` entries in `theme.json` on disk are not used at runtime (the theme.json filter replaces `fontFamilies`), and a filter on `wp_theme_json_data_user` drops the copy of the theme fonts the Site Editor can save in global styles.
+- **Only the selected Font Library fonts are loaded on the front end.** `theme_print_selected_font_faces()` replaces WordPress' `wp_print_font_faces()` and prints `@font-face` rules only for the selected primary/secondary families (faces without a `font-display` get `swap`). The block editor still loads every installed font, so all of them can be previewed there.
 
 **Adding a bundled font face:** put the `.woff2` file in `fonts/{family-folder}/` and add an entry to `theme_get_default_font_faces()`:
 
@@ -311,9 +328,12 @@ The theme has its own lightweight language handling, based on the URL prefix (no
 
 - Languages are defined on the **Site Options** page, in the "Site Options by Language" field group (`options_by_language` repeater). Each row has a `language` name, a `url_language_slug` and an `options` clone of the site options.
 - `get_current_language()` matches the request path against each slug (`/es` or `/es/...`). No match means the default language (English, slug `''`), which uses the main `options` group.
-- Per-language pieces: `get_current_language_options()` (header, footer, locations, social networks, archive cards, `[phonenumber]`); a `main_{slug}` menu location ("Main Menu {Language}"), chosen in `header.php` with `get_current_language_suffix()`; and `sidebar-default-{slug}` / `sidebar-blog-{slug}` widget areas used by `sidebar.php` and `sidebar-blog.php`. The header logo links to `home_url('/{slug}')`.
+- Per-language pieces: `get_current_language_options()` (header, footer, locations, social networks, archive cards, the blog filters' default image, `[phonenumber]`); a `main_{slug}` menu location ("Main Menu {Language}"), chosen in `header.php` with `get_current_language_suffix()` (the menu is only printed when that location has a menu; it never falls back to a list of pages); and `sidebar-default-{slug}` / `sidebar-blog-{slug}` widget areas used by `sidebar.php` and `sidebar-blog.php`.
+- **Logo link:** the current language's `logo_link` site option, or `home_url('/{slug}')` when it is empty (`?:`, since per-language options store an empty value when never set). A page with the custom header on can override it with its own `logo_link`.
+- **Language switcher:** when `options_by_language` has rows, the header callout lists the default language (code taken from the site language, linking to `home_url('/')`) plus every configured language, marks the current one with `aria-current` and adds `hreflang`/`lang` when the slug is a language code. It is printed whether or not a phone number is set.
+- **`lang` attribute:** `header.php` prints `<html <?php language_attributes(); ?>>`. A `language_attributes` filter in `helpers.php` replaces the `lang` value with the current slug when the slug looks like a language code (`es`, `pt-br`...), since language slugs switch content without changing the WordPress locale.
 
-**Translations:** `growthlabseotheme02_setup()` calls `load_theme_textdomain('growthlabseotheme02', get_template_directory() . '/languages')`. Put `growthlabseotheme02-{locale}.mo` / `.po` files in `languages/` (it currently holds only `.gitkeep`).
+**Translations:** `growthlabseotheme02_setup()` calls `load_theme_textdomain('growthlabseotheme02', get_template_directory() . '/languages')`. Templates, blocks and admin strings use the `growthlabseotheme02` text domain, and the JS texts (video lightbox labels, styled select placeholder, blog filter messages and pagination) are passed from PHP in `siteData.i18n`, `styledSelectData` and `postsFiltersData.i18n`, so they are translatable too. The blog filter month options keep their English value (`posts-filters.js` parses it) and only translate the visible text; dates in filtered cards are formatted with the page's `lang`. Put `growthlabseotheme02-{locale}.mo` / `.po` files in `languages/` (it currently holds only `.gitkeep`).
 
 ---
 
@@ -328,18 +348,19 @@ The theme has its own lightweight language handling, based on the URL prefix (no
 ### Pictures (`theme-functions/picture-optimization.php`)
 
 - `img_print_picture_tag()` builds a `<picture>` with per-breakpoint `<source>` elements chosen from the registered sizes (between `min_size` and `max_size`), with a WebP source when a `.webp` sibling exists. `is_cover: true` uses the cover sizes and supports separate tablet/mobile images.
-- Non-priority images use `data-src` / `data-srcset` and the `lazy-image` class, loaded by `js/picture-optimization.js` with an IntersectionObserver, plus a `<noscript>` fallback. `is_priority: true` outputs eager loading with `fetchpriority="high"`.
+- Non-priority images use `data-src` / `data-srcset` and the `lazy-image` class, loaded by `js/picture-optimization.js` with an IntersectionObserver only when they approach the viewport (images added later, such as Splide clones, are picked up too; browsers without IntersectionObserver load everything at once), plus a `<noscript>` fallback. `is_priority: true` outputs eager loading with `fetchpriority="high"`.
 - Registered sizes (all uncropped except the portrait covers): `cover-desktop` 1920x1080, `cover-tablet` 1280x600, `cover-mobile` 768x432, `cover-tablet-portrait` 960x1280 (crop), `cover-mobile-portrait` 768x1100 (crop), `content` 800x600, `featured-small` 480x360. `medium_large`, `1536x1536` and `2048x2048` are removed, and hard cropping of the core thumbnail size is disabled.
 
 ### CSS and JS loading
 
-- **Critical CSS:** `inline_main_critical_css()` (in `wp_head`) inlines, minified, in `<style id="main-css">`: font faces and font variables, color variables, `styles/main-min.css`, the active theme's `style.css`, the Splide core CSS (only when needed) and the `block-min.css` of every block used on the current singular page. `{theme-path}` in CSS is replaced with the theme URL. The result is cached in a `growthlabseotheme02_ccss_*` transient (one week) keyed by the theme URL, the mtimes of the files read, the block CSS files, whether Splide is included and a hash of the fonts and colors CSS, so editing any of them invalidates it. There is no separate main stylesheet request. Template styles (`template-default`, `template-blog`, `template-team-member`) are enqueued as files on the views that need them.
-- **Block assets:** styles of blocks in use are inlined and their `<link>` tags removed. Assets of unused theme blocks are dequeued. Block scripts are moved to the footer with `defer`.
-- **Splide:** only the three carousel blocks use it (filterable with `growthlabseotheme02_splide_blocks`). Its CSS is inlined only when the current post (including reusable blocks) or an active block widget contains one of them. The JS (`js/vendor/splide/splide-min.js`) is loaded on demand by the carousel block scripts through `window.loadSplide()`.
-- **Scripts:** `main-min.js`, `styled-select-fields-min.js` and `posts-filters-min.js` (home/archive) are deferred, `picture-optimization-min.js` is async. jQuery is moved to the footer, jQuery Migrate is deregistered and the Gravity Forms maps script is dequeued. `main-min.js` and `assets/img/transparent-bg.webp` are preloaded. Theme asset URLs (parent and active child theme) get `?ver={filemtime}`.
+- **Critical CSS:** `inline_main_critical_css()` (in `wp_head`) inlines, minified, in `<style id="main-css">`: font faces and font variables, color variables, `styles/main-min.css`, the active theme's `style.css`, the Splide core CSS (only when needed) and the `block-min.css` of every block used on the current singular page. `{theme-path}` in CSS is replaced with the theme URL. Comments and whitespace are stripped (spaces around `:` and `,` are kept, since they can be significant). The result is cached in a `growthlabseotheme02_ccss_*` transient (one week) keyed by the mtime of `functions.php`, the theme URL, the mtimes of the files read, the block CSS files, whether Splide is included and a hash of the fonts and colors CSS, so editing any of them invalidates it. Customizer previews skip the cache. There is no separate main stylesheet request. Template styles (`template-default`, `template-blog`, `template-team-member`) are enqueued as files on the views that need them; the blog index, archives and search results load `template-default` and `template-blog`.
+- **Block assets:** styles of blocks in use (blocks inside synced patterns included, see `get_current_post_blocks()`) are inlined and their `<link>` tags removed. The styles and scripts of every unused non-core block, plugin blocks included, are dequeued. Block scripts (`viewScript`, front end only) are moved to the footer with `defer`.
+- **Splide:** only the three carousel blocks use it (filterable with `growthlabseotheme02_splide_blocks`). Its CSS is inlined only when the current post (including reusable blocks) or an active block widget contains one of them. The JS (`js/vendor/splide/splide-min.js`) is loaded on demand by the carousel block scripts through `window.loadSplide()`. The carousels read their breakpoints from `window.themeBreakpoints`.
+- **Scripts:** `main-min.js`, `styled-select-fields-min.js` and `posts-filters-min.js` (blog index, archives and search results) are deferred, `picture-optimization-min.js` is async. jQuery is moved to the footer, `jquery-migrate` is removed from the `jquery` dependencies (deregistering it would make WordPress skip jQuery and every Gravity Forms script) and the Gravity Forms maps script is dequeued. `wp-i18n` is not touched: WordPress only prints it when a script needs it (e.g. `wp-a11y` for Gravity Forms). No script or image is preloaded. Theme asset URLs (parent and active child theme) get `?ver={filemtime}`.
+- **Blog filters:** `posts-filters.js` queries the posts REST API with the server listing's page size (Settings > Reading `posts_per_page`, passed as `postsFiltersData.perPage`). A month without a year is filtered on the server through the theme's `pf_month` REST parameter (that month in every year). A new request cancels the previous one, and cards built by the script keep the classes of the server-rendered cards.
 - **Fonts:** only selected bundled fonts are declared and preloaded (see [Fonts](#fonts-theme-functionsfonts-selectorphp)).
 - **YouTube:** thumbnail lookups are cached in transients (`get_youtube_thumbnail()`). Videos are only embedded after the play button is clicked.
-- **Other cleanups** (`theme-optimization.php`): emojis disabled; dashicons deregistered on the front end for users who can't `update_core`; `wp-i18n` dequeued unless the page uses `core/search`, `core/query` or `core/navigation`; RSD, wlwmanifest, shortlink, REST, oEmbed and feed links removed from `<head>`; the WooCommerce blocks style dequeued; common Google Maps JS handles dequeued; Google Maps iframes in content replaced with `.gmap-lazy` placeholders that `main.js` loads when they come into view.
+- **Other cleanups** (`theme-optimization.php`): emojis disabled; a direct Dashicons enqueue is dequeued on the front end unless the admin bar is showing (it is not deregistered, so plugin styles that depend on it keep it); RSD, wlwmanifest, shortlink, REST, oEmbed and feed links removed from `<head>`; the WooCommerce blocks style dequeued; common Google Maps JS handles dequeued; Google Maps iframes in content replaced with `.gmap-lazy` placeholders that `main.js` loads when they come into view.
 
 ---
 
@@ -347,22 +368,22 @@ The theme has its own lightweight language handling, based on the URL prefix (no
 
 - **`theme-functions/security-functions.php`:** removes the WordPress version `<meta name="generator">` and disables XML-RPC.
 - **Admin bar "Clear block cache":** visible to users with `manage_options`. The link carries a nonce (`clear_block_cache`), and the cache is only cleared when the capability and nonce both check out. This is the only admin bar tool in this theme.
-- **Escaping conventions:** escape on output by context (`esc_url`, `esc_attr`, `esc_html`), print headings through `print_title()` (`wp_kses_post`), validate select values with `get_valid_field_choice()`, and build ids with `get_block_id_attribute()`. The `[phonenumber]` shortcode escapes all attributes and allowlists `wrapper` and `target`, because contributors can use it.
-- **Site Options** is registered only for users with `manage_options`.
+- **Escaping conventions:** escape on output by context (`esc_url`, `esc_attr`, `esc_html`, `wp_kses_post` for ACF rich text), print headings through `print_title()` (`wp_kses_post`, tags allowlisted), validate select values with `get_valid_field_choice()`, and build ids with `get_block_id_attribute()`. Link targets are only printed when set, and `_blank` links get `rel="noopener noreferrer"`. The `[phonenumber]` shortcode escapes all attributes and allowlists `wrapper` and `target`, because contributors can use it.
+- **Site Options** is registered on `acf/init` with the `manage_options` capability.
 - **Google Maps embed codes** (`google_maps_embed_code` fields) are base64-encoded in the browser before saving to avoid ModSecurity false positives. Decode values starting with `base64:` before output.
 
 ### ACF unsafe HTML
 
-`acf-functions.php` returns `true` for `acf/the_field/allow_unsafe_html`, `acf/the_sub_field/allow_unsafe_html` and `acf/shortcode/allow_unsafe_html`, and hides ACF's "escaped HTML" admin notice. This is intentional: text, textarea and WYSIWYG fields are used for inline markup such as `<span>`, `<a>` and `<strong>` in titles and content, and block templates echo content fields as HTML.
+`acf-functions.php` returns `true` for `acf/the_field/allow_unsafe_html`, `acf/the_sub_field/allow_unsafe_html` and `acf/shortcode/allow_unsafe_html`, and hides ACF's "escaped HTML" admin notice. This is intentional: text, textarea and WYSIWYG fields are used for inline markup such as `<span>`, `<a>` and `<strong>` in titles and content.
 
-The consequence is that **anyone who can edit these fields can output arbitrary HTML, including scripts**. Only give block/options editing rights to trusted users, and don't use these fields for input from untrusted users. Titles printed with `print_title()` are still filtered with `wp_kses_post()`.
+Block templates and template parts print content fields through `wp_kses_post()` and titles through `print_title()`, so scripts are stripped there. Values printed with `the_field()`, `the_sub_field()` (the sidebar menus) or the `[acf]` shortcode are not escaped by ACF, and the custom hero title (`hero_title`) is printed as saved. Only give block/options editing rights to trusted users, and don't use these fields for input from untrusted users.
 
 ---
 
 ## Troubleshooting
 
 **A new or renamed block does not appear in the inserter / changes to `block.json` are ignored.**
-The list of block folders is cached in a transient (24 hours, per active theme). It is rebuilt automatically when a `block.json` is added or modified (hash of paths and modification times), on theme switch, and on every admin request while `WP_DEBUG` is on. To force it, use **Clear block cache** in the admin bar.
+The list of block folders is cached in a transient (24 hours, per active theme). It is rebuilt automatically when a `block.json` is added or modified (hash of paths and modification times), on theme switch (for both the new and the previous theme), and on every admin request while `WP_DEBUG` is on. To force it, use **Clear block cache** in the admin bar.
 
 **ACF > Field Groups shows "Sync available".**
 The JSON in `acf-json/` (parent or child) is newer than the database copy, for example after a `git pull` or a deploy where the WP Pusher sync did not run or was cut short. Review and click **Sync**. Edits made in the admin are saved back to the active theme's `acf-json/`, so commit them.
