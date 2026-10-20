@@ -2,15 +2,6 @@
 if (!defined('ABSPATH')) {
     exit;
 }
-get_header();
-?>
 
-<?php
-if (have_posts()) {
-    while (have_posts()) {
-        the_post();
-    }
-}
-?>
-
-<?php get_footer() ?>
+// Last template fallback: render the post listing used by archives
+get_template_part('archive');
