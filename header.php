@@ -67,7 +67,8 @@ if (!defined('ABSPATH')) {
                     'link_before'          => '<span>',
                     'link_after'              => '</span>',
                     // Never fall back to a list of every page when the menu location is empty
-                    'fallback_cb'          => false
+                    'fallback_cb'          => false,
+                    'container_aria_label' => __('Main menu', 'growthlabseotheme02'),
                 );
 
                 if (get_page_field("custom_header")) {
@@ -102,38 +103,66 @@ if (!defined('ABSPATH')) {
                         <hr>
                     </div>
 
-                    <nav class="main-nav" role="navigation">
-                        <?php wp_nav_menu($menu_args); ?>
-                    </nav>
+                    <?php // wp_nav_menu() prints the nav.main-nav container itself ?>
+                    <?php wp_nav_menu($menu_args); ?>
                 <?php endif ?>
 
-                <?php if ($phone_number): ?>
+                <?php
+                // Language switcher: the default language (no URL slug) plus every language of options_by_language
+                $language_links = [];
+                if (!empty(get_languages_map())) {
+                    $current_slug = get_current_language()['slug'] ?? '';
+                    $site_lang = get_bloginfo('language');
+                    $default_code = strtolower(strtok($site_lang, '-'));
+                    $language_links[] = array(
+                        'url'      => home_url('/'),
+                        'label'    => $default_code,
+                        'name'     => class_exists('Locale') ? (Locale::getDisplayLanguage($site_lang, $site_lang) ?: $default_code) : strtoupper($default_code),
+                        'code'     => $site_lang,
+                        'current'  => $current_slug === '',
+                    );
+                    foreach (get_languages_map() as $slug => $name) {
+                        $language_links[] = array(
+                            'url'      => home_url('/' . $slug . '/'),
+                            'label'    => $slug,
+                            'name'     => $name ?: $slug,
+                            // URL slugs are free text; only use them as language codes when they look like one
+                            'code'     => preg_match('/^[a-z]{2,3}(-[a-z0-9]{2,8})*$/i', $slug) ? $slug : '',
+                            'current'  => $current_slug === $slug,
+                        );
+                    }
+                }
+                ?>
+
+                <?php if ($phone_number || $language_links): ?>
                     <div class="site-header__callout">
 
                         <div class="callout">
-                            <?php if (!empty(get_languages_map())): ?>
+                            <?php if ($language_links): ?>
                                 <div class="callout__languages">
-                                    <a href="<?= get_site_url() ?>" class="language" aria-label="Select English language">
-                                        EN
-                                    </a>
-                                    <?php foreach (get_languages_map() as $lang => $data): ?>
-                                        <a href="<?= get_site_url() . '/' . $lang ?>" class="language" aria-label="<?= 'Select ' . esc_attr($lang) . ' language' ?>">
-                                            <?= $lang ?>
+                                    <?php foreach ($language_links as $language):
+                                        /* translators: %s: language name */
+                                        $language_label = sprintf(__('Select %s language', 'growthlabseotheme02'), $language['name']);
+                                    ?>
+                                        <a href="<?= esc_url($language['url']) ?>" class="language" aria-label="<?= esc_attr($language_label) ?>"<?= $language['code'] ? ' hreflang="' . esc_attr($language['code']) . '"' : '' ?><?= $language['current'] ? ' aria-current="true"' : '' ?>>
+                                            <span<?= $language['code'] ? ' lang="' . esc_attr($language['code']) . '"' : '' ?>><?= esc_html($language['label']) ?></span>
                                         </a>
                                     <?php endforeach; ?>
                                 </div>
                             <?php endif; ?>
 
-                            <?php if ($top_callout_first_line && $top_callout_first_line !== ''): ?>
+                            <?php if ($phone_number && $top_callout_first_line && $top_callout_first_line !== ''): ?>
                                 <span class="callout__text callout__text--first"><?= wp_kses_post($top_callout_first_line) ?></span>
                             <?php endif; ?>
-                            <?php if ($top_callout_second_line && $top_callout_second_line !== ''): ?>
+                            <?php if ($phone_number && $top_callout_second_line && $top_callout_second_line !== ''): ?>
                                 <span class="callout__text callout__text--second"><?= wp_kses_post($top_callout_second_line) ?></span>
                             <?php endif; ?>
-                            <a href="<?= get_phone_href($phone_number) ?>" class="callout__phone" aria-label="Call us at <?= esc_attr($phone_number) ?>">
-                                <?php echo get_theme_svg('assets/icons/icon-phone.svg') ?>
-                                <?= esc_html($phone_number) ?>
-                            </a>
+                            <?php if ($phone_number): ?>
+                                <a href="<?= get_phone_href($phone_number) ?>" class="callout__phone" aria-label="Call us at <?= esc_attr($phone_number) ?>">
+                                    <?php echo get_theme_svg('assets/icons/icon-phone.svg') ?>
+                                    <?= esc_html($phone_number) ?>
+                                </a>
+                            <?php endif; ?>
                         </div>
 
                     </div>
