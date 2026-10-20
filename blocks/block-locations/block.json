@@ -1,5 +1,6 @@
 {
   "name": "acf/office-locations",
+  "textdomain": "growthlabseotheme02",
   "title": "Office Locations",
  
   "style": ["file:./block-min.css"],

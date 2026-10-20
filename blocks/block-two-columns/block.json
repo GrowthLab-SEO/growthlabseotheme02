@@ -1,5 +1,6 @@
 {
   "name": "acf/two-columns",
+  "textdomain": "growthlabseotheme02",
   "title": "Two Columns",
 
   "style": ["file:./block-min.css"],

@@ -1,5 +1,6 @@
 {
   "name": "acf/cta-box",
+  "textdomain": "growthlabseotheme02",
   "title": "CTA Box",
 
   "style": ["file:./block-min.css"],

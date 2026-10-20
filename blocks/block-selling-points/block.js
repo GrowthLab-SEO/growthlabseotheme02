@@ -58,8 +58,8 @@ if (!window.loadSplide) {
           slideFocus: false,
           mediaQuery: "min",
           breakpoints: {
-            [tablet]: { perPage: 3 },
-            [ldpi]: { destroy: true, arrows: false },
+            [window.themeBreakpoints?.tablet ?? 768]: { perPage: 3 },
+            [window.themeBreakpoints?.ldpi ?? 1024]: { destroy: true, arrows: false },
           },
         });
         spl.mount();

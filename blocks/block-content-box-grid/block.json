@@ -1,5 +1,6 @@
 {
   "name": "acf/content-box-grid",
+  "textdomain": "growthlabseotheme02",
   "title": "Content Box Grid",
  
   "style": ["file:./block-min.css"],

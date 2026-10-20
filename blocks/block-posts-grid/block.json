@@ -1,5 +1,6 @@
 {
   "name": "acf/posts-grid",
+  "textdomain": "growthlabseotheme02",
   "title": "Posts Grid",
 
   "style": ["file:./block-min.css"],

@@ -1,9 +1,10 @@
 {
   "name": "acf/posts-carousel",
+  "textdomain": "growthlabseotheme02",
   "title": "Posts Carousel",
 
   "style": ["file:./block-min.css"],
-  "script": ["file:./block-min.js"],
+  "viewScript": ["file:./block-min.js"],
   "category": "growthlabseotheme02-blocks",
   "icon": "block-default",
   "keywords": [

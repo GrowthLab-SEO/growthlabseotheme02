@@ -18,6 +18,8 @@ const tablet = 768;
 const ldpi = 1024;
 const mdpi = 1200;
 const hdpi = 1440;
+// Shared with the block scripts, which run as separate files
+window.themeBreakpoints = { mobile, tablet, ldpi, mdpi, hdpi };
 
 requestAnimationFrame(() => {
   findConsecutiveGroups();

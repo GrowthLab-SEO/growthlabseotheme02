@@ -1,5 +1,6 @@
 {
   "name": "acf/content-intro",
+  "textdomain": "growthlabseotheme02",
   "title": "Content Intro",
 
   "style": ["file:./block-min.css"],

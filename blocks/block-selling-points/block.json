@@ -1,8 +1,9 @@
 {
   "name": "acf/selling-points",
+  "textdomain": "growthlabseotheme02",
   "title": "Selling Points",
   "style": ["file:./block-min.css"],
-  "script": ["file:./block-min.js"],
+  "viewScript": ["file:./block-min.js"],
   "category": "growthlabseotheme02-blocks",
   "icon": "block-default",
   "keywords": ["growthlabseo", "carousel", "selling points"],

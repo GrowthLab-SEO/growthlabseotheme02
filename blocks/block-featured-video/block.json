@@ -1,5 +1,6 @@
 {
   "name": "acf/featured-video",
+  "textdomain": "growthlabseotheme02",
   "title": "Featured Video",
   "style": ["file:./block-min.css"],
   "category": "growthlabseotheme02-blocks",

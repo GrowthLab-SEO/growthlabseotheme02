@@ -1,5 +1,6 @@
 {
   "name": "acf/faq",
+  "textdomain": "growthlabseotheme02",
   "title": "FAQ",
  
   "style": ["file:./block-min.css"],
