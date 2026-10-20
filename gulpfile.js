@@ -1,4 +1,4 @@
-const { parallel, src, dest, watch } = require("gulp");
+const { parallel, series, src, dest, watch } = require("gulp");
 const sass = require("gulp-sass")(require("sass"));
 const terser = require("gulp-terser");
 const sourcemaps = require("gulp-sourcemaps");
@@ -46,26 +46,26 @@ function buildStylesBlocks() {
 
 function buildScripts() {
   return src(paths.js)
+    .pipe(sourcemaps.init())
     .pipe(terser())
     .pipe(
       rename(function (path) {
         path.basename += "-min";
       })
     )
-    .pipe(sourcemaps.init())
     .pipe(sourcemaps.write("./"))
     .pipe(dest("./js/"));
 }
 
 function buildScriptsBlocks() {
   return src(paths.js_blocks)
+    .pipe(sourcemaps.init())
     .pipe(terser())
     .pipe(
       rename(function (path) {
         path.basename += "-min";
       })
     )
-    .pipe(sourcemaps.init())
     .pipe(sourcemaps.write("./"))
     .pipe(dest("./blocks/"));
 }
@@ -78,10 +78,14 @@ function watchFiles() {
   watch(paths.js_blocks, buildScriptsBlocks);
 }
 
-exports.default = parallel(
+// One-shot build (npm run build)
+const build = parallel(
   buildStyles,
   buildStylesBlocks,
   buildScripts,
-  buildScriptsBlocks,
-  watchFiles
+  buildScriptsBlocks
 );
+
+exports.build = build;
+// Build once, then rebuild on changes (npm run watch / npx gulp)
+exports.default = series(build, watchFiles);
