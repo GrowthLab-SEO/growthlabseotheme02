@@ -5,6 +5,14 @@ const sourcemaps = require("gulp-sourcemaps");
 const rename = require("gulp-rename");
 const postcss = require("gulp-postcss");
 const autoprefixer = require("autoprefixer");
+const path = require("path");
+
+// Sass reports imported partials with absolute paths, which differ between machines and builds.
+// Write every source relative to the stream base, like the entry files.
+function relativeSource(sourcePath, file) {
+  if (!path.isAbsolute(sourcePath)) return sourcePath;
+  return path.relative(file.base, sourcePath).split(path.sep).join("/");
+}
 
 const paths = {
   scss_globals: ["./styles/**/*.scss"],
@@ -27,6 +35,7 @@ function buildStyles() {
         path.basename += "-min";
       })
     )
+    .pipe(sourcemaps.mapSources(relativeSource))
     .pipe(sourcemaps.write("./"))
     .pipe(dest("./styles/"));
 }
@@ -40,6 +49,7 @@ function buildStylesBlocks() {
         path.basename += "-min";
       })
     )
+    .pipe(sourcemaps.mapSources(relativeSource))
     .pipe(sourcemaps.write("./"))
     .pipe(dest("./blocks/"));
 }
