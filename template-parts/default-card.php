@@ -50,7 +50,7 @@ $target_attr = !empty($args['link_target']) ? ' target="' . esc_attr($args['link
                 <?php
                 if ($args['link_url'] && $args['link_url'] !== '') {
                     echo '<a href="' . esc_url($args['link_url']) . '" class="default-card__con-link"' . $target_attr . ' aria-label="' . esc_attr(wp_strip_all_tags($args['title'])) . '">';
-                    echo "<span class='default-card__con-link-text'>LEARN MORE</span>";
+                    echo "<span class='default-card__con-link-text'>" . esc_html__('LEARN MORE', 'growthlabseotheme02') . "</span>";
                     echo get_theme_svg('assets/icons/icon-arrow-right.svg');
                     echo "</a>";
                 }

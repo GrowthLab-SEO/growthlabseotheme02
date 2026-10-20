@@ -28,8 +28,8 @@ $options = get_field_options("options");
 
             <?php if ($args['link_url']): ?>
                 <div class="team-card__btn">
-                    <a href="<?= esc_url($args['link_url']) ?>"<?= !empty($args['link_target']) ? ' target="' . esc_attr($args['link_target']) . '"' . ($args['link_target'] === '_blank' ? ' rel="noopener noreferrer"' : '') : '' ?> class="btn btn--tertiary" aria-label="Meet <?= esc_attr($args['first_name'] ?? '') ?>">
-                        <span>MEET <?= esc_html($args['first_name'] ?? '') ?></span>
+                    <a href="<?= esc_url($args['link_url']) ?>"<?= !empty($args['link_target']) ? ' target="' . esc_attr($args['link_target']) . '"' . ($args['link_target'] === '_blank' ? ' rel="noopener noreferrer"' : '') : '' ?> class="btn btn--tertiary" aria-label="<?= /* translators: %s: team member first name */ esc_attr(sprintf(__('Meet %s', 'growthlabseotheme02'), $args['first_name'] ?? '')) ?>">
+                        <span><?= /* translators: %s: team member first name */ esc_html(sprintf(__('MEET %s', 'growthlabseotheme02'), $args['first_name'] ?? '')) ?></span>
                     </a>
                 </div>
             <?php endif ?>

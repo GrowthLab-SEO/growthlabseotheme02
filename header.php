@@ -83,13 +83,13 @@ if (!defined('ABSPATH')) {
             ?>
 
             <?php if (!empty($menu_args)) : ?>
-                <button class="site-header__mobile-btn" role="button" aria-label="Mobile Menu Button">
+                <button class="site-header__mobile-btn" role="button" aria-label="<?= esc_attr__('Mobile Menu Button', 'growthlabseotheme02') ?>">
                     <div>
                         <hr>
                         <hr>
                         <hr>
                     </div>
-                    <span>Menu</span>
+                    <span><?= esc_html__('Menu', 'growthlabseotheme02') ?></span>
                 </button>
             <?php endif ?>
 
@@ -97,7 +97,7 @@ if (!defined('ABSPATH')) {
 
                 <?php if (!empty($menu_args)) : ?>
 
-                    <div class="site-header__close-btn hide-on-desktop" role="button" aria-label="Close Menu Button">
+                    <div class="site-header__close-btn hide-on-desktop" role="button" aria-label="<?= esc_attr__('Close Menu Button', 'growthlabseotheme02') ?>">
                         <hr>
                         <hr>
                     </div>
@@ -157,7 +157,7 @@ if (!defined('ABSPATH')) {
                                 <span class="callout__text callout__text--second"><?= wp_kses_post($top_callout_second_line) ?></span>
                             <?php endif; ?>
                             <?php if ($phone_number): ?>
-                                <a href="<?= get_phone_href($phone_number) ?>" class="callout__phone" aria-label="Call us at <?= esc_attr($phone_number) ?>">
+                                <a href="<?= get_phone_href($phone_number) ?>" class="callout__phone" aria-label="<?= /* translators: %s: phone number */ esc_attr(sprintf(__('Call us at %s', 'growthlabseotheme02'), $phone_number)) ?>">
                                     <?php echo get_theme_svg('assets/icons/icon-phone.svg') ?>
                                     <?= esc_html($phone_number) ?>
                                 </a>

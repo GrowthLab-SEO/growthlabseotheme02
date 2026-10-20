@@ -41,7 +41,7 @@ if (!defined('ABSPATH')) {
                     <?php endif ?>
 
                     <?php if ($location['phone']): ?>
-                        <a href="<?= get_phone_href($location['phone']) ?>" class="location-card__btn btn btn--tertiary" aria-label="Call us at <?= esc_attr($location['phone']) ?>">
+                        <a href="<?= get_phone_href($location['phone']) ?>" class="location-card__btn btn btn--tertiary" aria-label="<?= /* translators: %s: phone number */ esc_attr(sprintf(__('Call us at %s', 'growthlabseotheme02'), $location['phone'])) ?>">
                             <span>
                                 <?= esc_html($location['phone']) ?>
                             </span>

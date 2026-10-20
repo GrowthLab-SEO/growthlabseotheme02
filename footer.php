@@ -186,7 +186,7 @@
           ?>
 
           <a href="https://growthlabseo.com/" target="_blank" rel="noopener noreferrer" class="copyright-footer__logo" aria-label="Growth Lab SEO">
-            <img src="<?= esc_url(get_template_directory_uri() . '/assets/img/Growth-Lab-Logo-footer.webp') ?>" alt="Growth Lab SEO Logo" width="270" height="50">
+            <img src="<?= esc_url(get_template_directory_uri() . '/assets/img/Growth-Lab-Logo-footer.webp') ?>" alt="<?= esc_attr__('Growth Lab SEO logo', 'growthlabseotheme02') ?>" width="270" height="50">
           </a>
 
         </div>

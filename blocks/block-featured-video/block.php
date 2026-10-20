@@ -46,7 +46,7 @@ if (get_field('toggle_block')):
                     ?>
                     data-mode="<?= $enable_lightbox ? 'lightbox' : 'inline' ?>"
                     data-target=".featured-video__wrapper">
-                    <span>Play</span>
+                    <span><?= esc_html__('Play', 'growthlabseotheme02') ?></span>
                 </button>
             <?php
             endif;
