@@ -6,7 +6,7 @@ main:has(+ .contact-form--side-pic) {
   padding-bottom: var(--sp-lg);
 }
 
-[class*="__main"],
+[class*="__main"]:not(.full-width__main),
 aside {
   .contact-form__wrapper {
     margin-top: 0;
