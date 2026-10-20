@@ -66,14 +66,14 @@ if (!function_exists('theme_get_customizer_css')) {
         foreach ($default_colors as $color_name => $variants) {
             if ($color_name === 'text') {
                 $hex              = get_theme_mod('text_color', $variants);
-                $css_vars["--text"] = hex_to_rgb($hex);
+                $css_vars["--text"] = hex_to_rgb($hex, $variants);
                 continue;
             }
 
             foreach (['default' => '', 'dark' => '-dark', 'light' => '-light'] as $variant => $suffix) {
                 $setting_name       = "{$color_name}_color" . ($variant === 'default' ? '' : '_' . $variant);
                 $hex                = get_theme_mod($setting_name, $variants[$variant]);
-                $css_vars["--{$color_name}{$suffix}"] = hex_to_rgb($hex);
+                $css_vars["--{$color_name}{$suffix}"] = hex_to_rgb($hex, $variants[$variant]);
             }
         }
 
@@ -88,11 +88,19 @@ if (!function_exists('theme_get_customizer_css')) {
 }
 
 if (!function_exists('hex_to_rgb')) {
-    function hex_to_rgb($hex)
+    // "#rrggbb" or "#rgb" to "r, g, b" for the rgb(var(--color)) CSS variables. Invalid or empty values use $fallback
+    // (another hex color), so a bad Customizer value can't print an empty variable that breaks every rgb() using it.
+    function hex_to_rgb($hex, $fallback = '#000000')
     {
-        $hex = ltrim($hex, '#');
-        $rgb = array_map('hexdec', str_split($hex, 2));
-        return implode(', ', $rgb);
+        $hex = ltrim(trim((string) $hex), '#');
+        if (strlen($hex) === 3) {
+            $hex = $hex[0] . $hex[0] . $hex[1] . $hex[1] . $hex[2] . $hex[2];
+        }
+        if (!preg_match('/^[0-9a-f]{6}$/i', $hex)) {
+            return $fallback !== null ? hex_to_rgb($fallback, null) : '0, 0, 0';
+        }
+
+        return implode(', ', array_map('hexdec', str_split($hex, 2)));
     }
 }
 
