@@ -43,8 +43,7 @@ if (! function_exists('theme_get_all_fonts')) {
             return $fonts;
         }
 
-        $settings = WP_Theme_JSON_Resolver::get_merged_data()->get_settings();
-        $custom   = $settings['typography']['fontFamilies']['custom'] ?? [];
+        $custom = theme_get_font_library_families();
 
         // Insert custom fonts AT THE START so they are listed first
         $custom_fonts = [];
@@ -62,6 +61,99 @@ if (! function_exists('theme_get_all_fonts')) {
 
         // custom first, then the theme's
         return array_merge($custom_fonts, $fonts);
+    }
+}
+
+// ─── FONT LIBRARY CACHE ──────────────────────────────────────────────────────
+
+if (! function_exists('theme_get_font_library_cache_key')) {
+    /**
+     * Transient name of the cached Font Library families, scoped to the active template and stylesheet so a theme
+     * switch (or a child theme) never reads another theme's list.
+     */
+    function theme_get_font_library_cache_key(?string $template = null, ?string $stylesheet = null): string
+    {
+        $template   = $template ?? get_template();
+        $stylesheet = $stylesheet ?? get_stylesheet();
+
+        return 'theme_font_library_' . md5($template . '|' . $stylesheet);
+    }
+}
+
+if (! function_exists('theme_get_font_library_families')) {
+    /**
+     * Font families installed through the Font Library ('custom' sub-key of the merged theme.json data).
+     *
+     * WP_Theme_JSON_Resolver::get_merged_data() is expensive, so the list is cached in a transient (with an
+     * expiration, so it is not autoloaded) plus a static per-request cache. The transient is deleted whenever fonts,
+     * global styles or the theme change (see theme_flush_font_library_cache()). The Customizer always reads fresh data.
+     */
+    function theme_get_font_library_families(): array
+    {
+        static $families = null;
+
+        $bypass = is_customize_preview() || doing_action('customize_register');
+        if (! $bypass && null !== $families) {
+            return $families;
+        }
+
+        $key = theme_get_font_library_cache_key();
+        $cached = $bypass ? false : get_transient($key);
+
+        if (is_array($cached)) {
+            $result = $cached;
+        } else {
+            $settings = WP_Theme_JSON_Resolver::get_merged_data()->get_settings();
+            $result   = $settings['typography']['fontFamilies']['custom'] ?? [];
+
+            if (! $bypass) {
+                set_transient($key, $result, WEEK_IN_SECONDS);
+            }
+        }
+
+        if (! $bypass) {
+            $families = $result;
+        }
+
+        return $result;
+    }
+}
+
+if (! function_exists('theme_flush_font_library_cache')) {
+    /**
+     * Deletes the cached Font Library families of the active theme.
+     */
+    function theme_flush_font_library_cache(): void
+    {
+        delete_transient(theme_get_font_library_cache_key());
+    }
+}
+
+if (! function_exists('theme_flush_font_library_cache_on_delete')) {
+    /**
+     * Flushes the cache when a font family, font face or global styles post is deleted.
+     */
+    function theme_flush_font_library_cache_on_delete($post_id, $post = null): void
+    {
+        $post = $post ?: get_post($post_id);
+        if ($post && in_array($post->post_type, ['wp_font_family', 'wp_font_face', 'wp_global_styles'], true)) {
+            theme_flush_font_library_cache();
+        }
+    }
+}
+
+if (! function_exists('theme_flush_font_library_cache_on_switch')) {
+    /**
+     * Flushes the cache of both the previous and the new theme on a theme switch.
+     */
+    function theme_flush_font_library_cache_on_switch($new_name = '', $new_theme = null, $old_theme = null): void
+    {
+        theme_flush_font_library_cache();
+        foreach ([$new_theme, $old_theme] as $theme) {
+            if ($theme instanceof WP_Theme) {
+                delete_transient(theme_get_font_library_cache_key($theme->get_template(), $theme->get_stylesheet()));
+            }
+        }
     }
 }
 
@@ -259,6 +351,15 @@ if (! function_exists('_theme_resolve_font_family')) {
 // ─── HOOKS ───────────────────────────────────────────────────────────────────
 
 add_action('customize_register', 'theme_customize_register_fonts');
+
+// Keep the cached Font Library families in sync with fonts, global styles, Customizer saves and theme switches
+add_action('save_post_wp_font_family', 'theme_flush_font_library_cache');
+add_action('save_post_wp_font_face', 'theme_flush_font_library_cache');
+add_action('save_post_wp_global_styles', 'theme_flush_font_library_cache');
+add_action('deleted_post', 'theme_flush_font_library_cache_on_delete', 10, 2);
+add_action('customize_save_after', 'theme_flush_font_library_cache');
+add_action('switch_theme', 'theme_flush_font_library_cache_on_switch', 10, 3);
+add_action('after_switch_theme', 'theme_flush_font_library_cache');
 
 // The Site Editor's font manager saves a copy of the theme's font families (with every bundled font face) in the
 // global styles, which made WordPress print all bundled fonts whatever the Customizer selection. Drop that copy so
