@@ -342,19 +342,29 @@ function image_to_svg(array|string $image, string $classes = '')
         // Failures are only logged when WP_DEBUG is on
         $debug = defined('WP_DEBUG') && WP_DEBUG;
 
-        if (!file_exists($image_path) || !is_readable($image_path)) {
-            if ($debug) error_log('SVG Image path is missing or not readable: ' . $image_path);
+        // Uploaded SVGs (e.g. the logo symbol) are often printed by several blocks on one page:
+        // check and read each file once per request. false = missing/unreadable, null = not an SVG.
+        static $svg_files = [];
+
+        if (!array_key_exists($image_path, $svg_files)) {
+            if (!file_exists($image_path) || !is_readable($image_path)) {
+                if ($debug) error_log('SVG Image path is missing or not readable: ' . $image_path);
+                $svg_files[$image_path] = false;
+            } elseif (mime_content_type($image_path) === "image/svg+xml") {
+                $svg_content = @file_get_contents($image_path);
+                if ($svg_content === false && $debug) error_log('Could not read SVG file: ' . $image_path);
+                $svg_files[$image_path] = $svg_content;
+            } else {
+                $svg_files[$image_path] = null;
+            }
+        }
+
+        if ($svg_files[$image_path] === false) {
             return '';
         }
 
-        if (mime_content_type($image_path) === "image/svg+xml") {
-            $svg_content = @file_get_contents($image_path);
-            if ($svg_content === false) {
-                if ($debug) error_log('Could not read SVG file: ' . $image_path);
-                return '';
-            }
-
-            return "<div class='$classes'>$svg_content</div>";
+        if (is_string($svg_files[$image_path])) {
+            return "<div class='$classes'>{$svg_files[$image_path]}</div>";
         }
 
         // Build img tag with escaped attributes
