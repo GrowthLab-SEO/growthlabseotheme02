@@ -852,7 +852,7 @@ function phonenumber($atts, $content = null)
         '<a href="%s" target="%s"%s%s>%s</a>',
         get_phone_href($link_text),
         esc_attr($target),
-        $target === '_blank' ? ' rel="noopener"' : '',
+        $target === '_blank' ? ' rel="noopener noreferrer"' : '',
         $wrapper ? '' : $id_class,
         esc_html($link_text)
     );
