@@ -59,7 +59,8 @@ if (get_field('toggle_block')):
                     endforeach;
 
                 elseif ($is_a_menu && $menu):
-                    $menu_items = wp_get_nav_menu_items($menu);
+                    // A deleted menu returns false
+                    $menu_items = wp_get_nav_menu_items($menu) ?: [];
                     foreach ($menu_items as $menu_item):
                     ?>
 
