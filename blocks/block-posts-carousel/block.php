@@ -73,9 +73,9 @@ if (get_field('toggle_block')):
             if (isset($title) && $title) print_title($title, $title_tag, "posts-carousel__title tx-center");
             ?>
 
-            <?php if (isset($pretitle) && $text_content): ?>
+            <?php if (!empty($text_content)): ?>
                 <div class="posts-carousel__content formatted-text tx-center">
-                    <?= $text_content ?>
+                    <?= wp_kses_post($text_content) ?>
                 </div>
             <?php endif ?>
 
