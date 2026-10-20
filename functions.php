@@ -262,7 +262,7 @@ function growthlabseotheme02_request_uses_splide()
     $uses_splide = false;
 
     // Current post blocks (parsed once per request), including reusable blocks
-    foreach (get_current_post_blocks(true) as $block) {
+    foreach (get_current_post_blocks() as $block) {
         if (in_array($block['blockName'], $splide_blocks, true)) {
             $uses_splide = true;
             break;

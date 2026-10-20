@@ -138,7 +138,7 @@ add_action('wp_enqueue_scripts', function () {
     $blocks_in_use = array();
 
     // Parsed once per request and shared with other callers (includes inner blocks)
-    foreach (get_current_post_blocks(true) as $block) {
+    foreach (get_current_post_blocks() as $block) {
         if (!empty($block['blockName'])) {
             $blocks_in_use[] = $block['blockName'];
         }

@@ -506,37 +506,44 @@ if (!function_exists('get_post_fields_with_defaults')) {
     }
 }
 
-// Returns the parsed blocks of the current singular post ([] elsewhere), parsing its content only once per request.
-// With $flatten, inner blocks are included in the returned list after their parent.
+// Blocks of the current singular post, parsed once per post and flattened (inner blocks follow their parent).
+// Synced patterns (core/block) are expanded, so the blocks they contain count as used on the page. Falls back to the
+// queried post when a secondary loop changed the global $post. Returns [] for non-singular requests.
 if (!function_exists('get_current_post_blocks')) {
-    function get_current_post_blocks($flatten = false)
+    function get_current_post_blocks()
     {
-        global $post;
         static $cache = [];
 
-        if (!is_singular() || empty($post->post_content)) return [];
-        if (strpos($post->post_content, '<!-- wp:') === false) return [];
+        if (!is_singular()) return [];
 
-        $key = $post->ID . ($flatten ? ':flat' : '');
-        if (isset($cache[$key])) return $cache[$key];
-
-        if (!isset($cache[$post->ID])) {
-            $cache[$post->ID] = parse_blocks($post->post_content);
+        global $post;
+        $current = $post;
+        if (!($current instanceof WP_Post) || strpos((string) $current->post_content, '<!-- wp:') === false) {
+            $queried = get_queried_object();
+            if ($queried instanceof WP_Post) $current = $queried;
         }
+        if (!($current instanceof WP_Post) || strpos((string) $current->post_content, '<!-- wp:') === false) return [];
 
-        if ($flatten) {
-            $flat = [];
-            $walk = function ($blocks) use (&$walk, &$flat) {
-                foreach ($blocks as $block) {
-                    $flat[] = $block;
-                    if (!empty($block['innerBlocks'])) $walk($block['innerBlocks']);
+        if (isset($cache[$current->ID])) return $cache[$current->ID];
+
+        $blocks = [];
+        $expanded_refs = [];
+        $walk = function ($items) use (&$walk, &$blocks, &$expanded_refs) {
+            foreach ($items as $block) {
+                $blocks[] = $block;
+                if (!empty($block['innerBlocks'])) $walk($block['innerBlocks']);
+
+                // Each synced pattern is expanded once, which also stops patterns that include themselves
+                $ref = ($block['blockName'] ?? '') === 'core/block' ? (int) ($block['attrs']['ref'] ?? 0) : 0;
+                if ($ref && !isset($expanded_refs[$ref])) {
+                    $expanded_refs[$ref] = true;
+                    $walk(parse_blocks((string) get_post_field('post_content', $ref)));
                 }
-            };
-            $walk($cache[$post->ID]);
-            $cache[$key] = $flat;
-        }
+            }
+        };
+        $walk(parse_blocks($current->post_content));
 
-        return $cache[$key];
+        return $cache[$current->ID] = $blocks;
     }
 }
 
