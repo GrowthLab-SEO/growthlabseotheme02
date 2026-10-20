@@ -610,6 +610,21 @@ if (!function_exists('get_page_hero_style')) {
     }
 }
 
+// Name of the first block rendered in the current post's content (the one right after the hero), skipping
+// synced pattern wrappers and ACF blocks switched off with their toggle_block field. '' when there is none.
+if (!function_exists('get_first_content_block_name')) {
+    function get_first_content_block_name()
+    {
+        foreach (get_current_post_blocks() as $block) {
+            $name = $block['blockName'] ?? '';
+            if ($name === '' || $name === 'core/block') continue;
+            if (isset($block['attrs']['data']['toggle_block']) && !$block['attrs']['data']['toggle_block']) continue;
+            return $name;
+        }
+        return '';
+    }
+}
+
 // Fallback hero title for the current request, used when the page has no custom hero title
 if (!function_exists('get_page_hero_title')) {
     function get_page_hero_title()

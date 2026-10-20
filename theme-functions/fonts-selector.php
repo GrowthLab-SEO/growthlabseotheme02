@@ -446,7 +446,7 @@ add_action('wp_head', 'theme_print_selected_font_faces', 50);
 
 if (! function_exists('theme_get_above_fold_font_variants')) {
     /**
-     * Font variants the header and the hero render above the fold, by font role ("primary"/"secondary" are the
+     * Font variants the header, the hero and the first block after it render, by font role ("primary"/"secondary" are the
      * fonts selected in the Customizer). Measured on the theme's templates on desktop and mobile; only the files of
      * these variants are preloaded (theme_print_font_preloads()). The list is in priority order: the hero title,
      * usually the LCP element, first.
@@ -455,7 +455,7 @@ if (! function_exists('theme_get_above_fold_font_variants')) {
      * - 'hero_styles': hero styles that render it (omitted: every page)
      * - 'media':       media query for the preload (variants used only on some viewports)
      */
-    function theme_get_above_fold_font_variants(string $hero_style): array
+    function theme_get_above_fold_font_variants(string $hero_style, string $first_block = ''): array
     {
         $homepage_heroes = ['home', 'home_2', 'home_3', 'home_4', 'home_5', 'home_6'];
 
@@ -472,14 +472,54 @@ if (! function_exists('theme_get_above_fold_font_variants')) {
             empty($variant['hero_styles']) || in_array($hero_style, $variant['hero_styles'], true)
         ));
 
+        // Then the first block after the hero (lower priority than the header and hero)
+        $variants = array_merge($variants, theme_get_first_block_font_variants($first_block));
+
         /**
          * Lets a child theme adjust the preloaded variants, e.g. when its header or hero uses other weights.
          * Returning an empty array disables the font preloads.
          */
-        return apply_filters('theme_above_fold_font_variants', $variants, $hero_style);
+        return apply_filters('theme_above_fold_font_variants', $variants, $hero_style, $first_block);
     }
 }
 
+if (! function_exists('theme_get_first_block_font_variants')) {
+    /**
+     * Font variants of the first block after the hero, by block name ("core" covers every core block and "default"
+     * the blocks not listed, e.g. from plugins). Measured in Chrome with each block placed first, on desktop and mobile.
+     * Codes: "s600" = secondary font, weight 600; "p400" = primary font, weight 400. Heading weights first.
+     */
+    function theme_get_first_block_font_variants(string $block_name): array
+    {
+        if ($block_name === '') return [];
+
+        $map = [
+            'acf/contact-form'      => ['s400', 'p400', 'p700'],
+            'acf/content-box-grid'  => ['s500', 's400', 'p400'],
+            'acf/content-intro'     => ['s200'],
+            'acf/cta-box'           => ['s700', 's400'],
+            'acf/faq'               => ['s700', 's400', 'p400'],
+            'acf/featured-video'    => ['s700', 's400', 'p400'],
+            'acf/logos-carousel'    => ['s400'],
+            'acf/office-locations'  => ['s700', 's500', 's400', 'p400', 'p700', 'p600'],
+            'acf/posts-carousel'    => ['s700', 's500', 'p400', 'p700'],
+            'acf/posts-grid'        => ['s400', 'p400', 'p700'],
+            'acf/selling-points'    => ['s700', 's400', 'p400'],
+            'acf/two-columns'       => ['s400', 'p400', 'p700'],
+            'core'                  => ['p400', 'p700'],
+            'default'               => ['s700', 's400', 'p400'],
+        ];
+
+        $key   = str_starts_with($block_name, 'core/') ? 'core' : (isset($map[$block_name]) ? $block_name : 'default');
+        $roles = ['p' => 'primary', 's' => 'secondary'];
+
+        return array_map(fn($code) => [
+            'role'   => $roles[$code[0]],
+            'weight' => substr($code, 1),
+            'style'  => 'normal',
+        ], $map[$key]);
+    }
+}
 if (! function_exists('theme_parse_font_weight_range')) {
     /**
      * Font weight of a face as a [min, max] range: "400" -> [400, 400], "100 900" (variable font) -> [100, 900].
@@ -622,18 +662,21 @@ if (! function_exists('theme_print_font_preloads')) {
     /**
      * Preloads the font files the header and the hero render above the fold (theme_get_above_fold_font_variants()),
      * for the fonts selected in the Customizer, bundled or from the Font Library. A file used by several variants
-     * (e.g. a variable font) is preloaded once, and at most 4 files are preloaded (filter theme_font_preload_limit),
-     * in the order of the variants, so the preloads don't compete with the hero image.
+     * (e.g. a variable font) is preloaded once, and at most 6 files are preloaded (filter theme_font_preload_limit),
+     * in the order of the variants (header and hero first, then the first block), so the preloads don't compete
+     * with the hero image.
      */
     function theme_print_font_preloads()
     {
         if (! function_exists('theme_get_above_fold_font_variants')) return;
 
         $hero_style = function_exists('get_page_hero_style') ? get_page_hero_style() : 'default';
-        $max_files  = (int) apply_filters('theme_font_preload_limit', 4);
+        $max_files  = (int) apply_filters('theme_font_preload_limit', 6);
         $links      = [];
 
-        foreach (theme_get_above_fold_font_variants($hero_style) as $variant) {
+        $first_block = function_exists('get_first_content_block_name') ? get_first_content_block_name() : '';
+
+        foreach (theme_get_above_fold_font_variants($hero_style, $first_block) as $variant) {
             $face = theme_match_font_face(
                 theme_get_role_font_faces($variant['role'] ?? 'primary'),
                 (int) ($variant['weight'] ?? 400),
