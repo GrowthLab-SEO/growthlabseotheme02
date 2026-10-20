@@ -7,7 +7,7 @@ if (!defined('ABSPATH')) {
 <div class="location-card accordion <?= esc_attr($args['classes'] ?? '') ?>">
     <?php
     $tp_url = $location['target_page_url'];
-    $city = $tp_url ? "<a href='" . esc_url($tp_url) . "' target='_blank' aria-label='" . esc_attr($location['city']) . "'>" : '';
+    $city = $tp_url ? "<a href='" . esc_url($tp_url) . "' aria-label='" . esc_attr($location['city']) . "'>" : '';
     $city .= esc_html($location['city']);
     $city .= $tp_url ? "</a>" : '';
     ?>

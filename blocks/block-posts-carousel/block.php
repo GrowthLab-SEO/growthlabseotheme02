@@ -124,7 +124,7 @@ if (get_field('toggle_block')):
                                                 "role" => ($post_fields['role'] ?? ''),
                                                 "content" => get_the_excerpt(),
                                                 "link_url" => get_the_permalink(),
-                                                "link_target" => '_blank',
+                                                "link_target" => '_self',
                                             ));
                                             break;
 
@@ -137,7 +137,7 @@ if (get_field('toggle_block')):
                                                 "title_tag" => $items_title_tag ?? 'h3',
                                                 "excerpt" => get_the_excerpt(),
                                                 "link_url" => get_the_permalink(),
-                                                "link_target" => '_blank',
+                                                "link_target" => '_self',
                                             ));
                                             break;
 
@@ -157,7 +157,7 @@ if (get_field('toggle_block')):
                                                 "title" => get_the_title(),
                                                 "title_tag" => $items_title_tag ?? 'h3',
                                                 "link_url" => get_the_permalink(),
-                                                "link_target" => '_blank',
+                                                "link_target" => '_self',
                                                 "content" => get_the_excerpt(),
                                             ));
                                             break;
