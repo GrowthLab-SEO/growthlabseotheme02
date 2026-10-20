@@ -38,13 +38,14 @@ function disable_emojis_tinymce($plugins)
         return array();
     }
 }
-// Disable Dashicons on front-end
+// Disable Dashicons on front-end. The admin bar (shown to any logged-in user) needs them, and plugin styles that
+// depend on them would be dropped if the style were deregistered, so only dequeue a direct enqueue.
 function wpdocs_dequeue_dashicon()
 {
-    if (current_user_can('update_core')) {
+    if (is_admin_bar_showing()) {
         return;
     }
-    wp_deregister_style('dashicons');
+    wp_dequeue_style('dashicons');
 }
 
 //Disable the emoji's
