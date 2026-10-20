@@ -155,7 +155,7 @@ growthlabseotheme02/
 │   ├── globals/         Variables, mixins, normalize, forms, picture styles
 │   ├── template-parts/  Partials for header, footer, cards, hero, etc.
 │   ├── page-templates/  template-default, template-blog, template-team-member (enqueued as files)
-│   └── vendor/          Splide core CSS, TinyMCE editor styles, tom-select styles
+│   └── vendor/          Splide core CSS, TinyMCE editor styles
 ├── template-parts/      Heroes, cards, pagination, posts filters, social networks, Splide navigation, maps
 ├── theme-functions/
 │   ├── acf-functions.php        Block registration and cache, block CSS inlining, options page,

@@ -96,12 +96,4 @@ if (!function_exists('hex_to_rgb')) {
     }
 }
 
-// Enqueue inline styles with customizer CSS
-/* function theme_enqueue_styles()
-{
-    $color_scheme = theme_get_customizer_css();
-    wp_add_inline_style('growthlabseotheme02-main-stylesheet', $color_scheme);
-}
-add_action('wp_enqueue_scripts', 'theme_enqueue_styles'); */
-
 add_action('customize_register', 'theme_customize_register');
