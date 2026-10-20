@@ -1,5 +1,8 @@
 const styledSelectSelector =
   "select:not(.posts-filters__select):not([multiple]):not(.styled-select-field)";
+// Fallback label for selects without a label or selected text (translatable, see functions.php)
+const styledSelectPlaceholder =
+  (window.styledSelectData && window.styledSelectData.placeholder) || "Select an option";
 let openStyledSelect = null;
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -83,7 +86,7 @@ function createStyledSelect(select) {
     select.getAttribute("aria-label") ||
     labels.map((label) => label.textContent.trim()).join(" ") ||
     select.name ||
-    "Select an option";
+    styledSelectPlaceholder;
   listbox.setAttribute("aria-label", labelText);
 
   function enabledOptionFrom(start, direction) {
@@ -111,7 +114,7 @@ function createStyledSelect(select) {
   function syncValue() {
     const selectedOption = select.options[select.selectedIndex];
     const selectedText = selectedOption?.textContent.trim() || "";
-    value.textContent = selectedText || "Select an option";
+    value.textContent = selectedText || styledSelectPlaceholder;
     trigger.setAttribute(
       "aria-label",
       selectedText ? `${labelText}: ${selectedText}` : labelText,
@@ -243,18 +246,20 @@ function createStyledSelect(select) {
       searchTimer = window.setTimeout(() => {
         searchText = "";
       }, 700);
+      // Look for the next enabled option starting with the typed text, after the active one and wrapping around
       const start = activeIndex >= 0 ? activeIndex + 1 : 0;
-      const match = options.find((option, offset) => {
-        const candidate = options[(start + offset) % options.length];
-        return (
+      for (let offset = 0; offset < options.length; offset++) {
+        const index = (start + offset) % options.length;
+        const candidate = options[index];
+        if (
           !candidate.disabled &&
           candidate.element.textContent.toLocaleLowerCase().startsWith(searchText)
-        );
-      });
-      if (match) {
-        event.preventDefault();
-        if (!isOpen) openMenu();
-        setActive(options.indexOf(match));
+        ) {
+          event.preventDefault();
+          if (!isOpen) openMenu();
+          setActive(index);
+          break;
+        }
       }
     }
   });
