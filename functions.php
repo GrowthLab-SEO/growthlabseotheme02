@@ -437,6 +437,9 @@ function growthlabseotheme02_scripts()
         filemtime(get_template_directory() . '/js/styled-select-fields-min.js'),
         ["strategy" => "defer", "in_footer" => true]
     );
+    wp_localize_script('growthlabseotheme02-styled-select-fields', 'styledSelectData', [
+        'placeholder' => __('Select an option', 'growthlabseotheme02'),
+    ]);
 
     // Picture Optimization scripts.
     wp_enqueue_script(
