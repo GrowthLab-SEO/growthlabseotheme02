@@ -4,40 +4,36 @@ if (!defined('ABSPATH')) {
 }
 
 $options = get_current_language_options();
-$selected_social_networks = $args['social_networks'];
+$selected_social_networks = $args['social_networks'] ?? null;
 
+// Option field => icon file and network name
 $social_networks = array(
-    'facebook_url'   => 'icon-facebook.svg',
-    'youtube_url'    => 'icon-youtube.svg',
-    'tiktok_url'     => 'icon-tiktok.svg',
-    'twitterx_url'   => 'icon-twitter-x.svg',
-    'instagram_url'  => 'icon-instagram.svg',
-    'linkedin_url'   => 'icon-linkedin.svg',
+    'facebook_url'   => array('icon' => 'icon-facebook.svg', 'name' => 'Facebook'),
+    'youtube_url'    => array('icon' => 'icon-youtube.svg', 'name' => 'YouTube'),
+    'tiktok_url'     => array('icon' => 'icon-tiktok.svg', 'name' => 'TikTok'),
+    'twitterx_url'   => array('icon' => 'icon-twitter-x.svg', 'name' => 'X (Twitter)'),
+    'instagram_url'  => array('icon' => 'icon-instagram.svg', 'name' => 'Instagram'),
+    'linkedin_url'   => array('icon' => 'icon-linkedin.svg', 'name' => 'LinkedIn'),
 );
 
 if ($selected_social_networks) {
     $social_networks = array_filter($social_networks, function ($key) use ($selected_social_networks) {
-        return in_array($key, $selected_social_networks);
+        return in_array($key, (array) $selected_social_networks);
     }, ARRAY_FILTER_USE_KEY);
 }
-
-$icon_dir = get_template_directory() . '/assets/icons/';
 ?>
 
 <ul class="social-networks">
-    <?php foreach ($social_networks as $field_key => $icon_file) : ?>
-        <?php $url = $options[$field_key] ?? ''; ?>
+    <?php foreach ($social_networks as $field_key => $network) : ?>
+        <?php
+        $url = $options[$field_key] ?? '';
+        /* translators: %s: social network name, e.g. Facebook */
+        $label = sprintf(__('Visit our %s page', 'growthlabseotheme02'), $network['name']);
+        ?>
         <?php if (!empty($url)) : ?>
             <li>
-                <a href="<?= esc_url($url) ?>" target="_blank" rel="noopener noreferrer" aria-label="Visit our <?= esc_attr(ucwords(str_replace('_url', '', $field_key))) ?> page">
-                    <?php
-                    $icon_path = $icon_dir . $icon_file;
-                    if (file_exists($icon_path)) {
-                        include $icon_path;
-                    } else {
-                        echo '<!-- Icon ' . esc_attr($icon_file) . ' not found -->';
-                    }
-                    ?>
+                <a href="<?= esc_url($url) ?>" target="_blank" rel="noopener noreferrer" aria-label="<?= esc_attr($label) ?>">
+                    <?= get_theme_svg('assets/icons/' . $network['icon']) ?>
                 </a>
             </li>
         <?php endif; ?>
