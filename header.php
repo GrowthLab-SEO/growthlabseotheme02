@@ -52,7 +52,6 @@ if (!defined('ABSPATH')) {
                         echo img_generate_picture_tag(img: $image, max_size: "medium", alt_text: get_bloginfo('name'), is_priority: true, classes: "site-logo__image");
                     }
                     ?>
-                    <span>Site Logo</span>
                 </a>
             </div>
 
