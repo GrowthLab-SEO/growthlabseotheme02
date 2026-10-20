@@ -28,7 +28,7 @@ if (!$bg_mobile) $bg_mobile = [];
 
                     <?php print_title($hero_tagline, $hero_tagline_tag, "content-box__tagline"); ?>
                     <div class="content-box__title">
-                        <?= $args["hero_title"] ?>
+                        <?= wp_kses_post($args["hero_title"] ?? "") ?>
                     </div>
                     <?php print_title($hero_subtitle, $hero_subtitle_tag, "content-box__subtitle"); ?>
 

@@ -28,7 +28,7 @@ $hero_title_tag = $hero_title_tag ?? null;
         <div class="hero__content tx-center">
 
             <div class="hero__title">
-                <?= $args["hero_title"] ?>
+                <?= wp_kses_post($args["hero_title"] ?? "") ?>
             </div>
             <?php
             print_title($hero_subtitle, $hero_subtitle_tag, "hero__subtitle");

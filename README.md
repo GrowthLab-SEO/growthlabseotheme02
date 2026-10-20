@@ -376,7 +376,7 @@ The theme has its own lightweight language handling, based on the URL prefix (no
 
 `acf-functions.php` returns `true` for `acf/the_field/allow_unsafe_html`, `acf/the_sub_field/allow_unsafe_html` and `acf/shortcode/allow_unsafe_html`, and hides ACF's "escaped HTML" admin notice. This is intentional: text, textarea and WYSIWYG fields are used for inline markup such as `<span>`, `<a>` and `<strong>` in titles and content.
 
-Block templates and template parts print content fields through `wp_kses_post()` and titles through `print_title()`, so scripts are stripped there. Values printed with `the_field()`, `the_sub_field()` (the sidebar menus) or the `[acf]` shortcode are not escaped by ACF, and the custom hero title (`hero_title`) is printed as saved. Only give block/options editing rights to trusted users, and don't use these fields for input from untrusted users.
+Block templates and template parts print content fields through `wp_kses_post()` and titles through `print_title()`, so scripts are stripped there. Values printed with `the_field()`, `the_sub_field()` (the sidebar menus) or the `[acf]` shortcode are not escaped by ACF. The custom hero title (`hero_title`) also goes through `wp_kses_post()`. Only give block/options editing rights to trusted users, and don't use these fields for input from untrusted users.
 
 ---
 

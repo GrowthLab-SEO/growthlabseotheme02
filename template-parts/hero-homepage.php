@@ -41,7 +41,7 @@ if (!$bg_mobile) $bg_mobile = [];
             } ?>
 
             <div class="hero__title">
-                <?= $args["hero_title"] ?>
+                <?= wp_kses_post($args["hero_title"] ?? "") ?>
             </div>
 
             <?php if ($cta_button): ?>
