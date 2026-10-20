@@ -679,16 +679,25 @@ function transform_inline_font_sizes(
         return $html;
     }
 
-    libxml_use_internal_errors(true);
+    $previous_errors = libxml_use_internal_errors(true);
 
     $dom = new DOMDocument();
 
+    // Wrap the fragment in a container so multi-root WYSIWYG markup isn't nested into its first element, and declare
+    // UTF-8 instead of converting to HTML entities (mb_convert_encoding 'HTML-ENTITIES' is deprecated in PHP 8.2+)
     $dom->loadHTML(
-        mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8'),
+        '<?xml encoding="UTF-8"><div id="transform-inline-font-sizes">' . $html . '</div>',
         LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD
     );
+    libxml_clear_errors();
+    libxml_use_internal_errors($previous_errors);
 
-    foreach ($dom->getElementsByTagName('*') as $element) {
+    $container = $dom->getElementById('transform-inline-font-sizes');
+    if (!$container) {
+        return $html;
+    }
+
+    foreach ($container->getElementsByTagName('*') as $element) {
 
         if (!$element->hasAttribute('style')) {
             continue;
@@ -732,7 +741,12 @@ function transform_inline_font_sizes(
         $element->setAttribute('style', $style);
     }
 
-    return $dom->saveHTML();
+    $output = '';
+    foreach ($container->childNodes as $child) {
+        $output .= $dom->saveHTML($child);
+    }
+
+    return $output;
 }
 
 // Returns the best available thumbnail URL for a YouTube video, from $size downwards.
