@@ -285,13 +285,6 @@ add_action('wp_enqueue_scripts', function () {
     }
 }, 999);
 
-/**
- * Prevent block styles from loading in <head> for blocks not in use
- */
-add_filter('render_block', function ($block_content, $block) {
-    return $block_content;
-}, 10, 2);
-
 // Add ACF Options Page
 if (function_exists('acf_add_options_page') && current_user_can('manage_options')) {
     acf_add_options_page(array(
