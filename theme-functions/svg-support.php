@@ -299,6 +299,30 @@ function growthlab_sanitize_svg_upload($file)
 add_filter('wp_handle_upload_prefilter', 'growthlab_sanitize_svg_upload');
 add_filter('wp_handle_sideload_prefilter', 'growthlab_sanitize_svg_upload');
 
+// Whether a file is an SVG. mime_content_type() reports SVGs that start with whitespace or an XML comment as
+// text/plain, so .svg files are also checked for an <svg> root in their first bytes.
+function growthlab_is_svg_file($path)
+{
+    if (function_exists('mime_content_type') && mime_content_type($path) === 'image/svg+xml') return true;
+    if (strtolower(pathinfo($path, PATHINFO_EXTENSION)) !== 'svg') return false;
+
+    $head = @file_get_contents($path, false, null, 0, 2048);
+    return is_string($head) && stripos($head, '<svg') !== false;
+}
+
+// Gives an inlined SVG the accessible name of the image it replaces: role="img" + aria-label when there is alt text,
+// aria-hidden otherwise (decorative), unless the SVG markup already sets those attributes.
+function growthlab_label_inline_svg($svg, $alt = '')
+{
+    return preg_replace_callback('~<svg\b([^>]*)>~i', function ($match) use ($alt) {
+        $attributes = $match[1];
+        if (preg_match('~\s(aria-label|aria-hidden|role)\s*=~i', $attributes)) return $match[0];
+
+        $extra = $alt !== '' ? ' role="img" aria-label="' . esc_attr($alt) . '"' : ' aria-hidden="true" focusable="false"';
+        return '<svg' . rtrim($attributes, '/ ') . $extra . (str_ends_with(rtrim($attributes), '/') ? '/>' : '>');
+    }, $svg, 1);
+}
+
 // Image to SVG
 function image_to_svg(array|string $image, string $classes = '')
 {
@@ -315,6 +339,7 @@ function image_to_svg(array|string $image, string $classes = '')
     } else {
         $img_url = $image;
     }
+    $original_url = $img_url;
 
     try {
         $upload_dir = wp_get_upload_dir();
@@ -339,7 +364,7 @@ function image_to_svg(array|string $image, string $classes = '')
         // Normalize path for Windows and Unix
         $image_path = wp_normalize_path($image_path);
 
-        // Failures are only logged when WP_DEBUG is on
+        // Failures are logged only when WP_DEBUG is on
         $debug = defined('WP_DEBUG') && WP_DEBUG;
 
         // Uploaded SVGs (e.g. the logo symbol) are often printed by several blocks on one page:
@@ -350,7 +375,7 @@ function image_to_svg(array|string $image, string $classes = '')
             if (!file_exists($image_path) || !is_readable($image_path)) {
                 if ($debug) error_log('SVG Image path is missing or not readable: ' . $image_path);
                 $svg_files[$image_path] = false;
-            } elseif (mime_content_type($image_path) === "image/svg+xml") {
+            } elseif (growthlab_is_svg_file($image_path)) {
                 $svg_content = @file_get_contents($image_path);
                 if ($svg_content === false && $debug) error_log('Could not read SVG file: ' . $image_path);
                 $svg_files[$image_path] = $svg_content;
@@ -363,20 +388,24 @@ function image_to_svg(array|string $image, string $classes = '')
             return '';
         }
 
+        $alt = is_array($image) ? (string) ($image['alt'] ?? '') : '';
+
         if (is_string($svg_files[$image_path])) {
-            return "<div class='$classes'>{$svg_files[$image_path]}</div>";
+            return '<div class="' . esc_attr($classes) . '">' . growthlab_label_inline_svg($svg_files[$image_path], $alt) . '</div>';
         }
 
-        // Build img tag with escaped attributes
+        // Not an SVG: print a regular image (URL strings have no attachment data)
+        $fields = is_array($image) ? $image : [];
         return sprintf(
-            '<img src="%s" width="%s" height="%s" alt="%s" title="%s" loading="lazy" decoding="async">',
-            esc_url($image['url']),
-            esc_attr($image['width'] ?? ''),
-            esc_attr($image['height'] ?? ''),
-            esc_attr($image['alt'] ?? ''),
-            esc_attr($image['title'] ?? ''),
+            '<img src="%s"%s%s alt="%s"%s%s loading="lazy" decoding="async">',
+            esc_url($original_url),
+            !empty($fields['width']) ? ' width="' . esc_attr($fields['width']) . '"' : '',
+            !empty($fields['height']) ? ' height="' . esc_attr($fields['height']) . '"' : '',
+            esc_attr($alt),
+            !empty($fields['title']) ? ' title="' . esc_attr($fields['title']) . '"' : '',
+            $classes !== '' ? ' class="' . esc_attr($classes) . '"' : '',
         );
-    } catch (Exception $e) {
+    } catch (Throwable $e) {
         if (defined('WP_DEBUG') && WP_DEBUG) error_log('SVG Processing Error: ' . $e->getMessage());
         return '';
     }
@@ -436,8 +465,23 @@ function check_content_images($content)
             }
 
             $svg_content = file_get_contents($src_local);
-            return $svg_content !== false ? $svg_content : $match[0];
-        } catch (Exception $e) {
+            if ($svg_content === false) return $match[0];
+
+            // Keep the alt text and classes of the replaced <img>
+            $alt = preg_match('~\salt=(["\'])(.*?)\1~is', $match[0], $attr) ? html_entity_decode($attr[2], ENT_QUOTES) : '';
+            $svg_content = growthlab_label_inline_svg($svg_content, $alt);
+            if (preg_match('~\sclass=(["\'])(.*?)\1~is', $match[0], $attr) && trim($attr[2]) !== '') {
+                $classes = esc_attr(html_entity_decode($attr[2], ENT_QUOTES));
+                $svg_content = preg_replace_callback('~<svg\b([^>]*)>~i', function ($svg) use ($classes) {
+                    if (preg_match('~\sclass=(["\'])(.*?)\1~is', $svg[1])) {
+                        return preg_replace('~(\sclass=(["\']))~i', '$1' . $classes . ' ', $svg[0], 1);
+                    }
+                    return '<svg class="' . $classes . '"' . $svg[1] . '>';
+                }, $svg_content, 1);
+            }
+
+            return $svg_content;
+        } catch (Throwable $e) {
             return $match[0];
         }
     }, $content);
