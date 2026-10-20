@@ -51,7 +51,7 @@ if (!function_exists('register_color_setting')) {
         $wp_customize->add_control(
             new WP_Customize_Color_Control($wp_customize, $name, [
                 'section' => 'colors',
-                'label'   => esc_html__(ucwords(str_replace('_', ' ', $name)), get_stylesheet())
+                'label'   => esc_html(ucwords(str_replace('_', ' ', $name)))
             ])
         );
     }

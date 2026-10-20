@@ -15,7 +15,7 @@ if (!function_exists('theme_blocks_category')) {
             array(
                 array(
                     'slug'  => $theme_slug . '-blocks',
-                    'title' => __($theme_name . ' Blocks', $theme_slug),
+                    'title' => sprintf(__('%s Blocks', 'growthlabseotheme02'), $theme_name),
                 )
             )
         );
@@ -107,7 +107,7 @@ add_action('admin_bar_menu', function ($wp_admin_bar) {
 
     $wp_admin_bar->add_node(array(
         'id'    => 'clear-block-cache',
-        'title' => __('Clear block cache', get_text_domain()),
+        'title' => __('Clear block cache', 'growthlabseotheme02'),
         'href'  => wp_nonce_url(add_query_arg('clear_block_cache', '1', admin_url()), 'clear_block_cache'),
     ));
 }, 100);

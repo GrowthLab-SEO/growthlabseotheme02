@@ -165,13 +165,13 @@ if (! function_exists('theme_customize_register_fonts')) {
         global $default_fonts;
 
         $wp_customize->add_section('fonts_section', [
-            'title'       => esc_html__('Fonts', get_stylesheet()),
+            'title'       => esc_html__('Fonts', 'growthlabseotheme02'),
             'priority'    => 30,
-            'description' => esc_html__('Select the fonts for your theme', get_stylesheet()),
+            'description' => esc_html__('Select the fonts for your theme', 'growthlabseotheme02'),
         ]);
 
-        register_font_setting($wp_customize, 'font_primary',   $default_fonts['primary'],   'Primary Font');
-        register_font_setting($wp_customize, 'font_secondary', $default_fonts['secondary'], 'Secondary Font');
+        register_font_setting($wp_customize, 'font_primary',   $default_fonts['primary'],   __('Primary Font', 'growthlabseotheme02'));
+        register_font_setting($wp_customize, 'font_secondary', $default_fonts['secondary'], __('Secondary Font', 'growthlabseotheme02'));
     }
 }
 
@@ -205,7 +205,7 @@ if (! function_exists('register_font_setting')) {
 
         $wp_customize->add_control($name, [
             'section' => 'fonts_section',
-            'label'   => esc_html__($label, get_stylesheet()),
+            'label'   => esc_html($label),
             'type'    => 'select',
             'choices' => $choices,
         ]);
