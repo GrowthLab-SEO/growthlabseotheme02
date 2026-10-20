@@ -172,7 +172,7 @@ growthlabseotheme02/
 │   ├── picture-optimization.php Responsive <picture> generation
 │   ├── security-functions.php   Generator tag and XML-RPC
 │   ├── svg-support.php          SVG uploads, sanitization and inlining
-│   ├── theme-optimization.php   Head cleanup, emojis, dashicons, font preloads, lazy Google Maps
+│   ├── theme-optimization.php   Head cleanup, emojis, dashicons, delayed form scripts, lazy Google Maps
 │   └── tiny-mce.php             TinyMCE/ACF WYSIWYG fonts, sizes, colors and toolbar
 ├── functions.php        Includes, theme setup, theme.json filter, critical CSS, scripts, sidebars
 ├── theme.json
@@ -305,14 +305,15 @@ if (get_field('toggle_block')):
 
 - Appearance > Customize > Fonts has **Primary Font** and **Secondary Font** selects. The choices are the two bundled families (Mona Sans, Roboto Serif) plus any font installed through the WordPress Font Library.
 - The selection is output as `--font-primary` / `--font-secondary` and as the `primary` / `secondary` font families in `theme.json`.
-- **Bundled fonts are only declared and preloaded while selected.** `theme_get_default_font_faces_css()` prints `@font-face` rules only for selected bundled families, and `theme-optimization.php` preloads only their faces marked `'preload' => true`. When Font Library fonts are selected, no bundled file is loaded. The `fontFace` entries in `theme.json` on disk are not used at runtime (the theme.json filter replaces `fontFamilies`), and a filter on `wp_theme_json_data_user` drops the copy of the theme fonts the Site Editor can save in global styles.
+- **Bundled fonts are only declared while selected.** `theme_get_default_font_faces_css()` prints `@font-face` rules only for selected bundled families. When Font Library fonts are selected, no bundled file is loaded. The `fontFace` entries in `theme.json` on disk are not used at runtime (the theme.json filter replaces `fontFamilies`), and a filter on `wp_theme_json_data_user` drops the copy of the theme fonts the Site Editor can save in global styles.
 - **Only the selected Font Library fonts are loaded on the front end.** `theme_print_selected_font_faces()` replaces WordPress' `wp_print_font_faces()` and prints `@font-face` rules only for the selected primary/secondary families (faces without a `font-display` get `swap`). The block editor still loads every installed font, so all of them can be previewed there.
+- **Font preloads (header and hero only).** `theme_get_above_fold_font_variants()` in `theme-functions/fonts-selector.php` lists the role (primary/secondary), weight and style of the text the header and the hero render above the fold, measured on the theme's templates on desktop and mobile; variants can be limited to some hero styles (`hero_styles`) or viewports (`media`). `theme_print_font_preloads()` (priority 1 in `wp_head`) maps each variant to the file of the font selected in the Customizer, bundled or from the Font Library, picking the face the browser would use (nearest weight per the CSS rules, one file for variable fonts), with the same URL as its `@font-face` rule, and preloads at most 4 files in the list order (hero title first). Adjust them with the `theme_above_fold_font_variants` filter (an empty array disables them) and the limit with `theme_font_preload_limit`.
 
 **Adding a bundled font face:** put the `.woff2` file in `fonts/{family-folder}/` and add an entry to `theme_get_default_font_faces()`:
 
 ```php
 'Mona Sans' => [
-    ['weight' => '800', 'style' => 'normal', 'file' => 'mona-sans-v4-latin/mona-sans-v4-latin-800.woff2', 'display' => 'swap', 'preload' => false],
+    ['weight' => '800', 'style' => 'normal', 'file' => 'mona-sans-v4-latin/mona-sans-v4-latin-800.woff2', 'display' => 'swap'],
     // ...
 ],
 ```
@@ -358,7 +359,7 @@ The theme has its own lightweight language handling, based on the URL prefix (no
 - **Scripts:** `main-min.js`, `styled-select-fields-min.js` and `posts-filters-min.js` (blog index, archives and search results) are deferred, `picture-optimization-min.js` is async. jQuery is moved to the footer, `jquery-migrate` is removed from the `jquery` dependencies (deregistering it would make WordPress skip jQuery and every Gravity Forms script) and the Gravity Forms maps script is dequeued. `wp-i18n` is not touched: WordPress only prints it when a script needs it (e.g. `wp-a11y` for Gravity Forms). No script or image is preloaded. Theme asset URLs (parent and active child theme) get `?ver={filemtime}`.
 - **Delayed form scripts:** jQuery, Gravity Forms and their dependencies (e.g. `wp-a11y`, `wp-i18n`) are printed as inert `type="text/plain"` tags (inline parts and translations included, `script_loader_tag` in `theme-functions/theme-optimization.php`). A small inline loader runs them in their original order when a Gravity Forms form gets within 600px of the viewport or on the first click, key press, touch or focus, so pages don't download or run them up front. Any script that depends on a delayed one is delayed too. Gravity Forms initialises through `gform.initializeOnLoaded()`, which waits for its own scripts, and the forms submit without JavaScript as well.
 - **Blog filters:** `posts-filters.js` queries the posts REST API with the server listing's page size (Settings > Reading `posts_per_page`, passed as `postsFiltersData.perPage`). A month without a year is filtered on the server through the theme's `pf_month` REST parameter (that month in every year). A new request cancels the previous one, and cards built by the script keep the classes of the server-rendered cards.
-- **Fonts:** only selected bundled fonts are declared and preloaded (see [Fonts](#fonts-theme-functionsfonts-selectorphp)).
+- **Fonts:** only selected bundled fonts are declared, and only the faces the header and hero use are preloaded (see [Fonts](#fonts-theme-functionsfonts-selectorphp)).
 - **YouTube:** thumbnail lookups are cached in transients (`get_youtube_thumbnail()`). Videos are only embedded after the play button is clicked.
 - **Other cleanups** (`theme-optimization.php`): emojis disabled; a direct Dashicons enqueue is dequeued on the front end unless the admin bar is showing (it is not deregistered, so plugin styles that depend on it keep it); RSD, wlwmanifest, shortlink, REST, oEmbed and feed links removed from `<head>`; the WooCommerce blocks style dequeued; common Google Maps JS handles dequeued; Google Maps iframes in content replaced with `.gmap-lazy` placeholders that `main.js` loads when they come into view.
 

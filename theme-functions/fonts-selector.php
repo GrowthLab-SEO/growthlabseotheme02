@@ -216,33 +216,34 @@ if (! function_exists('register_font_setting')) {
 
 if (! function_exists('theme_get_default_font_faces')) {
     /**
-     * Font files bundled with the theme (in /fonts), keyed by family name. They are only loaded and
-     * preloaded while the family is selected as the primary or secondary font in the Customizer.
+     * Font files bundled with the theme (in /fonts), keyed by family name. They are only loaded while
+     * the family is selected as the primary or secondary font in the Customizer; theme_print_font_preloads()
+     * preloads the faces the header and hero use.
      */
     function theme_get_default_font_faces(): array
     {
         return [
             'Roboto Serif' => [
-                ['weight' => '100', 'style' => 'normal', 'file' => 'roboto-serif-v17-latin/roboto-serif-v17-latin-100.woff2', 'display' => 'swap', 'preload' => true],
-                ['weight' => '100', 'style' => 'italic', 'file' => 'roboto-serif-v17-latin/roboto-serif-v17-latin-100italic.woff2', 'display' => 'swap', 'preload' => false],
-                ['weight' => '300', 'style' => 'normal', 'file' => 'roboto-serif-v17-latin/roboto-serif-v17-latin-300.woff2', 'display' => 'swap', 'preload' => false],
-                ['weight' => '300', 'style' => 'italic', 'file' => 'roboto-serif-v17-latin/roboto-serif-v17-latin-300italic.woff2', 'display' => 'swap', 'preload' => false],
-                ['weight' => '400', 'style' => 'normal', 'file' => 'roboto-serif-v17-latin/roboto-serif-v17-latin-regular.woff2', 'display' => 'swap', 'preload' => true],
-                ['weight' => '400', 'style' => 'italic', 'file' => 'roboto-serif-v17-latin/roboto-serif-v17-latin-italic.woff2', 'display' => 'swap', 'preload' => false],
-                ['weight' => '500', 'style' => 'normal', 'file' => 'roboto-serif-v17-latin/roboto-serif-v17-latin-500.woff2', 'display' => 'swap', 'preload' => true],
-                ['weight' => '500', 'style' => 'italic', 'file' => 'roboto-serif-v17-latin/roboto-serif-v17-latin-500italic.woff2', 'display' => 'swap', 'preload' => false],
-                ['weight' => '600', 'style' => 'normal', 'file' => 'roboto-serif-v17-latin/roboto-serif-v17-latin-600.woff2', 'display' => 'swap', 'preload' => true],
-                ['weight' => '600', 'style' => 'italic', 'file' => 'roboto-serif-v17-latin/roboto-serif-v17-latin-600italic.woff2', 'display' => 'swap', 'preload' => false],
-                ['weight' => '700', 'style' => 'normal', 'file' => 'roboto-serif-v17-latin/roboto-serif-v17-latin-700.woff2', 'display' => 'swap', 'preload' => true],
-                ['weight' => '700', 'style' => 'italic', 'file' => 'roboto-serif-v17-latin/roboto-serif-v17-latin-700italic.woff2', 'display' => 'swap', 'preload' => false],
+                ['weight' => '100', 'style' => 'normal', 'file' => 'roboto-serif-v17-latin/roboto-serif-v17-latin-100.woff2', 'display' => 'swap'],
+                ['weight' => '100', 'style' => 'italic', 'file' => 'roboto-serif-v17-latin/roboto-serif-v17-latin-100italic.woff2', 'display' => 'swap'],
+                ['weight' => '300', 'style' => 'normal', 'file' => 'roboto-serif-v17-latin/roboto-serif-v17-latin-300.woff2', 'display' => 'swap'],
+                ['weight' => '300', 'style' => 'italic', 'file' => 'roboto-serif-v17-latin/roboto-serif-v17-latin-300italic.woff2', 'display' => 'swap'],
+                ['weight' => '400', 'style' => 'normal', 'file' => 'roboto-serif-v17-latin/roboto-serif-v17-latin-regular.woff2', 'display' => 'swap'],
+                ['weight' => '400', 'style' => 'italic', 'file' => 'roboto-serif-v17-latin/roboto-serif-v17-latin-italic.woff2', 'display' => 'swap'],
+                ['weight' => '500', 'style' => 'normal', 'file' => 'roboto-serif-v17-latin/roboto-serif-v17-latin-500.woff2', 'display' => 'swap'],
+                ['weight' => '500', 'style' => 'italic', 'file' => 'roboto-serif-v17-latin/roboto-serif-v17-latin-500italic.woff2', 'display' => 'swap'],
+                ['weight' => '600', 'style' => 'normal', 'file' => 'roboto-serif-v17-latin/roboto-serif-v17-latin-600.woff2', 'display' => 'swap'],
+                ['weight' => '600', 'style' => 'italic', 'file' => 'roboto-serif-v17-latin/roboto-serif-v17-latin-600italic.woff2', 'display' => 'swap'],
+                ['weight' => '700', 'style' => 'normal', 'file' => 'roboto-serif-v17-latin/roboto-serif-v17-latin-700.woff2', 'display' => 'swap'],
+                ['weight' => '700', 'style' => 'italic', 'file' => 'roboto-serif-v17-latin/roboto-serif-v17-latin-700italic.woff2', 'display' => 'swap'],
             ],
             'Mona Sans' => [
-                ['weight' => '400', 'style' => 'normal', 'file' => 'mona-sans-v4-latin/mona-sans-v4-latin-regular.woff2', 'display' => 'swap', 'preload' => true],
-                ['weight' => '400', 'style' => 'italic', 'file' => 'mona-sans-v4-latin/mona-sans-v4-latin-italic.woff2', 'display' => 'swap', 'preload' => false],
-                ['weight' => '600', 'style' => 'normal', 'file' => 'mona-sans-v4-latin/mona-sans-v4-latin-600.woff2', 'display' => 'swap', 'preload' => true],
-                ['weight' => '600', 'style' => 'italic', 'file' => 'mona-sans-v4-latin/mona-sans-v4-latin-600italic.woff2', 'display' => 'swap', 'preload' => false],
-                ['weight' => '700', 'style' => 'normal', 'file' => 'mona-sans-v4-latin/mona-sans-v4-latin-700.woff2', 'display' => 'swap', 'preload' => true],
-                ['weight' => '700', 'style' => 'italic', 'file' => 'mona-sans-v4-latin/mona-sans-v4-latin-700italic.woff2', 'display' => 'swap', 'preload' => false],
+                ['weight' => '400', 'style' => 'normal', 'file' => 'mona-sans-v4-latin/mona-sans-v4-latin-regular.woff2', 'display' => 'swap'],
+                ['weight' => '400', 'style' => 'italic', 'file' => 'mona-sans-v4-latin/mona-sans-v4-latin-italic.woff2', 'display' => 'swap'],
+                ['weight' => '600', 'style' => 'normal', 'file' => 'mona-sans-v4-latin/mona-sans-v4-latin-600.woff2', 'display' => 'swap'],
+                ['weight' => '600', 'style' => 'italic', 'file' => 'mona-sans-v4-latin/mona-sans-v4-latin-600italic.woff2', 'display' => 'swap'],
+                ['weight' => '700', 'style' => 'normal', 'file' => 'mona-sans-v4-latin/mona-sans-v4-latin-700.woff2', 'display' => 'swap'],
+                ['weight' => '700', 'style' => 'italic', 'file' => 'mona-sans-v4-latin/mona-sans-v4-latin-700italic.woff2', 'display' => 'swap'],
             ],
         ];
     }
@@ -442,3 +443,227 @@ if (! function_exists('theme_print_selected_font_faces')) {
 
 remove_action('wp_head', 'wp_print_font_faces', 50);
 add_action('wp_head', 'theme_print_selected_font_faces', 50);
+
+if (! function_exists('theme_get_above_fold_font_variants')) {
+    /**
+     * Font variants the header and the hero render above the fold, by font role ("primary"/"secondary" are the
+     * fonts selected in the Customizer). Measured on the theme's templates on desktop and mobile; only the files of
+     * these variants are preloaded (theme_print_font_preloads()). The list is in priority order: the hero title,
+     * usually the LCP element, first.
+     *
+     * Each variant: role, weight, style and optionally
+     * - 'hero_styles': hero styles that render it (omitted: every page)
+     * - 'media':       media query for the preload (variants used only on some viewports)
+     */
+    function theme_get_above_fold_font_variants(string $hero_style): array
+    {
+        $homepage_heroes = ['home', 'home_2', 'home_3', 'home_4', 'home_5', 'home_6'];
+
+        $variants = [
+            // Homepage hero titles use the secondary font
+            ['role' => 'secondary', 'weight' => '700', 'style' => 'normal', 'hero_styles' => $homepage_heroes],
+            ['role' => 'secondary', 'weight' => '400', 'style' => 'normal', 'hero_styles' => $homepage_heroes],
+            // Default hero title, header menu, callout and hero text
+            ['role' => 'primary', 'weight' => '700', 'style' => 'normal'],
+            ['role' => 'primary', 'weight' => '400', 'style' => 'normal'],
+        ];
+
+        $variants = array_values(array_filter($variants, fn($variant) =>
+            empty($variant['hero_styles']) || in_array($hero_style, $variant['hero_styles'], true)
+        ));
+
+        /**
+         * Lets a child theme adjust the preloaded variants, e.g. when its header or hero uses other weights.
+         * Returning an empty array disables the font preloads.
+         */
+        return apply_filters('theme_above_fold_font_variants', $variants, $hero_style);
+    }
+}
+
+if (! function_exists('theme_parse_font_weight_range')) {
+    /**
+     * Font weight of a face as a [min, max] range: "400" -> [400, 400], "100 900" (variable font) -> [100, 900].
+     */
+    function theme_parse_font_weight_range($weight): array
+    {
+        $keywords = ['normal' => 400, 'bold' => 700];
+        $values   = [];
+
+        foreach (preg_split('/\s+/', trim((string) $weight)) as $part) {
+            $part = strtolower($part);
+            if (isset($keywords[$part])) {
+                $values[] = $keywords[$part];
+            } elseif (is_numeric($part)) {
+                $values[] = (int) $part;
+            }
+        }
+
+        if (! $values) $values = [400];
+        return [min($values), max($values)];
+    }
+}
+
+if (! function_exists('theme_get_role_font_faces')) {
+    /**
+     * Faces of the font selected in the Customizer for a role ("primary" or "secondary"), as
+     * ['weight' => [min, max], 'style' => ..., 'url' => ...]. The URL is the one the @font-face rule uses,
+     * so a preload of it is reused instead of downloaded twice. Bundled fonts take precedence over
+     * fonts with the same name from the Font Library, as in the printed @font-face rules.
+     */
+    function theme_get_role_font_faces(string $role): array
+    {
+        global $default_fonts;
+
+        static $cache = [];
+        if (isset($cache[$role])) return $cache[$role];
+
+        $name  = (string) get_theme_mod('font_' . $role, $default_fonts[$role] ?? '');
+        $faces = [];
+
+        foreach (theme_get_default_font_faces() as $family => $family_faces) {
+            if (strcasecmp($family, $name) !== 0) continue;
+
+            $base = get_template_directory_uri() . '/fonts/';
+            foreach ($family_faces as $face) {
+                $faces[] = [
+                    'weight' => theme_parse_font_weight_range($face['weight']),
+                    'style'  => $face['style'],
+                    'url'    => $base . $face['file'],
+                ];
+            }
+            return $cache[$role] = $faces;
+        }
+
+        if (! class_exists('WP_Font_Face_Resolver')) return $cache[$role] = [];
+
+        // Font Library fonts: the saved name and the first family of its CSS value can differ
+        $names = array_filter([
+            theme_normalize_font_family_name($name),
+            theme_normalize_font_family_name(explode(',', _theme_resolve_font_family($name, theme_get_all_fonts(), ''))[0]),
+        ]);
+
+        static $groups = null;
+        if ($groups === null) $groups = WP_Font_Face_Resolver::get_fonts_from_theme_json();
+
+        foreach ($groups as $family_faces) {
+            $family = theme_normalize_font_family_name((string) ($family_faces[0]['font-family'] ?? ''));
+            if (! in_array($family, $names, true)) continue;
+
+            foreach ($family_faces as $face) {
+                $sources = array_values(array_filter((array) ($face['src'] ?? []), 'is_string'));
+                if (! $sources) continue;
+
+                // The browser uses the first source it supports: woff2 everywhere
+                $url = $sources[0];
+                foreach ($sources as $source) {
+                    if (str_ends_with(strtolower((string) strtok($source, '?#')), '.woff2')) {
+                        $url = $source;
+                        break;
+                    }
+                }
+
+                $faces[] = [
+                    'weight' => theme_parse_font_weight_range($face['font-weight'] ?? '400'),
+                    'style'  => strtolower((string) ($face['font-style'] ?? 'normal')),
+                    'url'    => $url,
+                ];
+            }
+            break;
+        }
+
+        return $cache[$role] = $faces;
+    }
+}
+
+if (! function_exists('theme_match_font_face')) {
+    /**
+     * The face the browser renders for a weight and style, following the CSS font matching rules: the closest
+     * style first, then a face whose weight range contains the weight, then the nearest weight in the direction
+     * the spec defines (for 400-500 heavier weights up to 500, then lighter, then heavier; below 400 lighter first;
+     * above 500 heavier first).
+     */
+    function theme_match_font_face(array $faces, int $weight, string $style = 'normal'): ?array
+    {
+        $style_order = [
+            'italic'  => ['italic', 'oblique', 'normal'],
+            'oblique' => ['oblique', 'italic', 'normal'],
+        ][$style] ?? ['normal', 'oblique', 'italic'];
+
+        foreach ($style_order as $candidate_style) {
+            $candidates = array_values(array_filter($faces, fn($face) => $face['style'] === $candidate_style));
+            if (! $candidates) continue;
+
+            // Rank: [group, distance]; a lower rank is a better match
+            $rank = function ($face) use ($weight) {
+                [$min, $max] = $face['weight'];
+                if ($weight >= $min && $weight <= $max) return [0, 0];
+
+                $value = $weight < $min ? $min : $max;
+                if ($weight >= 400 && $weight <= 500) {
+                    if ($value > $weight && $value <= 500) return [1, $value - $weight];
+                    if ($value < $weight) return [2, $weight - $value];
+                    return [3, $value - $weight];
+                }
+                if ($weight < 400) {
+                    return $value < $weight ? [1, $weight - $value] : [2, $value - $weight];
+                }
+                return $value > $weight ? [1, $value - $weight] : [2, $weight - $value];
+            };
+
+            usort($candidates, fn($a, $b) => $rank($a) <=> $rank($b));
+            return $candidates[0];
+        }
+
+        return null;
+    }
+}
+
+if (! function_exists('theme_print_font_preloads')) {
+    /**
+     * Preloads the font files the header and the hero render above the fold (theme_get_above_fold_font_variants()),
+     * for the fonts selected in the Customizer, bundled or from the Font Library. A file used by several variants
+     * (e.g. a variable font) is preloaded once, and at most 4 files are preloaded (filter theme_font_preload_limit),
+     * in the order of the variants, so the preloads don't compete with the hero image.
+     */
+    function theme_print_font_preloads()
+    {
+        if (! function_exists('theme_get_above_fold_font_variants')) return;
+
+        $hero_style = function_exists('get_page_hero_style') ? get_page_hero_style() : 'default';
+        $max_files  = (int) apply_filters('theme_font_preload_limit', 4);
+        $links      = [];
+
+        foreach (theme_get_above_fold_font_variants($hero_style) as $variant) {
+            $face = theme_match_font_face(
+                theme_get_role_font_faces($variant['role'] ?? 'primary'),
+                (int) ($variant['weight'] ?? 400),
+                $variant['style'] ?? 'normal'
+            );
+            if (! $face) continue;
+
+            $url   = $face['url'];
+            $media = $variant['media'] ?? '';
+
+            if (isset($links[$url])) {
+                // Needed without a media condition by another variant: preload it everywhere
+                if ($media === '') $links[$url] = '';
+                continue;
+            }
+            if (count($links) >= $max_files) continue;
+
+            $links[$url] = $media;
+        }
+
+        $types = ['woff2' => 'font/woff2', 'woff' => 'font/woff', 'ttf' => 'font/ttf', 'otf' => 'font/otf'];
+        foreach ($links as $url => $media) {
+            $extension = strtolower(pathinfo((string) strtok($url, '?#'), PATHINFO_EXTENSION));
+            printf(
+                '<link rel="preload" href="%s" as="font"%s%s crossorigin>' . "\n",
+                esc_url($url),
+                isset($types[$extension]) ? ' type="' . esc_attr($types[$extension]) . '"' : '',
+                $media !== '' ? ' media="' . esc_attr($media) . '"' : ''
+            );
+        }
+    }
+}
+add_action('wp_head', 'theme_print_font_preloads', 1);

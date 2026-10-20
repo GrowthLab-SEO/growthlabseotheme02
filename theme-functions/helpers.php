@@ -600,6 +600,16 @@ if (!function_exists('is_listing_page')) {
     }
 }
 
+// Hero style of the current request: listings always use the default hero and 404 pages have none
+if (!function_exists('get_page_hero_style')) {
+    function get_page_hero_style()
+    {
+        if (is_404()) return 'nohero';
+        if (is_listing_page()) return 'default';
+        return get_page_field('hero_style') ?: 'default';
+    }
+}
+
 // Fallback hero title for the current request, used when the page has no custom hero title
 if (!function_exists('get_page_hero_title')) {
     function get_page_hero_title()

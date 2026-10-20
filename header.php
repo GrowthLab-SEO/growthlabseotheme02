@@ -38,7 +38,7 @@ if (!defined('ABSPATH')) {
         $cta_button = get_page_field("cta_button") ?: null;
     }
 
-    $hero_style = is_listing_page() ? 'default' : (get_page_field('hero_style') ?: 'default');
+    $hero_style = get_page_hero_style();
     ?>
 
     <header role="banner" class="site-header <?= !is_404() && $hero_style !== "nohero" && $sticky_header ? "site-header--sticky" : "" ?>">

@@ -82,24 +82,6 @@ if (!is_admin()) {
 }
 
 /**
- * Preload the bundled font files of the fonts selected in the Customizer.
- * Nothing is preloaded when other fonts (e.g. from the Font Library) are selected.
- */
-add_action('wp_head', function () {
-    if (!function_exists('theme_get_selected_default_font_faces')) return;
-
-    $base = get_template_directory_uri() . '/fonts/';
-
-    foreach (theme_get_selected_default_font_faces() as $faces) {
-        foreach ($faces as $face) {
-            if (empty($face['preload'])) continue;
-            echo '<link rel="preload" href="' . esc_url($base . $face['file']) . '" as="font" type="font/woff2" crossorigin>' . "\n";
-        }
-    }
-}, 1);
-
-
-/**
  * Find and remove Google Maps JS API if accidentally loaded
  */
 add_action('wp_enqueue_scripts', function () {
