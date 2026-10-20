@@ -173,7 +173,7 @@ if (!function_exists('normalize_block_spacing')) {
         }
 
         if (is_string($value)) {
-            return $value;
+            return css_preset_value($value);
         }
 
         if (is_array($value)) {
@@ -194,6 +194,19 @@ if (!function_exists('normalize_block_spacing')) {
     }
 }
 
+// The editor stores preset spacing as "var:preset|spacing|40": turn it into the CSS variable WordPress prints
+// (var(--wp--preset--spacing--40)). Other values are returned as they are.
+if (!function_exists('css_preset_value')) {
+    function css_preset_value($value)
+    {
+        if (is_string($value) && str_starts_with($value, 'var:')) {
+            return 'var(--wp--' . str_replace('|', '--', substr($value, 4)) . ')';
+        }
+
+        return $value;
+    }
+}
+
 if (!function_exists('format_spacing_item')) {
     function format_spacing_item($value, $unit = '')
     {
@@ -209,7 +222,7 @@ if (!function_exists('format_spacing_item')) {
             return $value . ($unit ?: 'px');
         }
 
-        return (string) $value;
+        return css_preset_value((string) $value);
     }
 }
 
