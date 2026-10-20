@@ -85,24 +85,24 @@ if (!defined('ABSPATH')) {
             ?>
 
             <?php if (!empty($menu_args)) : ?>
-                <button class="site-header__mobile-btn" role="button" aria-label="<?= esc_attr__('Mobile Menu Button', 'growthlabseotheme02') ?>">
-                    <div>
-                        <hr>
-                        <hr>
-                        <hr>
-                    </div>
+                <button type="button" class="site-header__mobile-btn" aria-expanded="false" aria-controls="site-navigation">
+                    <span class="site-header__mobile-icon" aria-hidden="true">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </span>
                     <span><?= esc_html__('Menu', 'growthlabseotheme02') ?></span>
                 </button>
             <?php endif ?>
 
-            <div class="site-header__navigation">
+            <div class="site-header__navigation" id="site-navigation">
 
                 <?php if (!empty($menu_args)) : ?>
 
-                    <div class="site-header__close-btn hide-on-desktop" role="button" aria-label="<?= esc_attr__('Close Menu Button', 'growthlabseotheme02') ?>">
-                        <hr>
-                        <hr>
-                    </div>
+                    <button type="button" class="site-header__close-btn hide-on-desktop" aria-label="<?= esc_attr__('Close menu', 'growthlabseotheme02') ?>">
+                        <span aria-hidden="true"></span>
+                        <span aria-hidden="true"></span>
+                    </button>
 
                     <?php // wp_nav_menu() prints the nav.main-nav container itself ?>
                     <?php wp_nav_menu($menu_args); ?>

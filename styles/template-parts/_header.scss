@@ -299,7 +299,7 @@
       color: rgb(var(--secondary-light));
     }
 
-    div {
+    #{$header}__mobile-icon {
       width: 24px;
       height: 24px;
       position: relative;
@@ -308,7 +308,8 @@
       justify-content: space-evenly;
       align-items: center;
 
-      hr {
+      span {
+        display: block;
         width: 20px;
         height: 2px;
         background-color: rgb(var(--secondary-light));
@@ -322,8 +323,11 @@
     margin: 15px 15px 15px auto;
     position: relative;
     display: block;
+    background: none;
+    cursor: pointer;
 
-    hr {
+    span {
+      display: block;
       width: 20px;
       height: 2px;
       background-color: rgb(var(--secondary-light));
