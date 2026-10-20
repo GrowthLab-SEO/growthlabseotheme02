@@ -273,6 +273,14 @@ if (!function_exists('get_current_language')) {
     }
 }
 
+// Language URL slugs (options_by_language) switch content without changing the WordPress locale, so
+// language_attributes() would still print the site language there. Use the slug as the lang code when it is one.
+add_filter('language_attributes', function ($output) {
+    $slug = get_current_language()['slug'] ?? '';
+    if ($slug === '' || !preg_match('/^[a-z]{2,3}(-[a-z0-9]{2,8})*$/i', $slug)) return $output;
+    return preg_replace('/lang="[^"]*"/', 'lang="' . esc_attr($slug) . '"', $output);
+});
+
 if (!function_exists('get_current_language_suffix')) {
     function get_current_language_suffix()
     {
