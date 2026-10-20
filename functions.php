@@ -337,6 +337,8 @@ function inline_main_critical_css()
     }
 
     $cache_key = 'growthlabseotheme02_ccss_' . md5(serialize(array(
+        // This file builds the CSS, so changing it invalidates the cache too
+        @filemtime(__FILE__),
         $theme_uri,
         $source_mtimes,
         $block_css_files,
@@ -344,7 +346,9 @@ function inline_main_critical_css()
         md5($fonts_css . $color_scheme),
     )));
 
-    $critical_css = get_transient($cache_key);
+    // Customizer previews change fonts/colors on every refresh, so don't fill the cache from them
+    $use_cache = !is_customize_preview();
+    $critical_css = $use_cache ? get_transient($cache_key) : false;
     if (is_string($critical_css)) {
         echo '<style id="main-css">' . $critical_css . '</style>';
         return;
@@ -378,12 +382,13 @@ function inline_main_critical_css()
     $critical_css = preg_replace('/\{theme-path\}/', $theme_uri, $critical_css);
     // Minify CSS: remove comments, extra spaces, and newlines
     $critical_css = preg_replace('/\/\*.*?\*\//s', '', $critical_css); // Remove CSS comments
-    $critical_css = preg_replace('/\s+/', ' ', $critical_css); // Replace multiple spaces with single space
-    $critical_css = preg_replace('/\s*([{}:;,])\s*/', '$1', $critical_css); // Remove spaces around braces, colons, semicolons, commas
+    $critical_css = preg_replace('/\s+/', ' ', $critical_css); // Collapse whitespace runs into one space
+    // Spaces around braces and semicolons are never significant; the ones around ":" and "," can be (".a :hover", strings)
+    $critical_css = preg_replace('/\s*([{};])\s*/', '$1', $critical_css);
     $critical_css = trim($critical_css); // Trim leading/trailing whitespace
 
     // An expiration keeps the transient out of the autoloaded options
-    set_transient($cache_key, $critical_css, WEEK_IN_SECONDS);
+    if ($use_cache) set_transient($cache_key, $critical_css, WEEK_IN_SECONDS);
 
     echo '<style id="main-css">' . $critical_css . '</style>';
 }
