@@ -189,6 +189,15 @@
           }
         }
       }
+
+      // Unstyled button inside the item, so the item looks the same while being focusable
+      &__button {
+        padding: 0;
+        background: none;
+        border: none;
+        color: inherit;
+        cursor: pointer;
+      }
     }
 
     .footer-office {

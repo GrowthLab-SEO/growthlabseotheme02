@@ -29,9 +29,12 @@
             <ul class="footer-offices-selector">
               <?php foreach ($offices as $office): ?>
                 <li class="footer-offices-selector__item btn btn--secondary" data-office="<?= esc_attr($office['city']); ?>">
-                  <span>
-                    <?= esc_html($office['city']); ?>
-                  </span>
+                  <?php // The button makes the item keyboard reachable; its click bubbles to the li handler in main.js ?>
+                  <button type="button" class="footer-offices-selector__button">
+                    <span>
+                      <?= esc_html($office['city']); ?>
+                    </span>
+                  </button>
                 </li>
               <?php endforeach ?>
             </ul>
