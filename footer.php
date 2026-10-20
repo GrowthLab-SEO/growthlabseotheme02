@@ -50,11 +50,10 @@
 
                     <address class="footer-office__info">
 
-                      <<?= $office["city_tag"] ?> class="footer-office__city">
-                        <a href="<?= $office['target_page_url'] ?>" aria-label="<?= esc_attr($office['city']); ?>">
-                          <?= esc_html($office['city']); ?>
-                        </a>
-                      </<?= $office["city_tag"] ?>>
+                      <?php
+                      $city_link = '<a href="' . esc_url($office['target_page_url'] ?? '') . '" aria-label="' . esc_attr($office['city']) . '">' . esc_html($office['city']) . '</a>';
+                      print_title($city_link, $office['city_tag'] ?? 'p', 'footer-office__city');
+                      ?>
 
                       <div class="footer-office__item">
                         <?php echo get_theme_svg('assets/icons/icon-location-outlined.svg'); ?>
@@ -66,10 +65,10 @@
                         <a href="tel:+1<?= get_flat_number($office['phone']) ?>" aria-label="<?= esc_attr($office['phone']); ?>"><?= esc_html($office['phone']); ?></a>
                       </p>
 
-                      <?php if ($office['cta_button'] && isset($office['cta_button'])): ?>
-                        <a href="<?= $office['cta_button']['url'] ?>" class="footer-office__cta btn btn--tertiary" target="<?= $office['cta_button']['target'] ?>" aria-label="<?= esc_attr($office['cta_button']['title']); ?>">
+                      <?php if (!empty($office['cta_button']['url'])): ?>
+                        <a href="<?= esc_url($office['cta_button']['url']) ?>" class="footer-office__cta btn btn--tertiary"<?= !empty($office['cta_button']['target']) ? ' target="' . esc_attr($office['cta_button']['target']) . '"' . ($office['cta_button']['target'] === '_blank' ? ' rel="noopener noreferrer"' : '') : '' ?> aria-label="<?= esc_attr($office['cta_button']['title'] ?? ''); ?>">
                           <span>
-                            <?= esc_html($office['cta_button']['title']); ?>
+                            <?= esc_html($office['cta_button']['title'] ?? ''); ?>
                           </span>
                         </a>
                       <?php endif; ?>
