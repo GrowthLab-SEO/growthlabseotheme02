@@ -290,10 +290,14 @@ function footerOfficesSelector() {
 
   if (!officeSelectors.length || !offices.length) return;
 
+  // The selected office is marked with the active class and, for assistive technology, aria-pressed on its button
+  const setSelected = (selector, selected) => {
+    selector.classList.toggle("active", selected);
+    selector.querySelector("button")?.setAttribute("aria-pressed", selected ? "true" : "false");
+  };
+
   // Set first element as active on page load
-  if (officeSelectors[0]) {
-    officeSelectors[0].classList.add("active");
-  }
+  officeSelectors.forEach((selector, index) => setSelected(selector, index === 0));
   if (offices[0]) {
     offices[0].classList.add("active");
   }
@@ -303,11 +307,11 @@ function footerOfficesSelector() {
       const officeCity = selector.getAttribute("data-office");
 
       // Remove active class from all selectors and offices
-      officeSelectors.forEach((item) => item.classList.remove("active"));
+      officeSelectors.forEach((item) => setSelected(item, false));
       offices.forEach((office) => office.classList.remove("active"));
 
       // Add active class to clicked selector
-      selector.classList.add("active");
+      setSelected(selector, true);
 
       // Add active class to matching office
       offices.forEach((office) => {
