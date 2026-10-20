@@ -200,11 +200,10 @@ if (!defined('ABSPATH')) {
     <?php
     $hero_title = get_page_field("hero_properties")["hero_title"] ?? null;
 
-    // Without a custom hero title the page title is the page heading
+    // Without a custom hero title the page title is the page heading. A custom title is a WYSIWYG field, so editors
+    // choose its tag there (it isn't always the page h1, for SEO or styling reasons) and it is printed as written.
     if (empty($hero_title)) {
         $hero_title = '<h1>' . wp_kses_post(get_page_hero_title()) . '</h1>';
-    } else {
-        $hero_title = get_hero_heading($hero_title);
     }
 
 

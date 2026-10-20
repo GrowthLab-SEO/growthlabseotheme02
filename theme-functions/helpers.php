@@ -600,19 +600,6 @@ if (!function_exists('is_listing_page')) {
     }
 }
 
-// The hero title is the page heading. Hero titles come from a WYSIWYG field, so when the editor didn't use an h1 the
-// first paragraph becomes the h1 (the hero styles inherit from the wrapper, so the look doesn't change).
-if (!function_exists('get_hero_heading')) {
-    function get_hero_heading($html)
-    {
-        $html = (string) $html;
-        if ($html === '' || stripos($html, '<h1') !== false) return $html;
-
-        $heading = preg_replace('~<p(\s[^>]*)?>(.*?)</p>~is', '<h1$1>$2</h1>', $html, 1, $count);
-        return $count ? $heading : '<h1>' . $html . '</h1>';
-    }
-}
-
 // Fallback hero title for the current request, used when the page has no custom hero title
 if (!function_exists('get_page_hero_title')) {
     function get_page_hero_title()
