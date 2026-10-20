@@ -114,7 +114,7 @@ if (get_field('toggle_block')):
 
             <?php if ($text_content): ?>
                 <div class="posts-grid__content formatted-text tx-center">
-                    <?= $text_content ?>
+                    <?= wp_kses_post($text_content) ?>
                 </div>
             <?php endif ?>
 

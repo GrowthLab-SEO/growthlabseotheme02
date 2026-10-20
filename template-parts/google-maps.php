@@ -17,7 +17,7 @@ if (!defined('ABSPATH')) {
     }
 
     if ($iframe_src): ?>
-        <div class="<?= $args['classes'] ?? '' ?> gmap-lazy"
+        <div class="<?= esc_attr($args['classes'] ?? '') ?> gmap-lazy"
             data-src="<?= esc_url($iframe_src) ?>"
             data-city="<?= esc_attr($args['name'] ?? '') ?>">
             <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#999;text-align:center;">

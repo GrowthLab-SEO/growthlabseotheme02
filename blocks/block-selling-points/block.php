@@ -29,7 +29,7 @@ if (get_field('toggle_block')):
             if (isset($text_content) && $text_content):
             ?>
                 <div class="selling-points__content formatted-text tx-center">
-                    <?= $text_content ?>
+                    <?= wp_kses_post($text_content) ?>
                 </div>
             <?php
             endif
@@ -54,12 +54,17 @@ if (get_field('toggle_block')):
 
                                                 <?php
                                                 $item_title_html = $item['title'] ?? '';
-                                                if (!empty($item['title']) && !empty($item['link'])) $item_title_html = "<a href='" . esc_url($item['link']["url"]) . "' target='" . esc_attr($item['link']["target"]) . "' class='item-card__link'>" . $item['title'] . "</a>";
+                                                if (!empty($item['title']) && !empty($item['link']['url'])) {
+                                                    $link_target = $item['link']['target'] ?? '';
+                                                    $item_title_html = '<a href="' . esc_url($item['link']['url']) . '"'
+                                                        . ($link_target ? ' target="' . esc_attr($link_target) . '"' . ($link_target === '_blank' ? ' rel="noopener noreferrer"' : '') : '')
+                                                        . ' class="item-card__link">' . $item['title'] . '</a>';
+                                                }
                                                 print_title($item_title_html, $item['title_tag'] ?? 'p', "item-card__title");
                                                 ?>
 
                                                 <?php if (!empty($item['content'])): ?>
-                                                    <p class="item-card__description"><?= $item['content'] ?></p>
+                                                    <p class="item-card__description"><?= wp_kses_post($item['content']) ?></p>
                                                 <?php endif; ?>
                                             </div>
                                         </div>

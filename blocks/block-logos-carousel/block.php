@@ -38,9 +38,9 @@ if (get_field('toggle_block')):
                                     <div class="logo splide__slide">
                                         <?php if ($has_link): ?>
                                             <a href="<?= esc_url($logo['link']['url']); ?>"
-                                                target="<?= esc_attr($logo['link']['target']); ?>"
+                                                <?= !empty($logo['link']['target']) ? ' target="' . esc_attr($logo['link']['target']) . '"' . ($logo['link']['target'] === '_blank' ? ' rel="noopener noreferrer"' : '') : '' ?>
                                                 class="logo__link"
-                                                aria-label="<?= esc_attr($logo['link']['title']); ?>">
+                                                aria-label="<?= esc_attr($logo['link']['title'] ?? ''); ?>">
                                             <?php endif; ?>
 
                                             <?= img_generate_picture_tag(
@@ -51,7 +51,7 @@ if (get_field('toggle_block')):
 
 
                                             <?php if ($has_link): ?>
-                                                <span><?= $logo['link']['title'] ?></span>
+                                                <span><?= esc_html($logo['link']['title'] ?? '') ?></span>
                                             </a>
                                         <?php endif; ?>
                                     </div>

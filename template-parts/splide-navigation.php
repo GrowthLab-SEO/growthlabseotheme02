@@ -18,14 +18,14 @@
         ';
     ?>
 
- <div class="splide__arrows pagination-buttons <?= $args["classes"] ?>">
+ <div class="splide__arrows pagination-buttons <?= esc_attr($args["classes"] ?? '') ?>">
      <button class="splide__arrow splide__arrow--prev arrow arrow--prev">
          <?= $prev_arrow ?>
      </button>
 
-     <?php if ($args['nav_link']): ?>
-         <a href="<?= $args['nav_link']['url'] ?>" target="<?= $args['nav_link']['target'] ?>" class="cta-btn btn btn--tertiary" aria-label="<?= esc_attr($args['nav_link']['title']) ?>">
-             <span><?= $args['nav_link']['title'] ?></span>
+     <?php if (!empty($args['nav_link']['url'])): ?>
+         <a href="<?= esc_url($args['nav_link']['url'] ?? '') ?>"<?= !empty($args['nav_link']['target']) ? ' target="' . esc_attr($args['nav_link']['target']) . '"' . ($args['nav_link']['target'] === '_blank' ? ' rel="noopener noreferrer"' : '') : '' ?> class="cta-btn btn btn--tertiary" aria-label="<?= esc_attr($args['nav_link']['title'] ?? '') ?>">
+             <span><?= esc_html($args['nav_link']['title'] ?? '') ?></span>
          </a>
      <?php endif ?>
 

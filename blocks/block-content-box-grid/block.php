@@ -21,7 +21,7 @@ if (get_field('toggle_block')):
 
             <?php if ($text_content): ?>
                 <div class="content-box-grid__content formatted-text tx-center">
-                    <?= $text_content ?>
+                    <?= wp_kses_post($text_content) ?>
                 </div>
             <?php endif ?>
 
@@ -42,10 +42,15 @@ if (get_field('toggle_block')):
 
                                             <?php
                                             $box_title_html = $item['title'] ?? '';
-                                            if (!empty($item['title']) && !empty($item['title_link'])) $box_title_html = "<a href='" . esc_url($item['title_link']['url']) . "' target='" . esc_attr($item['title_link']['target']) . "' aria-label='" . esc_attr($item['title']) . "'>" . $item['title'] . "</a>";
+                                            if (!empty($item['title']) && !empty($item['title_link']['url'])) {
+                                                $title_target = $item['title_link']['target'] ?? '';
+                                                $box_title_html = '<a href="' . esc_url($item['title_link']['url']) . '"'
+                                                    . ($title_target ? ' target="' . esc_attr($title_target) . '"' . ($title_target === '_blank' ? ' rel="noopener noreferrer"' : '') : '')
+                                                    . ' aria-label="' . esc_attr(wp_strip_all_tags($item['title'])) . '">' . $item['title'] . '</a>';
+                                            }
                                             print_title($box_title_html, $item['title_tag'] ?? 'p', "box__title");
                                             ?>
-                                            <?= $item['text_content'] ?? ''; ?>
+                                            <?= wp_kses_post($item['text_content'] ?? ''); ?>
 
                                         </div>
 
@@ -65,7 +70,7 @@ if (get_field('toggle_block')):
                     ?>
 
                         <li class="box box--menu-item">
-                            <a href="<?= esc_url($menu_item->url) ?>" target="<?= esc_attr($menu_item->target) ?>" class="box__wrapper" aria-label="<?= esc_attr($menu_item->title) ?>">
+                            <a href="<?= esc_url($menu_item->url) ?>"<?= !empty($menu_item->target) ? ' target="' . esc_attr($menu_item->target) . '"' . ($menu_item->target === '_blank' ? ' rel="noopener noreferrer"' : '') : '' ?> class="box__wrapper" aria-label="<?= esc_attr($menu_item->title) ?>">
                                 <div class="box__inner">
 
                                     <div class="box__content formatted-text">

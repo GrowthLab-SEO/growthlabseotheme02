@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 $options = get_field_options("options");
 
 ?>
-<div class="team-card <?= $args["classes"] ?>">
+<div class="team-card <?= esc_attr($args["classes"] ?? '') ?>">
     <div class="team-card__wrapper">
 
         <div class='team-card__pic-wrapper'>
@@ -20,16 +20,16 @@ $options = get_field_options("options");
         </div>
 
         <div class="team-card__inner">
-            <p class="team-card__role pretitle"><?= $args["role"] ?></p>
+            <p class="team-card__role pretitle"><?= wp_kses_post($args["role"] ?? '') ?></p>
 
             <?php print_title($args["title"], $args["title_tag"], "team-card__title"); ?>
 
-            <p class="team-card__content formatted-text"><?php if ($args["content"] && !empty($args["content"])) echo $args["content"] ?></p>
+            <p class="team-card__content formatted-text"><?php if (!empty($args["content"])) echo wp_kses_post($args["content"]) ?></p>
 
             <?php if ($args['link_url']): ?>
                 <div class="team-card__btn">
-                    <a href="<?= $args['link_url'] ?>" target="<?= $args['link_target'] ?>" class="btn btn--tertiary" aria-label="Meet <?= esc_attr($args['first_name']) ?>">
-                        <span>MEET <?= $args['first_name'] && !empty($args['first_name']) ? $args['first_name'] : '' ?></span>
+                    <a href="<?= esc_url($args['link_url']) ?>"<?= !empty($args['link_target']) ? ' target="' . esc_attr($args['link_target']) . '"' . ($args['link_target'] === '_blank' ? ' rel="noopener noreferrer"' : '') : '' ?> class="btn btn--tertiary" aria-label="Meet <?= esc_attr($args['first_name'] ?? '') ?>">
+                        <span>MEET <?= esc_html($args['first_name'] ?? '') ?></span>
                     </a>
                 </div>
             <?php endif ?>

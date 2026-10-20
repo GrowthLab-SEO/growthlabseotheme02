@@ -62,7 +62,7 @@
 
                       <p class="footer-office__item">
                         <?php echo get_theme_svg('assets/icons/icon-phone.svg'); ?>
-                        <a href="tel:+1<?= get_flat_number($office['phone']) ?>" aria-label="<?= esc_attr($office['phone']); ?>"><?= esc_html($office['phone']); ?></a>
+                        <a href="<?= get_phone_href($office['phone']) ?>" aria-label="<?= esc_attr($office['phone']); ?>"><?= esc_html($office['phone']); ?></a>
                       </p>
 
                       <?php if (!empty($office['cta_button']['url'])): ?>
@@ -121,7 +121,7 @@
           <?php if (!empty($content_section['first_column_content'])): ?>
             <div class="content-info-footer__col">
               <div class="formatted-text">
-                <?= $content_section['first_column_content'] ?>
+                <?= wp_kses_post($content_section['first_column_content']) ?>
               </div>
             </div>
           <?php endif; ?>
@@ -137,7 +137,7 @@
               </div>
 
               <?php if (!empty($content_section['cta_button'])): ?>
-                <a href="<?= $content_section['cta_button']['url'] ?>" class="btn btn--primary" target="<?= $content_section['cta_button']['target'] ?>" aria-label="<?= esc_attr($content_section['cta_button']['title']) ?>">
+                <a href="<?= esc_url($content_section['cta_button']['url'] ?? '') ?>" class="btn btn--primary"<?= !empty($content_section['cta_button']['target']) ? ' target="' . esc_attr($content_section['cta_button']['target']) . '"' . ($content_section['cta_button']['target'] === '_blank' ? ' rel="noopener noreferrer"' : '') : '' ?> aria-label="<?= esc_attr($content_section['cta_button']['title']) ?>">
                   <span>
                     <?= esc_html($content_section['cta_button']['title']) ?>
                   </span>
@@ -150,7 +150,7 @@
           <?php if (!empty($content_section['last_column_content'])): ?>
             <div class="content-info-footer__col">
               <div class="formatted-text">
-                <?= $content_section['last_column_content'] ?>
+                <?= wp_kses_post($content_section['last_column_content']) ?>
               </div>
             </div>
           <?php endif; ?>
@@ -166,7 +166,7 @@
       <section class="copyright-footer">
         <div class="copyright-footer__wrapper container">
           <p class="copyright-footer__advertisement">
-            <?= !empty($copyright_section['copyright']) ? $copyright_section['copyright'] : '' ?>
+            <?= !empty($copyright_section['copyright']) ? wp_kses_post($copyright_section['copyright']) : '' ?>
           </p>
 
           <?php
@@ -186,7 +186,7 @@
           ?>
 
           <a href="https://growthlabseo.com/" target="_blank" class="copyright-footer__logo" aria-label="Growth Lab SEO">
-            <img src="<?= get_template_directory_uri() . "/assets/img/Growth-Lab-Logo-footer.webp" ?>" alt="Growth Lab SEO Logo" width="270" height="50">
+            <img src="<?= esc_url(get_template_directory_uri() . '/assets/img/Growth-Lab-Logo-footer.webp') ?>" alt="Growth Lab SEO Logo" width="270" height="50">
           </a>
 
         </div>

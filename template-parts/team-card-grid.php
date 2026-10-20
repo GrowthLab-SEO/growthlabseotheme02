@@ -4,9 +4,9 @@ if (!defined('ABSPATH')) {
 }
 ?>
 
-<div class="team-card-grid <?= $args["classes"] ?>">
-    <?php if ($args['link_url'] && $args['link_url'] !== ''): ?>
-        <a href="<?= $args['link_url'] ?>" target="<?= $args['link_target'] ?>" class="team-card-grid__wrapper" aria-label="<?= esc_attr($args['name']) ?>">
+<div class="team-card-grid <?= esc_attr($args["classes"] ?? '') ?>">
+    <?php if (!empty($args['link_url'])): ?>
+        <a href="<?= esc_url($args['link_url']) ?>"<?= !empty($args['link_target']) ? ' target="' . esc_attr($args['link_target']) . '"' . ($args['link_target'] === '_blank' ? ' rel="noopener noreferrer"' : '') : '' ?> class="team-card-grid__wrapper" aria-label="<?= esc_attr(wp_strip_all_tags($args['name'] ?? '')) ?>">
             <?php
             if (isset($args['picture']) && $args['picture'] && $args['picture'] !== '') {
                 img_print_picture_tag(img: $args["picture"], max_size: "cover-mobile", min_size: "featured-small", classes: "team-card-grid__pic");
@@ -17,9 +17,9 @@ if (!defined('ABSPATH')) {
 
             <div class="team-card-grid__inner tx-center">
 
-                <p class="team-card-grid__title"><?= $args["name"] ?></p>
+                <p class="team-card-grid__title"><?= wp_kses_post($args["name"] ?? '') ?></p>
 
-                <p class="team-card-grid__role"><?= $args["role"] ?></p>
+                <p class="team-card-grid__role"><?= wp_kses_post($args["role"] ?? '') ?></p>
 
             </div>
         </a>

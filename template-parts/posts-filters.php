@@ -113,7 +113,7 @@ $extra_classes = isset($args['classes']) ? esc_attr($args['classes']) : '';
                 <select class="posts-filters__select" id="pf-year" name="year">
                     <option value="">All years</option>
                     <?php for ($y = $year_end; $y >= $year_start; $y--): ?>
-                        <option value="<?= $y ?>"><?= $y ?></option>
+                        <option value="<?= (int) $y ?>"><?= (int) $y ?></option>
                     <?php endfor ?>
                 </select>
                 <svg class="posts-filters__chevron" aria-hidden="true" width="12" height="12"

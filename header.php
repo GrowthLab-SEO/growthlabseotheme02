@@ -125,14 +125,14 @@ if (!defined('ABSPATH')) {
                             <?php endif; ?>
 
                             <?php if ($top_callout_first_line && $top_callout_first_line !== ''): ?>
-                                <span class="callout__text callout__text--first"><?= $top_callout_first_line ?></span>
+                                <span class="callout__text callout__text--first"><?= wp_kses_post($top_callout_first_line) ?></span>
                             <?php endif; ?>
                             <?php if ($top_callout_second_line && $top_callout_second_line !== ''): ?>
-                                <span class="callout__text callout__text--second"><?= $top_callout_second_line ?></span>
+                                <span class="callout__text callout__text--second"><?= wp_kses_post($top_callout_second_line) ?></span>
                             <?php endif; ?>
-                            <a href="tel:+1<?= get_flat_number($phone_number) ?>" class="callout__phone" aria-label="Call us at <?= esc_attr($phone_number) ?>">
+                            <a href="<?= get_phone_href($phone_number) ?>" class="callout__phone" aria-label="Call us at <?= esc_attr($phone_number) ?>">
                                 <?php echo get_theme_svg('assets/icons/icon-phone.svg') ?>
-                                <?= $phone_number ?>
+                                <?= esc_html($phone_number) ?>
                             </a>
                         </div>
 
@@ -142,10 +142,10 @@ if (!defined('ABSPATH')) {
 
             <?php if ($cta_button): ?>
                 <div class="site-header__cta <?= isset($cta_button_mobile_only) && $cta_button_mobile_only ? 'hide-on-mobile hide-on-tablet' : ''; ?>">
-                    <a href="<?= $cta_button['url'] ?>" class="cta-button btn--tertiary" target="<?= $cta_button['target'] ?>" aria-label="<?= esc_attr($cta_button['title']) ?>">
+                    <a href="<?= esc_url($cta_button['url'] ?? '') ?>" class="cta-button btn--tertiary"<?= !empty($cta_button['target']) ? ' target="' . esc_attr($cta_button['target']) . '"' . ($cta_button['target'] === '_blank' ? ' rel="noopener noreferrer"' : '') : '' ?> aria-label="<?= esc_attr($cta_button['title'] ?? '') ?>">
 
                         <span class="cta-button__text">
-                            <?= $cta_button['title'] ?>
+                            <?= esc_html($cta_button['title'] ?? '') ?>
                         </span>
 
                     </a>
@@ -154,10 +154,10 @@ if (!defined('ABSPATH')) {
 
             <?php if ($cta_button_mobile_only): ?>
                 <div class="site-header__cta--mobile-only hide-on-desktop">
-                    <a href="<?= $cta_button_mobile_only['url'] ?>" class="cta-button btn--tertiary" target="<?= $cta_button_mobile_only['target'] ?>" aria-label="<?= esc_attr($cta_button_mobile_only['title']) ?>">
+                    <a href="<?= esc_url($cta_button_mobile_only['url'] ?? '') ?>" class="cta-button btn--tertiary"<?= !empty($cta_button_mobile_only['target']) ? ' target="' . esc_attr($cta_button_mobile_only['target']) . '"' . ($cta_button_mobile_only['target'] === '_blank' ? ' rel="noopener noreferrer"' : '') : '' ?> aria-label="<?= esc_attr($cta_button_mobile_only['title'] ?? '') ?>">
 
                         <span class="cta-button__text">
-                            <?= $cta_button_mobile_only['title'] ?>
+                            <?= esc_html($cta_button_mobile_only['title'] ?? '') ?>
                         </span>
 
                     </a>

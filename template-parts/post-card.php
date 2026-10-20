@@ -3,12 +3,16 @@ if (!defined('ABSPATH')) {
     exit;
 }
 ?>
-<article class="post-card <?= $args["classes"] ?>">
+<?php
+// Link target attribute (and rel for new tabs), empty when no target is set
+$target_attr = !empty($args['link_target']) ? ' target="' . esc_attr($args['link_target']) . '"' . ($args['link_target'] === '_blank' ? ' rel="noopener noreferrer"' : '') : '';
+?>
+<article class="post-card <?= esc_attr($args["classes"] ?? '') ?>">
     <div class="post-card__wrapper">
 
         <?php
         if ($args['link_url']) {
-            echo "<a href=" . $args['link_url'] . " class='post-card__pic-wrapper' target=" . $args['link_target'] . " aria-label='" . esc_attr($args['title']) . "'>";
+            echo '<a href="' . esc_url($args['link_url']) . '" class="post-card__pic-wrapper"' . $target_attr . ' aria-label="' . esc_attr(wp_strip_all_tags($args['title'])) . '">';
         } else {
             echo "<div class='post-card__pic-wrapper'>";
         }
@@ -28,14 +32,14 @@ if (!defined('ABSPATH')) {
         ?>
 
         <div class="post-card__inner">
-            <span class="post-card__meta"><?= $args["meta"] ?></span>
+            <span class="post-card__meta"><?= esc_html($args["meta"] ?? '') ?></span>
 
             <?php print_title($args["title"], $args["title_tag"], "post-card__title"); ?>
 
-            <p class="post-card__content"><?= $args["excerpt"] ?></p>
+            <p class="post-card__content"><?= wp_kses_post($args["excerpt"] ?? '') ?></p>
 
             <?php if ($args['link_url']): ?>
-                <a href="<?= $args['link_url'] ?>" target="<?= $args['link_target'] ?>" class="post-card__link" aria-label="Read more about <?= esc_attr($args['title']) ?>">
+                <a href="<?= esc_url($args['link_url']) ?>"<?= $target_attr ?> class="post-card__link" aria-label="Read more about <?= esc_attr(wp_strip_all_tags($args['title'])) ?>">
                     <span>Read More
                         <?php echo get_theme_svg('assets/icons/icon-circle-arrow.svg') ?>
                     </span>

@@ -4,11 +4,11 @@ if (!defined('ABSPATH')) {
 }
 ?>
 <?php $location = $args['location']; ?>
-<div class="location-card accordion <?= isset($args['classes']) ? $args['classes'] : '' ?>">
+<div class="location-card accordion <?= esc_attr($args['classes'] ?? '') ?>">
     <?php
     $tp_url = $location['target_page_url'];
     $city = $tp_url ? "<a href='" . esc_url($tp_url) . "' target='_blank' aria-label='" . esc_attr($location['city']) . "'>" : '';
-    $city .= $location['city'];
+    $city .= esc_html($location['city']);
     $city .= $tp_url ? "</a>" : '';
     ?>
 
@@ -32,18 +32,18 @@ if (!defined('ABSPATH')) {
                 </div>
                 <div class="location-card__col">
 
-                    <p class="location-card__address"><?= $location['address'] ?></p>
+                    <p class="location-card__address"><?= wp_kses_post($location['address'] ?? '') ?></p>
 
-                    <?php if (!empty($location['cta_button']) && $location['cta_button']['url']): ?>
-                        <a href="<?= esc_url($location['cta_button']['url']) ?>" class="location-card__cta" aria-label="<?= esc_attr($location['cta_button']['title']) ?>">
-                            <?= esc_html($location['cta_button']['title']) ?>
+                    <?php if (!empty($location['cta_button']['url'])): ?>
+                        <a href="<?= esc_url($location['cta_button']['url']) ?>" class="location-card__cta" aria-label="<?= esc_attr($location['cta_button']['title'] ?? '') ?>">
+                            <?= esc_html($location['cta_button']['title'] ?? '') ?>
                         </a>
                     <?php endif ?>
 
                     <?php if ($location['phone']): ?>
-                        <a href="tel:+1<?= get_flat_number($location['phone']) ?>" class="location-card__btn btn btn--tertiary" aria-label="Call us at <?= esc_attr($location['phone']) ?>">
+                        <a href="<?= get_phone_href($location['phone']) ?>" class="location-card__btn btn btn--tertiary" aria-label="Call us at <?= esc_attr($location['phone']) ?>">
                             <span>
-                                <?= $location['phone'] ?>
+                                <?= esc_html($location['phone']) ?>
                             </span>
                         </a>
                     <?php endif ?>

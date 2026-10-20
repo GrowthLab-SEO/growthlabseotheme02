@@ -4,7 +4,7 @@ if (!defined('ABSPATH')) {
 }
 ?>
 
-<div class="testimonial-card <?= $args["classes"] ?>">
+<div class="testimonial-card <?= esc_attr($args["classes"] ?? '') ?>">
     <div class="testimonial-card__wrapper">
         <div class="testimonial-card__inner">
 
@@ -23,13 +23,13 @@ if (!defined('ABSPATH')) {
 
             <blockquote class="testimonial-card__content">
                 <p>
-                    "<?= $args["content"] ?>"
+                    "<?= wp_kses_post($args["content"] ?? '') ?>"
                 </p>
             </blockquote>
 
             <p class="testimonial-card__author">
-                <?= $args["author"] ?>
-                <span><?= $args["role"]  ?></span>
+                <?= wp_kses_post($args["author"] ?? '') ?>
+                <span><?= wp_kses_post($args["role"] ?? '') ?></span>
             </p>
 
         </div>
