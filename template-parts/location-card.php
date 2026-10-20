@@ -12,10 +12,20 @@ if (!defined('ABSPATH')) {
     $city .= $tp_url ? "</a>" : '';
     ?>
 
-    <div class="location-card__container">
-        <?= print_title($city, $location['city_tag'], "location-card__city accordion__heading"); ?>
+    <?php
+    // Disabled accordions stay open and are not interactive
+    $is_accordion = !str_contains(' ' . ($args['classes'] ?? '') . ' ', ' disabled ');
+    $panel_id = wp_unique_id('location-card-panel-');
+    $city_heading = (string) get_wrapped_title($city, $location['city_tag'] ?? 'p', "location-card__city accordion__heading");
+    if ($is_accordion) {
+        $city_heading = preg_replace('/^<([a-z0-9]+)/', '<$1 role="button" tabindex="0" aria-expanded="false" aria-controls="' . esc_attr($panel_id) . '"', $city_heading, 1);
+    }
+    ?>
 
-        <div class="location-card__wrapper accordion__content">
+    <div class="location-card__container">
+        <?= $city_heading ?>
+
+        <div class="location-card__wrapper accordion__content" id="<?= esc_attr($panel_id) ?>">
 
             <div class="location-card__inner accordion__inner">
                 <div class="location-card__col">

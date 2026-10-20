@@ -69,13 +69,14 @@ if (get_field('toggle_block')):
                                 <?php
                                 if (!empty($section['faq_items'])) :
                                     foreach ($section['faq_items'] as $item) :
+                                        $answer_id = wp_unique_id('faq-answer-');
                                 ?>
 
                                         <div class="faq__item accordion">
-                                            <div class="faq__question accordion__heading">
+                                            <div class="faq__question accordion__heading" role="button" tabindex="0" aria-expanded="false" aria-controls="<?= esc_attr($answer_id) ?>">
                                                 <?php print_title($item['question'] ?? '', $item['question_tag'] ?? 'p'); ?>
                                             </div>
-                                            <div class="faq__answer accordion__content">
+                                            <div class="faq__answer accordion__content" id="<?= esc_attr($answer_id) ?>">
                                                 <div class="formatted-text accordion__inner">
                                                     <?= wp_kses_post($item['answer'] ?? '') ?>
                                                 </div>
