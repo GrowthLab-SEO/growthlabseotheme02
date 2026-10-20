@@ -285,8 +285,10 @@ add_action('wp_enqueue_scripts', function () {
     }
 }, 999);
 
-// Add ACF Options Page
-if (function_exists('acf_add_options_page') && current_user_can('manage_options')) {
+// Add ACF Options Page. Registered on acf/init (ACF's documented hook); the capability setting limits it to admins.
+add_action('acf/init', function () {
+    if (!function_exists('acf_add_options_page')) return;
+
     acf_add_options_page(array(
         'page_title' => 'Site Options',
         'menu_title' => 'Site Options',
@@ -295,7 +297,7 @@ if (function_exists('acf_add_options_page') && current_user_can('manage_options'
         'capability' => 'manage_options',
         'redirect'   => false
     ));
-}
+});
 
 if (!function_exists('my_acf_json_save_point')) {
     function my_acf_json_save_point($path)
