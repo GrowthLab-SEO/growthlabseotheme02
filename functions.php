@@ -397,8 +397,12 @@ function growthlabseotheme02_scripts()
     wp_scripts()->add_data('jquery', 'group', 1);
     wp_scripts()->add_data('jquery-core', 'group', 1);
 
-    // Remove jQuery Migrate (not needed for modern GF)
-    wp_deregister_script('jquery-migrate');
+    // Drop jQuery Migrate from the jquery dependencies (not needed for modern GF).
+    // Deregistering it instead would make WordPress skip jquery and every script that depends on it.
+    $jquery = wp_scripts()->query('jquery', 'registered');
+    if ($jquery) {
+        $jquery->deps = array_values(array_diff($jquery->deps, ['jquery-migrate']));
+    }
 
     // Gravity Forms - remove maps
     wp_dequeue_script('gform_gravityforms_maps');
