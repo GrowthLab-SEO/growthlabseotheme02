@@ -371,3 +371,74 @@ add_filter('wp_theme_json_data_user', function ($theme_json) {
     unset($data['settings']['typography']['fontFamilies']['theme']);
     return new WP_Theme_JSON_Data($data, 'custom');
 });
+
+// ─── FONT LIBRARY @FONT-FACE OUTPUT ──────────────────────────────────────────
+
+if (! function_exists('theme_normalize_font_family_name')) {
+    /**
+     * Normalizes a font family name for comparisons (lowercase, without quotes or surrounding spaces).
+     */
+    function theme_normalize_font_family_name(string $name): string
+    {
+        return strtolower(trim($name, " \t\n\r\0\x0B'\""));
+    }
+}
+
+if (! function_exists('theme_get_selected_font_family_names')) {
+    /**
+     * Normalized family names of the primary and secondary fonts selected in the Customizer: the saved name and
+     * the first family of its CSS font-family value (they can differ for Font Library fonts).
+     */
+    function theme_get_selected_font_family_names(): array
+    {
+        global $default_fonts;
+
+        $all_fonts = theme_get_all_fonts();
+        $names     = [];
+
+        foreach (['font_primary' => 'primary', 'font_secondary' => 'secondary'] as $mod => $slot) {
+            $name    = (string) get_theme_mod($mod, $default_fonts[$slot]);
+            $family  = _theme_resolve_font_family($name, $all_fonts, '');
+            $names[] = theme_normalize_font_family_name($name);
+            $names[] = theme_normalize_font_family_name(explode(',', $family)[0]);
+        }
+
+        return array_values(array_unique(array_filter($names)));
+    }
+}
+
+if (! function_exists('theme_print_selected_font_faces')) {
+    /**
+     * Replaces WordPress' front-end wp_print_font_faces(), which prints @font-face rules for every font installed
+     * through the Font Library even when they aren't used. Only the families selected in the Customizer are printed,
+     * and faces without an explicit font-display use swap (WordPress defaults to fallback), like the bundled fonts.
+     * The block editor still loads every installed font, so all of them can be previewed there.
+     */
+    function theme_print_selected_font_faces()
+    {
+        if (! class_exists('WP_Font_Face_Resolver') || ! function_exists('wp_print_font_faces')) return;
+
+        $selected = theme_get_selected_font_family_names();
+        $fonts    = [];
+
+        // The resolver returns one group of faces per font family; the family name is in each face's font-family
+        foreach (WP_Font_Face_Resolver::get_fonts_from_theme_json() as $faces) {
+            $family = (string) ($faces[0]['font-family'] ?? '');
+            if (! in_array(theme_normalize_font_family_name($family), $selected, true)) continue;
+
+            foreach ($faces as $i => $face) {
+                if (empty($face['font-display'])) {
+                    $faces[$i]['font-display'] = 'swap';
+                }
+            }
+            $fonts[] = $faces;
+        }
+
+        if ($fonts) {
+            wp_print_font_faces($fonts);
+        }
+    }
+}
+
+remove_action('wp_head', 'wp_print_font_faces', 50);
+add_action('wp_head', 'theme_print_selected_font_faces', 50);
