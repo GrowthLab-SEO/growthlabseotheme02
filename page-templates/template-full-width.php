@@ -6,9 +6,11 @@ if (!defined('ABSPATH')) {
 get_header();
 ?>
 
-<?php while (have_posts()) {
-    the_post();
-    the_content();
-} ?>
+<main id="main-content">
+    <?php while (have_posts()) {
+        the_post();
+        the_content();
+    } ?>
+</main>
 
 <?php get_footer() ?>

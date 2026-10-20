@@ -29,7 +29,7 @@ foreach (get_post_fields_with_defaults() as $key => $value) $$key = $value;
                     </ul>
                 </aside>
 
-                <main role="main" class="single__main">
+                <main id="main-content" role="main" class="single__main">
                     <div class="single-team__heading">
                         <p class="single-team__role pretitle"><?= wp_kses_post($role ?? ''); ?></p>
                         <h1 class="single-team__title"><?php the_title(); ?></h1>

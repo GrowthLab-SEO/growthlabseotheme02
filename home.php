@@ -14,7 +14,7 @@ $hide_sidebar = $post_id && get_field("hide_sidebar", $post_id);
 
         <?php get_template_part("template-parts/posts", "filters", array("classes" => "blog__filters")) ?>
 
-        <main role="main" class="blog__main">
+        <main id="main-content" role="main" class="blog__main">
 
             <div class="blog__loop">
 

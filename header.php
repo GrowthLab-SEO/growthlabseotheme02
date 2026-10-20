@@ -19,6 +19,8 @@ if (!defined('ABSPATH')) {
 
     <?php wp_body_open(); ?>
 
+    <a class="skip-link screen-reader-text" href="#main-content"><?= esc_html__('Skip to content', 'growthlabseotheme02') ?></a>
+
     <?php
     $options = get_current_language_options();
     $options = fill_acf_group_defaults($options, 'options', 'option');

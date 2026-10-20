@@ -12,7 +12,7 @@ $hide_sidebar = $post_id && get_field("hide_sidebar", $post_id);
 
     <div class="blog__wrapper container">
 
-        <main role="main" class="blog__main">
+        <main id="main-content" role="main" class="blog__main">
 
             <?php if (!have_posts()): ?>
                 <p class="blog__no-results"><?= esc_html(__('No results found. Try a different search.', 'growthlabseotheme02')) ?></p>
