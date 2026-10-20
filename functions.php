@@ -502,14 +502,6 @@ add_filter('body_class', function ($classes) {
     return $classes;
 });
 
-// add aria-label to navigation menu links using the menu item title
-add_filter('nav_menu_link_attributes', function ($atts, $item, $args, $depth) {
-    if (empty($atts['aria-label'])) {
-        $atts['aria-label'] = esc_attr($item->title);
-    }
-    return $atts;
-}, 10, 4);
-
 /**
  * Register widget area.
  *
