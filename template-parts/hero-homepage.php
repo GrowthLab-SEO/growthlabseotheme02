@@ -29,7 +29,7 @@ if (!$bg_mobile) $bg_mobile = [];
     ); ?>
 
     <div class="hero__wrapper container">
-        <?php if (!empty($hero_pictures['side_portrait'])) img_print_picture_tag(img: $hero_pictures['side_portrait'], max_size: "cover-mobile-portrait", min_size: "featured-small", classes: "hero__side-portrait", is_priority: true, fetch_priority: false); ?>
+        <?php if (!empty($hero_pictures['side_portrait'])) img_print_picture_tag(img: $hero_pictures['side_portrait'], max_size: "cover-mobile-portrait", min_size: "featured-small", classes: "hero__side-portrait", is_priority: true); ?>
 
         <div class="hero__content">
             <?php if (isset($hero_tagline) && $hero_tagline) {
