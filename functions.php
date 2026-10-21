@@ -91,18 +91,13 @@ if (!function_exists('growthlabseotheme02_setup')) {
         }
 
 
-        //Remove Sizes from default WordPress Image Sizes
+        // Don't generate these WordPress sizes (the size list WordPress uses to generate files comes from this filter)
         add_filter('intermediate_image_sizes', function ($sizes) {
             return array_diff($sizes, [
                 'medium_large',
                 '1536x1536',
                 '2048x2048'
             ]);
-        });
-
-        add_filter('intermediate_image_sizes_advanced', function ($sizes) {
-            unset($sizes['medium_large']);
-            return $sizes;
         });
 
         //Add custom sized images
