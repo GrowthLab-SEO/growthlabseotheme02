@@ -20,7 +20,8 @@
  *
  * Lazy loading: pictures are lazy by default (data-src/data-srcset, filled in by js/picture-optimization.js
  * when they get near the viewport, with a <noscript> copy for browsers without JavaScript). is_priority: true
- * loads the picture right away with fetchpriority="high", for the image that is the LCP element.
+ * loads the picture right away with fetchpriority="high", for the image that is the LCP element; those images are
+ * also preloaded in the <head> (see "Preloads of high priority images").
  *
  * Layout shifts: lazy images get --ar-{breakpoint}-w/h custom properties with the real size of the file each
  * breakpoint serves; styles/globals/_picture-optimization.scss turns them into an aspect-ratio, so the space
@@ -615,22 +616,50 @@ if (!function_exists('img_create_source')) {
     }
 }
 
-if (!function_exists('img_render_sources')) {
+if (!function_exists('img_source_entry')) {
     /**
-     * <source> elements of a list of ['url' => ..., 'mime' => ..., 'media' => ...] entries, largest screens first.
-     *
-     * A breakpoint whose file is the same as the next smaller breakpoint's is dropped (the smaller one already
-     * covers it), and each file gets its WebP copy first when it exists.
+     * One file of a picture: the breakpoint it starts at and its URL and type.
      */
-    function img_render_sources(array $entries): array
+    function img_source_entry(string $breakpoint, string $url, string $mime): array
+    {
+        return [
+            'url'   => $url,
+            'mime'  => $mime,
+            'min'   => po_get_breakpoint_ranges()[$breakpoint] ?? 0,
+            'media' => po_get_media_query($breakpoint),
+        ];
+    }
+}
+
+if (!function_exists('img_dedupe_entries')) {
+    /**
+     * Drops the breakpoints (largest screens first) whose file is the same as the next smaller breakpoint's: the
+     * smaller one already covers them. Used for both the <source> elements and the preloads, so they always match.
+     */
+    function img_dedupe_entries(array $entries): array
     {
         $entries = array_values($entries);
-        $sources = [];
+        $kept    = [];
 
         foreach ($entries as $i => $entry) {
             $next = $entries[$i + 1] ?? null;
-            if ($next && $next['url'] === $entry['url']) continue;
+            if (!$next || $next['url'] !== $entry['url']) $kept[] = $entry;
+        }
 
+        return $kept;
+    }
+}
+
+if (!function_exists('img_render_sources')) {
+    /**
+     * <source> elements of a list of img_source_entry() entries, largest screens first. Each file gets its WebP
+     * copy first when it exists.
+     */
+    function img_render_sources(array $entries): array
+    {
+        $sources = [];
+
+        foreach (img_dedupe_entries($entries) as $entry) {
             if (img_is_webp($entry['url'], $entry['mime'])) {
                 $sources[] = img_create_source($entry['url'], 'image/webp', $entry['media']);
                 continue;
@@ -734,6 +763,100 @@ if (!function_exists('img_wrap_picture')) {
     }
 }
 
+if (!function_exists('img_finish_picture')) {
+    /**
+     * Builds the <picture> of a list of img_source_entry() entries. Pictures with fetchpriority="high" also get
+     * their files preloaded in the <head> (img_register_preload()).
+     */
+    function img_finish_picture(array $entries, string $img_tag, string $classes, string $id, bool $is_priority, bool $fetch_priority): string
+    {
+        if ($is_priority && $fetch_priority) img_register_preload($entries);
+
+        return img_wrap_picture(img_render_sources($entries), $img_tag, $classes, $id, $is_priority);
+    }
+}
+
+/* -------------------------------------------------------------------------------------------------------------
+ * Preloads of high priority images
+ *
+ * The browser only finds an image when the HTML parser reaches it, after the header and the inline critical CSS
+ * (100-150KB). Images with fetchpriority="high" are preloaded at the start of the <head> so their download starts
+ * with the first bytes of the page. The <head> is printed before the images, so it gets a placeholder that the
+ * page output buffer replaces with the collected preloads.
+ *
+ * Each file of the picture gets one preload, limited to the screens that use it ("(min-width: 768px) and
+ * (max-width: 1023px)"), in WebP when a WebP copy exists, exactly like the <source> elements, so the browser
+ * downloads each file once.
+ * ---------------------------------------------------------------------------------------------------------- */
+
+if (!defined('PO_PRELOAD_PLACEHOLDER')) {
+    define('PO_PRELOAD_PLACEHOLDER', '<!-- growthlab-image-preloads -->');
+}
+
+if (!function_exists('img_register_preload')) {
+    /**
+     * Collects the preload links of a picture's files for img_print_preloads(). Returns the links.
+     */
+    function img_register_preload(array $entries): array
+    {
+        $entries = img_dedupe_entries($entries);
+        $links   = [];
+
+        foreach ($entries as $i => $entry) {
+            // Screens this file is used on: from its breakpoint up to the next larger file's breakpoint
+            $larger = $entries[$i - 1] ?? null;
+            $media  = array_filter([
+                $entry['min'] > 0 ? "(min-width: {$entry['min']}px)" : '',
+                $larger ? '(max-width: ' . ($larger['min'] - 1) . 'px)' : '',
+            ]);
+
+            $webp = img_is_webp($entry['url'], $entry['mime']) || img_has_webp($entry['url'], $entry['mime']);
+            $url  = $webp ? img_get_webp_url($entry['url'], $entry['mime']) : $entry['url'];
+            $type = $webp ? 'image/webp' : $entry['mime'];
+
+            $links[] = sprintf(
+                '<link rel="preload" as="image" href="%s" type="%s"%s fetchpriority="high">',
+                esc_url($url),
+                esc_attr($type),
+                $media ? ' media="' . esc_attr(implode(' and ', $media)) . '"' : ''
+            );
+        }
+
+        $GLOBALS['po_image_preloads'] = array_values(array_unique(array_merge($GLOBALS['po_image_preloads'] ?? [], $links)));
+
+        return $links;
+    }
+}
+
+if (!function_exists('img_print_preloads_placeholder')) {
+    /**
+     * Placeholder for the preloads, first in the <head> (before the inline critical CSS and the font preloads).
+     */
+    function img_print_preloads_placeholder(): void
+    {
+        echo PO_PRELOAD_PLACEHOLDER . "\n";
+    }
+}
+add_action('wp_head', 'img_print_preloads_placeholder', 0);
+
+if (!function_exists('img_start_preloads_buffer')) {
+    /**
+     * Buffers the front end HTML so the placeholder can be replaced once the whole page is rendered.
+     */
+    function img_start_preloads_buffer(): void
+    {
+        if (is_admin() || wp_doing_ajax() || wp_is_json_request() || is_feed() || is_embed()) return;
+
+        ob_start(function ($html) {
+            if (!is_string($html) || !str_contains($html, PO_PRELOAD_PLACEHOLDER)) return $html;
+
+            $links = $GLOBALS['po_image_preloads'] ?? [];
+            return preg_replace('/' . preg_quote(PO_PRELOAD_PLACEHOLDER, '/') . '\R?/', $links ? implode("\n", $links) . "\n" : '', $html, 1);
+        });
+    }
+}
+add_action('template_redirect', 'img_start_preloads_buffer', PHP_INT_MAX);
+
 /* -------------------------------------------------------------------------------------------------------------
  * Picture builders
  * ---------------------------------------------------------------------------------------------------------- */
@@ -781,7 +904,7 @@ if (!function_exists('img_generate_standard_picture')) {
                 $bp_ratios[$breakpoint] = po_get_size_dimensions($fields, $size);
             }
 
-            $entries[] = ['url' => $url, 'mime' => $mime, 'media' => po_get_media_query($breakpoint)];
+            $entries[] = img_source_entry($breakpoint, $url, $mime);
         }
 
         // Phones: the dedicated mobile image, or a small size of the main image
@@ -795,7 +918,7 @@ if (!function_exists('img_generate_standard_picture')) {
             $mobile_mime = $fields['mime_type'];
             $bp_ratios['mobile'] = po_get_size_dimensions($fields, $mobile_size);
         }
-        $entries[] = ['url' => $mobile_url, 'mime' => $mobile_mime, 'media' => null];
+        $entries[] = img_source_entry('mobile', $mobile_url, $mobile_mime);
 
         $img_tag = img_create_img_tag(
             src: $mobile_url,
@@ -806,7 +929,7 @@ if (!function_exists('img_generate_standard_picture')) {
             fetch_priority: $fetch_priority
         );
 
-        return img_wrap_picture(img_render_sources($entries), $img_tag, $classes, $id, $is_priority);
+        return img_finish_picture($entries, $img_tag, $classes, $id, $is_priority, $fetch_priority);
     }
 }
 
@@ -865,11 +988,7 @@ if (!function_exists('img_generate_cover_picture')) {
                 $main_used[] = $size;
             }
 
-            $entries[] = [
-                'url'   => po_get_size_url($fields, $size),
-                'mime'  => $fields['mime_type'],
-                'media' => po_get_media_query($breakpoint),
-            ];
+            $entries[] = img_source_entry($breakpoint, po_get_size_url($fields, $size), $fields['mime_type']);
             $bp_ratios[$breakpoint] = po_get_size_dimensions($fields, $size);
         }
 
@@ -878,7 +997,7 @@ if (!function_exists('img_generate_cover_picture')) {
         $mobile_size   = po_get_cover_mobile_size($mobile_source);
         $mobile_url    = po_get_size_url($mobile_source, $mobile_size);
 
-        $entries[]           = ['url' => $mobile_url, 'mime' => $mobile_source['mime_type'], 'media' => null];
+        $entries[]           = img_source_entry('mobile', $mobile_url, $mobile_source['mime_type']);
         $bp_ratios['mobile'] = po_get_size_dimensions($mobile_source, $mobile_size);
 
         $img_tag = img_create_img_tag(
@@ -890,7 +1009,7 @@ if (!function_exists('img_generate_cover_picture')) {
             fetch_priority: $fetch_priority
         );
 
-        return img_wrap_picture(img_render_sources($entries), $img_tag, $classes, $id, $is_priority);
+        return img_finish_picture($entries, $img_tag, $classes, $id, $is_priority, $fetch_priority);
     }
 }
 
@@ -924,8 +1043,8 @@ if (!function_exists('img_generate_single_picture')) {
             fetch_priority: $fetch_priority
         );
 
-        $sources = img_render_sources([['url' => $url, 'mime' => $fields['mime_type'], 'media' => null]]);
-        return img_wrap_picture($sources, $img_tag, $classes, $id, $is_priority);
+        $entries = [img_source_entry('mobile', $url, $fields['mime_type'])];
+        return img_finish_picture($entries, $img_tag, $classes, $id, $is_priority, $fetch_priority);
     }
 }
 
