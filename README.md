@@ -281,7 +281,7 @@ if (get_field('toggle_block')):
 
 | Function | File | Description |
 | --- | --- | --- |
-| `img_print_picture_tag(...)` / `img_generate_picture_tag(...)` | `picture-optimization.php` | Responsive `<picture>` (echo / return). Named args: `img`, `mobile_img`, `tablet_img`, `max_size`, `min_size`, `classes`, `id`, `alt_text`, `is_cover`, `img_attr`, `is_priority`. |
+| `img_print_picture_tag(...)` / `img_generate_picture_tag(...)` | `picture-optimization.php` | Responsive `<picture>` (echo / return). Named args: `img`, `mobile_img`, `tablet_img`, `max_size`, `min_size`, `classes`, `id`, `alt_text`, `is_cover`, `img_attr` (preferably an array, its values are escaped), `is_priority`, `fetch_priority` (`false` for priority images that aren't the LCP element, e.g. the logo). |
 | `image_to_svg($image, $classes = '')` | `svg-support.php` | Inlines a local SVG file inside a `<div>`, or returns an `<img>` for other images. Accepts an ACF image array or a URL; the inlined SVG keeps the image's alt text (`role="img"` + `aria-label`, or `aria-hidden` when decorative). |
 | `theme_get_customizer_css()` | `color-scheme.php` | `:root` block with the color variables. |
 | `hex_to_rgb($hex, $fallback = '#000000')` | `color-scheme.php` | `#15253f` to `21, 37, 63`. 3-digit colors are expanded; empty or invalid values use `$fallback` (the theme default for the Customizer colors). |
@@ -347,9 +347,15 @@ The theme has its own lightweight language handling, based on the URL prefix (no
 
 ### Pictures (`theme-functions/picture-optimization.php`)
 
-- `img_print_picture_tag()` builds a `<picture>` with per-breakpoint `<source>` elements chosen from the registered sizes (between `min_size` and `max_size`), with a WebP source when a `.webp` sibling exists. `is_cover: true` uses the cover sizes and supports separate tablet/mobile images.
-- Non-priority images use `data-src` / `data-srcset` and the `lazy-image` class, loaded by `js/picture-optimization.js` with an IntersectionObserver only when they approach the viewport (images added later, such as Splide clones, are picked up too; browsers without IntersectionObserver load everything at once), plus a `<noscript>` fallback. `is_priority: true` outputs eager loading with `fetchpriority="high"`.
-- Registered sizes (all uncropped except the portrait covers): `cover-desktop` 1920x1080, `cover-tablet` 1280x600, `cover-mobile` 768x432, `cover-tablet-portrait` 960x1280 (crop), `cover-mobile-portrait` 768x1100 (crop), `content` 800x600, `featured-small` 480x360. `medium_large`, `1536x1536` and `2048x2048` are removed, and hard cropping of the core thumbnail size is disabled.
+- `img_print_picture_tag()` builds a `<picture>` with one `<source>` per breakpoint (`$GLOBALS['breakpoints']` in `functions.php`: tablet 768px, ldpi 1024px, mdpi 1280px, hdpi 1920px). Each breakpoint gets the widest generated size that fits it, never smaller than `min_size` (what phones get) nor larger than `max_size`; phones never get a larger file than desktops. Breakpoints that would repeat the file of the next smaller one are dropped.
+- Image sizes are read from the attachment metadata, which has the real width of each file (sizes without hard crop keep each image's proportions, so they can be narrower than the registered width).
+- `is_cover: true` (hero backgrounds) uses `full`, `cover-desktop`, `cover-tablet` (1024-1279px screens), `cover-tablet-portrait` and `cover-mobile-portrait`. A `tablet_img` is only used for 768-1023px screens; larger screens always get the main image. Phones get the `mobile_img`, else the `tablet_img`, else the main image, in a portrait crop; without one, the smallest file at least 1000px tall (or the tallest file), so a very large original isn't sent to phones when a generated size would do.
+- A URL of a generated size (`photo-800x533.jpg`) is resolved to its attachment; URLs outside the media library are printed as a plain lazy image.
+- WebP `<source>` elements are added when the image is WebP or a `.webp` copy exists (`image.jpg.webp`).
+- Non-priority images use `data-src` / `data-srcset` and the `lazy-image` class; `js/picture-optimization.js` swaps them in with an IntersectionObserver (100px margin) only when they approach the viewport, and picks up images added later (e.g. Splide clones); browsers without IntersectionObserver load every image at once. A `<noscript>` copy is printed for browsers without JavaScript.
+- Lazy images get `--ar-{breakpoint}-w/h` custom properties with the real size of the file each breakpoint serves; `styles/globals/_picture-optimization.scss` turns them into an `aspect-ratio`, so their space is reserved before they load. Its breakpoint list must match `$GLOBALS['breakpoints']`.
+- `is_priority: true` loads the image eagerly with `fetchpriority="high"` (the hero background); the header logo and the hero side portraits pass `fetch_priority: false`, so they load eagerly without competing with the hero image.
+- Registered sizes (all uncropped except the portrait covers): `cover-desktop` 1920x1080, `cover-tablet` 1280x600, `cover-mobile` 768x432, `cover-tablet-portrait` 960x1280 (crop), `cover-mobile-portrait` 768x1100 (crop), `content` 800x600, `featured-small` 480x360. `medium_large`, `1536x1536` and `2048x2048` are not generated (`intermediate_image_sizes` filter), and hard cropping of the core thumbnail size is disabled.
 
 ### CSS and JS loading
 
