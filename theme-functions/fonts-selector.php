@@ -677,6 +677,22 @@ if (! function_exists('theme_font_variant_condition')) {
     }
 }
 
+if (! function_exists('theme_get_font_file_size')) {
+    /**
+     * Size in bytes of a font file of this site, or null when it isn't a local file.
+     */
+    function theme_get_font_file_size(string $url): ?int
+    {
+        static $sizes = [];
+
+        if (! array_key_exists($url, $sizes)) {
+            $path        = function_exists('img_url_to_path') ? img_url_to_path($url) : '';
+            $sizes[$url] = $path !== '' && is_file($path) ? (int) filesize($path) : null;
+        }
+
+        return $sizes[$url];
+    }
+}
 if (! function_exists('theme_print_font_preloads')) {
     /**
      * Preloads the font files the header and the hero render above the fold (theme_get_above_fold_font_variants()),
@@ -684,6 +700,10 @@ if (! function_exists('theme_print_font_preloads')) {
      * (e.g. a variable font) is preloaded once, and at most 6 files are preloaded (filter theme_font_preload_limit),
      * in the order of the variants (header and hero first, then the first block), so the preloads don't compete
      * with the hero image.
+     *
+     * Files over 300KB (filter theme_font_preload_max_bytes) are not preloaded: a font that heavy, e.g. a Japanese
+     * font installed from Google Fonts with all its characters, would take the bandwidth of the hero image. Editors
+     * see an HTML comment about them; the fix is a file with only the characters the site uses.
      */
     function theme_print_font_preloads()
     {
@@ -691,7 +711,9 @@ if (! function_exists('theme_print_font_preloads')) {
 
         $hero_style = function_exists('get_page_hero_style') ? get_page_hero_style() : 'default';
         $max_files  = (int) apply_filters('theme_font_preload_limit', 6);
+        $max_bytes  = (int) apply_filters('theme_font_preload_max_bytes', 300 * 1024);
         $links      = [];
+        $too_large  = [];
 
         $first_block = function_exists('get_first_content_block_name') ? get_first_content_block_name() : '';
 
@@ -705,6 +727,12 @@ if (! function_exists('theme_print_font_preloads')) {
 
             $url   = $face['url'];
             $media = $variant['media'] ?? '';
+
+            $size = theme_get_font_file_size($url);
+            if ($max_bytes > 0 && $size !== null && $size > $max_bytes) {
+                $too_large[$url] = $size;
+                continue;
+            }
 
             if (isset($links[$url])) {
                 // Needed without a media condition by another variant: preload it everywhere
@@ -725,6 +753,12 @@ if (! function_exists('theme_print_font_preloads')) {
                 isset($types[$extension]) ? ' type="' . esc_attr($types[$extension]) . '"' : '',
                 $media !== '' ? ' media="' . esc_attr($media) . '"' : ''
             );
+        }
+
+        if ($too_large && current_user_can('edit_theme_options')) {
+            foreach ($too_large as $url => $size) {
+                printf("<!-- Font not preloaded, %s is too large to preload: %s -->\n", esc_html(size_format($size)), esc_html(basename(strtok($url, '?#'))));
+            }
         }
     }
 }
