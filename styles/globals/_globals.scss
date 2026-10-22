@@ -48,6 +48,11 @@ section {
   &:not(.hero) {
     contain-intrinsic-size: auto 700px;
   }
+
+  // The hero is always above the fold: skipping its rendering on the first frame shifts the whole page
+  &.hero {
+    content-visibility: visible;
+  }
 }
 
 /*Headings*/
