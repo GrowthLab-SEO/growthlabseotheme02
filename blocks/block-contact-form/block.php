@@ -36,11 +36,18 @@ if (get_field('toggle_block')):
                     ?>
 
 
-                    <?php if (isset($contact_form) && $contact_form): ?>
+                    <?php
+                    $form_html = get_selected_form_html([
+                        'contact_form'      => $contact_form ?? null,
+                        'contact_form_type' => $contact_form_type ?? null,
+                        'contact_form_code' => $contact_form_code ?? null,
+                    ]);
+                    if ($form_html !== ''):
+                    ?>
                         <div class="form-box">
 
                             <div class="form-box__form">
-                                <?php render_gravity_form($contact_form, display_title: false, display_description: false); ?>
+                                <?= $form_html ?>
                             </div>
 
                         </div>

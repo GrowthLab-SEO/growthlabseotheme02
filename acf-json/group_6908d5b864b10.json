@@ -1001,12 +1001,12 @@
                     "delay": 0
                 },
                 {
-                    "key": "field_69f1083015051",
-                    "label": "Contact Form",
-                    "name": "contact_form",
+                    "key": "field_86046a83e0a2a",
+                    "label": "Form Type",
+                    "name": "contact_form_type",
                     "aria-label": "",
-                    "type": "forms",
-                    "instructions": "",
+                    "type": "select",
+                    "instructions": "Gravity Form: a form of this site. Custom code: the embed code or script of a third-party form (e.g. a CRM). None: no form.",
                     "required": 0,
                     "conditional_logic": [
                         [
@@ -1022,10 +1022,87 @@
                         "class": "",
                         "id": ""
                     },
+                    "choices": {
+                        "gravity_form": "Gravity Form",
+                        "custom": "Custom code",
+                        "none": "None"
+                    },
+                    "default_value": "gravity_form",
+                    "return_format": "value",
+                    "multiple": 0,
+                    "allow_null": 0,
+                    "allow_in_bindings": 0,
+                    "ui": 0,
+                    "ajax": 0,
+                    "placeholder": "",
+                    "create_options": 0,
+                    "save_options": 0
+                },
+                {
+                    "key": "field_69f1083015051",
+                    "label": "Contact Form",
+                    "name": "contact_form",
+                    "aria-label": "",
+                    "type": "forms",
+                    "instructions": "",
+                    "required": 0,
+                    "conditional_logic": [
+                        [
+                            {
+                                "field": "field_69f108301504c",
+                                "operator": "!=",
+                                "value": "1"
+                            },
+                            {
+                                "field": "field_86046a83e0a2a",
+                                "operator": "==",
+                                "value": "gravity_form"
+                            }
+                        ]
+                    ],
+                    "wrapper": {
+                        "width": "",
+                        "class": "",
+                        "id": ""
+                    },
                     "return_format": "id",
                     "allow_null": 0,
                     "multiple": 0,
                     "allow_in_bindings": 0
+                },
+                {
+                    "key": "field_8767506531080",
+                    "label": "Form Code",
+                    "name": "contact_form_code",
+                    "aria-label": "",
+                    "type": "textarea",
+                    "instructions": "Embed code or script of the third-party form. It is printed as is.",
+                    "required": 0,
+                    "conditional_logic": [
+                        [
+                            {
+                                "field": "field_69f108301504c",
+                                "operator": "!=",
+                                "value": "1"
+                            },
+                            {
+                                "field": "field_86046a83e0a2a",
+                                "operator": "==",
+                                "value": "custom"
+                            }
+                        ]
+                    ],
+                    "wrapper": {
+                        "width": "",
+                        "class": "",
+                        "id": ""
+                    },
+                    "default_value": "",
+                    "maxlength": "",
+                    "allow_in_bindings": 0,
+                    "rows": 6,
+                    "placeholder": "",
+                    "new_lines": ""
                 },
                 {
                     "key": "field_69f10c56d8f67",
@@ -1604,5 +1681,5 @@
     "display_title": "",
     "allow_ai_access": false,
     "ai_description": "",
-    "modified": 1792510544
+    "modified": 1792796649
 }

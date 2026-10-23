@@ -654,6 +654,26 @@ if (!function_exists('render_gravity_form')) {
     }
 }
 
+// HTML of the form chosen in a set of form fields:
+// - "{prefix}_type": gravity_form, custom or none. Fields saved before the type existed have none and keep their Gravity Form.
+// - "{prefix}": the Gravity Form ID.
+// - "{prefix}_code": the embed code or script of a third-party form, printed as is.
+// Returns an empty string when there is no form to print.
+if (!function_exists('get_selected_form_html')) {
+    function get_selected_form_html($fields, $prefix = 'contact_form')
+    {
+        $fields = is_array($fields) ? $fields : [];
+        $type   = ($fields[$prefix . '_type'] ?? '') ?: 'gravity_form';
+
+        if ($type === 'custom') return trim((string) ($fields[$prefix . '_code'] ?? ''));
+        if ($type !== 'gravity_form' || empty($fields[$prefix])) return '';
+
+        ob_start();
+        render_gravity_form($fields[$prefix], display_title: false, display_description: false);
+        return trim((string) ob_get_clean());
+    }
+}
+
 if (!function_exists('format_number_abbreviated')) {
     function format_number_abbreviated($number)
     {

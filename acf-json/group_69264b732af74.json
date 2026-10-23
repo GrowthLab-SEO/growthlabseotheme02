@@ -310,6 +310,36 @@
             "delay": 0
         },
         {
+            "key": "field_978a92652f4dc",
+            "label": "Form Type",
+            "name": "contact_form_type",
+            "aria-label": "",
+            "type": "select",
+            "instructions": "Gravity Form: a form of this site. Custom code: the embed code or script of a third-party form (e.g. a CRM). None: no form.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "choices": {
+                "gravity_form": "Gravity Form",
+                "custom": "Custom code",
+                "none": "None"
+            },
+            "default_value": "gravity_form",
+            "return_format": "value",
+            "multiple": 0,
+            "allow_null": 0,
+            "allow_in_bindings": 0,
+            "ui": 0,
+            "ajax": 0,
+            "placeholder": "",
+            "create_options": 0,
+            "save_options": 0
+        },
+        {
             "key": "field_69264ba02c7b9",
             "label": "Contact Form",
             "name": "contact_form",
@@ -320,8 +350,9 @@
             "conditional_logic": [
                 [
                     {
-                        "field": "field_69264b9f2c7b2",
-                        "operator": "!="
+                        "field": "field_978a92652f4dc",
+                        "operator": "==",
+                        "value": "gravity_form"
                     }
                 ]
             ],
@@ -334,6 +365,35 @@
             "allow_null": 0,
             "multiple": 0,
             "allow_in_bindings": 0
+        },
+        {
+            "key": "field_355a502759aea",
+            "label": "Form Code",
+            "name": "contact_form_code",
+            "aria-label": "",
+            "type": "textarea",
+            "instructions": "Embed code or script of the third-party form. It is printed as is.",
+            "required": 0,
+            "conditional_logic": [
+                [
+                    {
+                        "field": "field_978a92652f4dc",
+                        "operator": "==",
+                        "value": "custom"
+                    }
+                ]
+            ],
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "allow_in_bindings": 0,
+            "rows": 6,
+            "placeholder": "",
+            "new_lines": ""
         }
     ],
     "location": [
@@ -357,5 +417,5 @@
     "display_title": "",
     "allow_ai_access": false,
     "ai_description": "",
-    "modified": 1775542831
+    "modified": 1792796649
 }
