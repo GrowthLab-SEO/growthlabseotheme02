@@ -37,7 +37,7 @@ if (get_field('toggle_block')):
             <?php if (isset($text_content) && $text_content): ?>
                 <div class="two-columns__col">
                     <div class="formatted-text two-columns__content">
-                        <?= wp_kses_post($text_content ?? "") ?>
+                        <?= $text_content ?? "" ?>
 
                         <?php if ($cta_link && isset($cta_link) && !empty($cta_link["url"])): ?>
                             <a href="<?= esc_url($cta_link["url"]) ?>"<?= !empty($cta_link['target']) ? ' target="' . esc_attr($cta_link['target']) . '"' . ($cta_link['target'] === '_blank' ? ' rel="noopener noreferrer"' : '') : '' ?> class="btn btn--tertiary" aria-label="<?= esc_attr($cta_link["title"]) ?>">

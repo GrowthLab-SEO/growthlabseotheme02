@@ -19,7 +19,7 @@ if (get_field('toggle_block')):
                     <?php
                     if (isset($pretitle) && $pretitle) print_title($pretitle, $pretitle_tag, "locations__pretitle pretitle");
                     if (isset($title) && $title) print_title($title, $title_tag, "locations__title tx-center");
-                    echo wp_kses_post($main_content ?? "");
+                    echo $main_content ?? "";
                     ?>
                 </div>
             <?php endif; ?>

@@ -22,7 +22,7 @@ foreach (get_post_fields_with_defaults() as $key => $value) $$key = $value;
                             foreach ($highlighted_points as $point) : ?>
                                 <li class="single-team__point">
                                     <p class="h4"><?= wp_kses_post($point['heading'] ?? '') ?></p>
-                                    <?= wp_kses_post($point['content'] ?? '') ?>
+                                    <?= $point['content'] ?? '' ?>
                                 </li>
                             <?php endforeach; ?>
                         <?php endif; ?>

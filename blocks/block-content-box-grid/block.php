@@ -21,7 +21,7 @@ if (get_field('toggle_block')):
 
             <?php if ($text_content): ?>
                 <div class="content-box-grid__content formatted-text tx-center">
-                    <?= wp_kses_post($text_content) ?>
+                    <?= $text_content ?>
                 </div>
             <?php endif ?>
 
@@ -50,7 +50,7 @@ if (get_field('toggle_block')):
                                             }
                                             print_title($box_title_html, $item['title_tag'] ?? 'p', "box__title");
                                             ?>
-                                            <?= wp_kses_post($item['text_content'] ?? ''); ?>
+                                            <?= $item['text_content'] ?? ''; ?>
 
                                         </div>
 

@@ -97,7 +97,7 @@
               ?>
 
               <div class="contact-form__description formatted-text tx-center">
-                <?php echo wp_kses_post(wpautop($form_section['contact_form_description'] ?? '')); ?>
+                <?php echo wpautop($form_section['contact_form_description'] ?? ''); ?>
               </div>
 
               <?php $form_html = get_selected_form_html($form_section); ?>
@@ -127,7 +127,7 @@
           <?php if (!empty($content_section['first_column_content'])): ?>
             <div class="content-info-footer__col">
               <div class="formatted-text">
-                <?= wp_kses_post($content_section['first_column_content']) ?>
+                <?= $content_section['first_column_content'] ?>
               </div>
             </div>
           <?php endif; ?>
@@ -156,7 +156,7 @@
           <?php if (!empty($content_section['last_column_content'])): ?>
             <div class="content-info-footer__col">
               <div class="formatted-text">
-                <?= wp_kses_post($content_section['last_column_content']) ?>
+                <?= $content_section['last_column_content'] ?>
               </div>
             </div>
           <?php endif; ?>

@@ -75,7 +75,7 @@ if (get_field('toggle_block')):
 
             <?php if (!empty($text_content)): ?>
                 <div class="posts-carousel__content formatted-text tx-center">
-                    <?= wp_kses_post($text_content) ?>
+                    <?= $text_content ?>
                 </div>
             <?php endif ?>
 

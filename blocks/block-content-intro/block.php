@@ -49,7 +49,7 @@ if (get_field('toggle_block')):
                 if (!empty($columns['title']))  print_title($columns['title'], $columns['title_tag'] ?? 'p', "col__title");
                 ?>
                 <div class="col__content formatted-text">
-                    <?= wp_kses_post($columns['content'] ?? "") ?>
+                    <?= $columns['content'] ?? "" ?>
                 </div>
             </div>
 
@@ -63,7 +63,7 @@ if (get_field('toggle_block')):
                         <?php get_template_part("template-parts/logo", "separator", ["classes" => "inner-cta-box__separator"]); ?>
 
                         <div class="inner-cta-box__content formatted-text">
-                            <?= wp_kses_post($cta_box['content']) ?>
+                            <?= $cta_box['content'] ?>
                         </div>
                     <?php endif ?>
 
