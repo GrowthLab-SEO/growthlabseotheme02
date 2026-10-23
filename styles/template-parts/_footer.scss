@@ -1,5 +1,7 @@
 @use "globals/variables" as v;
 @use "globals/mixins" as m;
+// Child themes also print location cards in the footer, so their styles load on every page
+@use "./location-card";
 
 .site-footer {
   position: relative;

@@ -21,7 +21,6 @@ patch (1.0.x) for fixes, minor (1.x.0) for new features or changes editors can s
 - Contrast of hovered options in the styled selects.
 
 ### Changed
-- The location card styles load with the Locations block only, instead of on every page.
 - Site Options: "Posts Default Title Tag" and "Posts Default Image" are now labeled "Posts Cards Default Title Tag"
   and "Posts Cards Default Image". They only apply to the post cards of the blog, archive and search listings, not to
   the page title in the hero.
