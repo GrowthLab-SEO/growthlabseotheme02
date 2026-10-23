@@ -119,8 +119,8 @@
 
         #{$header}__callout {
           width: 90%;
-          grid-column: 2/4;
-          grid-column-end: none !important;
+          // Up to the last line of the grid
+          grid-column: 2 / -1;
 
           .callout {
             &__text--first {
@@ -143,8 +143,8 @@
 
         #{$header}__callout {
           width: 90%;
-          grid-column: 2/4;
-          grid-column-end: none !important;
+          // Up to the last line of the grid
+          grid-column: 2 / -1;
 
           .callout {
             &__text--first {
@@ -261,11 +261,6 @@
 
     &--mobile-only {
       @extend #{$header}__cta;
-
-      @media (min-width: v.$ldpi) {
-        grid-column: none;
-        grid-row: none;
-      }
     }
   }
 
