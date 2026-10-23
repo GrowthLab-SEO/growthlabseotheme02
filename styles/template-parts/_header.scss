@@ -326,6 +326,11 @@
     background: none;
     cursor: pointer;
 
+    // The off-canvas navigation is used up to $mdpi
+    @media (min-width: v.$mdpi) {
+      display: none;
+    }
+
     span {
       display: block;
       width: 20px;

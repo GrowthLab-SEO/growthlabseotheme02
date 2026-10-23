@@ -99,7 +99,7 @@ if (!defined('ABSPATH')) {
 
                 <?php if (!empty($menu_args)) : ?>
 
-                    <button type="button" class="site-header__close-btn hide-on-desktop" aria-label="<?= esc_attr__('Close menu', 'growthlabseotheme02') ?>">
+                    <button type="button" class="site-header__close-btn" aria-label="<?= esc_attr__('Close menu', 'growthlabseotheme02') ?>">
                         <span aria-hidden="true"></span>
                         <span aria-hidden="true"></span>
                     </button>
