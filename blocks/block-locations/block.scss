@@ -1,5 +1,6 @@
 @use "../../styles/globals/variables" as v;
 @use "../../styles/globals/mixins" as m;
+@use "../../styles/template-parts/location-card";
 
 .locations {
   padding: var(--sp-sm) 0;
