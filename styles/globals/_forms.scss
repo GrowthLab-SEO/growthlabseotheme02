@@ -190,7 +190,7 @@ select.styled-select-field {
 .styled-select__option:hover,
 .styled-select__option.is-active {
   background: rgb(var(--primary-light));
-  color: rgb(var(--primary-dark));
+  color: rgb(var(--secondary-light));
 }
 
 .styled-select__option[aria-selected="true"] {
