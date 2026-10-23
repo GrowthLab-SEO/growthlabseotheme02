@@ -701,13 +701,21 @@ p:has(.alignleft) {
   max-width: 100%;
   width: fit-content;
   margin: 0;
-  margin-right: 20px;
   display: flex;
-  float: left;
 
   @media (max-width: 500px) {
     width: 100%;
   }
+}
+
+p:has(.alignright) {
+  margin-left: 20px;
+  float: right;
+}
+
+p:has(.alignleft) {
+  margin-right: 20px;
+  float: left;
 }
 
 .aligncenter {
