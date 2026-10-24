@@ -424,6 +424,25 @@ img.bg-image {
   li {
     &::before {
       content: "\25AA";
+      // Decorative: no text for screen readers (browsers without the alt syntax keep the line above)
+      content: "\25AA" / "";
+      margin-block: auto;
+      margin-right: 8px;
+      font-size: inherit;
+      color: inherit;
+    }
+  }
+
+  // Ordered lists show their numbers (li is a flex item, so it doesn't count list items by itself)
+  ol {
+    counter-reset: formatted-list;
+  }
+
+  ol > li {
+    counter-increment: formatted-list;
+
+    &::before {
+      content: counter(formatted-list) ".";
       margin-block: auto;
       margin-right: 8px;
       font-size: inherit;
@@ -444,6 +463,8 @@ img.bg-image {
       cursor: pointer;
       &::after {
         content: "\2212";
+        // Decorative: no text for screen readers (browsers without the alt syntax keep the line above)
+        content: "\2212" / "";
       }
     }
   }
@@ -451,6 +472,8 @@ img.bg-image {
   &:not(.disabled) &__heading {
     &::after {
       content: "\002B";
+      // Decorative: no text for screen readers (browsers without the alt syntax keep the line above)
+      content: "\002B" / "";
       width: var(--sp-sm);
       display: block;
       font-size: var(--sp-sm);

@@ -65,6 +65,8 @@
 
           &::after {
             content: "\276F";
+            // Decorative: no text for screen readers (browsers without the alt syntax keep the line above)
+            content: "\276F" / "";
             font-size: 16px;
             display: block;
             color: rgb(var(--tertiary));

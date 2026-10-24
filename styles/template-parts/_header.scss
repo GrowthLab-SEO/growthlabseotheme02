@@ -583,6 +583,8 @@
 
       &::after {
         content: "\002B";
+        // Decorative: no text for screen readers (browsers without the alt syntax keep the line above)
+        content: "\002B" / "";
         width: 2.5rem;
         height: 2.5rem;
         position: absolute;
@@ -595,6 +597,8 @@
 
         @media (min-width: v.$mdpi) {
           content: "\276F";
+          // Decorative: no text for screen readers (browsers without the alt syntax keep the line above)
+          content: "\276F" / "";
           width: 2rem;
           height: 2rem;
           position: static;
@@ -671,6 +675,8 @@
 
       &::after {
         content: "\2212";
+        // Decorative: no text for screen readers (browsers without the alt syntax keep the line above)
+        content: "\2212" / "";
       }
     }
   }

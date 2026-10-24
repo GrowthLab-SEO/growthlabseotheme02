@@ -107,6 +107,8 @@
 
     &::after {
       content: "\25B6";
+      // Decorative: no text for screen readers (browsers without the alt syntax keep the line above)
+      content: "\25B6" / "";
       width: 50%;
       @include m.flex-center;
       justify-content: space-around;
@@ -121,6 +123,8 @@
       cursor: pointer;
       &::after {
         content: "\25B6";
+        // Decorative: no text for screen readers (browsers without the alt syntax keep the line above)
+        content: "\25B6" / "";
         background-color: rgba(var(--tertiary-dark));
       }
     }
