@@ -1,0 +1,31 @@
+// Accessibility rules shared by the whole theme
+
+// Keyboard focus: a visible outline on every focusable element. Several components reset their styles with
+// "all: unset" or "all: inherit", which also removes the browser focus ring. currentColor keeps the outline as
+// readable as the element's own text on its background.
+:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+// Collapsed accordions keep their content out of the tab order and away from screen readers. The content
+// transition delays the change, so it stays visible until it finishes closing. Disabled accordions always show it.
+.accordion:not(.open, .disabled) .accordion__content {
+  visibility: hidden;
+}
+
+// Visitors who asked their system to reduce motion
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
