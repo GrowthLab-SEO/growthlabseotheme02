@@ -1,10 +1,10 @@
-@use "../../styles/globals/variables" as v;
-@use "../../styles/globals/mixins" as m;
-@use "../../styles/template-parts/result-card";
-@use "../../styles/template-parts/post-card";
-@use "../../styles/template-parts/default-card";
-@use "../../styles/template-parts/testimonial-card";
-@use "../../styles/template-parts/team-card-grid";
+@use "globals/variables" as v;
+@use "globals/mixins" as m;
+@use "template-parts/result-card";
+@use "template-parts/post-card";
+@use "template-parts/default-card";
+@use "template-parts/testimonial-card";
+@use "template-parts/team-card-grid";
 
 .posts-grid {
   padding: var(--sp-xsm) 0;

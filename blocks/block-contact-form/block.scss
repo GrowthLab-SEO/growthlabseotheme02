@@ -1,5 +1,5 @@
-@use "../../styles/globals/variables" as v;
-@use "../../styles/globals/mixins" as m;
+@use "globals/variables" as v;
+@use "globals/mixins" as m;
 
 section:has(+ .contact-form--side-pic),
 main:has(+ .contact-form--side-pic) {
