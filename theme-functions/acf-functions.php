@@ -27,8 +27,8 @@ add_filter('block_categories_all', 'theme_blocks_category', 10, 2);
 if (!function_exists('register_acf_blocks')) {
     function register_acf_blocks()
     {
-        $cache_key = 'theme_block_files_cache_' . get_stylesheet();
-        $hash_key  = 'theme_block_files_hash_'  . get_stylesheet();
+        $cache_key    = 'theme_block_files_cache_' . get_stylesheet();
+        $hash_key     = 'theme_block_files_hash_'  . get_stylesheet();
 
         $block_json_files = array_merge(
             glob(get_template_directory()   . '/blocks/*/block.json') ?: [],
@@ -46,8 +46,8 @@ if (!function_exists('register_acf_blocks')) {
 
         // Force a rebuild during local development if the block cache is stale or if
         // the admin requests a cache clear. This helps ensure updated block.json
-        // metadata is picked up immediately. Manual clears require a valid nonce
-        // (see the admin bar link below).
+        // metadata is picked up immediately. The manual clear requires a valid nonce
+        // (see the "Clear block cache" admin bar link).
         $clear_requested = isset($_GET['clear_block_cache'])
             && current_user_can('manage_options')
             && wp_verify_nonce($_GET['_wpnonce'] ?? '', 'clear_block_cache');
@@ -62,7 +62,6 @@ if (!function_exists('register_acf_blocks')) {
         if ($block_files === false) {
             $block_files = [];
 
-            // 1. Parent blocks
             foreach (glob(get_template_directory() . '/blocks/*/block.json') ?: [] as $block) {
                 $data = json_decode(file_get_contents($block), true);
                 if (!empty($data['name'])) {
@@ -70,7 +69,6 @@ if (!function_exists('register_acf_blocks')) {
                 }
             }
 
-            // 2. Child blocks (override)
             foreach (glob(get_stylesheet_directory() . '/blocks/*/block.json') ?: [] as $block) {
                 $data = json_decode(file_get_contents($block), true);
                 if (!empty($data['name'])) {
@@ -82,11 +80,9 @@ if (!function_exists('register_acf_blocks')) {
             set_transient($hash_key,   $current_hash,  24 * HOUR_IN_SECONDS);
         }
 
-        // Store block folder map globally for later critical CSS extraction.
         global $acf_block_dirs;
         $acf_block_dirs = $block_files;
 
-        // 3. Register all found blocks
         foreach ($block_files as $block_dir) {
             register_block_type($block_dir);
         }
@@ -102,18 +98,8 @@ add_action('switch_theme', function ($new_name, $new_theme, $old_theme) {
     }
 }, 10, 3);
 
+// After WordPress and plugins register their blocks and supports on init (default priority 10)
 add_action('init', 'register_acf_blocks', 11);
-
-// Admin bar link to clear the block cache (nonce-protected)
-add_action('admin_bar_menu', function ($wp_admin_bar) {
-    if (!current_user_can('manage_options')) return;
-
-    $wp_admin_bar->add_node(array(
-        'id'    => 'clear-block-cache',
-        'title' => __('Clear block cache', 'growthlabseotheme02'),
-        'href'  => wp_nonce_url(add_query_arg('clear_block_cache', '1', admin_url()), 'clear_block_cache'),
-    ));
-}, 100);
 
 /**
  * Load block assets only when block is present on the page
@@ -130,22 +116,14 @@ add_filter('should_load_separate_core_block_assets', '__return_true');
  * MODIFIED: Inline critical CSS for used blocks instead of enqueuing separate files
  */
 add_action('wp_enqueue_scripts', function () {
-    global $post;
-
-    if (!is_singular() || empty($post->post_content)) return;
-    if (strpos($post->post_content, '<!-- wp:') === false) return;
+    // Blocks of the current request, inner blocks and synced patterns included (parsed once per request)
+    $blocks = get_current_post_blocks();
+    if (empty($blocks)) return;
 
     $registered_blocks = WP_Block_Type_Registry::get_instance()->get_all_registered();
     if (empty($registered_blocks)) return;
 
-    $blocks_in_use = array();
-
-    // Parsed once per request and shared with other callers (includes inner blocks)
-    foreach (get_current_post_blocks() as $block) {
-        if (!empty($block['blockName'])) {
-            $blocks_in_use[] = $block['blockName'];
-        }
-    }
+    $blocks_in_use = array_values(array_filter(array_column($blocks, 'blockName')));
 
     if (empty($blocks_in_use)) return;
 
@@ -165,8 +143,7 @@ add_action('wp_enqueue_scripts', function () {
         $blocks_by_type[$type][] = $block_name;
     }
 
-    // Collect the CSS files per type; inline_main_critical_css() reads them only when the
-    // critical CSS isn't cached yet
+    // Collect the CSS files per type; inline_main_critical_css() reads and combines them
     global $block_critical_css_files;
     $block_critical_css_files = array();
 
@@ -426,6 +403,7 @@ $acf_sync = function () use ($_theme_dir) {
                 $warnings++;
                 continue;
             }
+
             $json_data = json_decode(file_get_contents($file), true);
             if (empty($json_data) || !is_array($json_data)) {
                 $warnings++;
@@ -463,6 +441,7 @@ $acf_sync = function () use ($_theme_dir) {
                 $warnings++;
                 continue;
             }
+
             $json_data = json_decode(file_get_contents($file), true);
             if (empty($json_data) || !is_array($json_data)) {
                 $warnings++;
@@ -575,7 +554,7 @@ if (is_admin()) {
 if (!function_exists('get_theme_color_palette_for_acf')) {
     function get_theme_color_palette_for_acf()
     {
-        // Use the Customizer colors with the color-scheme.php defaults so both always match
+        // Use the Customizer colors with the same defaults as color-scheme.php so both always match
         global $default_colors;
 
         return array(
