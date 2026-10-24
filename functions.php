@@ -327,6 +327,54 @@ if (!function_exists('theme_get_hero_css_files')) {
     }
 }
 
+/**
+ * Card styles. The cards of the posts blocks have their own stylesheets (styles/cards/, built from the template-parts
+ * partials) and are printed only when the page renders them. Cards are rendered after the <head>, so the inline CSS
+ * keeps a placeholder where the block styles start (where the cards were inside the block stylesheets), and an output
+ * buffer replaces it with the styles of the cards the page used.
+ */
+if (!defined('THEME_CARD_CSS_PLACEHOLDER')) {
+    define('THEME_CARD_CSS_PLACEHOLDER', 'theme-card-css-placeholder{}');
+}
+
+// Marks a card stylesheet as used when its template part loads, also when a child theme overrides the template part
+if (!function_exists('theme_record_card_css')) {
+    function theme_record_card_css($slug, $name)
+    {
+        global $theme_used_card_css;
+        $card = basename($slug) . ($name ? "-$name" : '');
+        $file = get_template_directory() . "/styles/cards/$card-min.css";
+        if (file_exists($file)) $theme_used_card_css[$card] = $file;
+    }
+}
+add_action('get_template_part', 'theme_record_card_css', 10, 2);
+
+if (!function_exists('theme_start_card_css_buffer')) {
+    function theme_start_card_css_buffer()
+    {
+        if (is_admin() || wp_doing_ajax() || is_feed() || (defined('REST_REQUEST') && REST_REQUEST)) return;
+
+        ob_start(function ($html) {
+            if (!is_string($html) || !str_contains($html, THEME_CARD_CSS_PLACEHOLDER)) return $html;
+
+            global $theme_used_card_css;
+            $files = (array) ($theme_used_card_css ?? array());
+            // The listing pages stylesheet (template-blog) already has the post card
+            if (function_exists('is_listing_page') && is_listing_page()) unset($files['post-card']);
+
+            $css = '';
+            foreach ($files as $file) {
+                $css .= trim(preg_replace('/\/\*.*?\*\//s', '', (string) file_get_contents($file)));
+            }
+            // Same asset placeholders as the rest of the inline CSS (see inline_main_critical_css())
+            $css = str_replace(array('{child-theme-path}', '{theme-path}'), array(get_stylesheet_directory_uri(), get_template_directory_uri()), $css);
+
+            return str_replace(THEME_CARD_CSS_PLACEHOLDER, $css, $html);
+        });
+    }
+}
+add_action('template_redirect', 'theme_start_card_css_buffer', PHP_INT_MAX);
+
 function inline_main_critical_css()
 {
     // Block CSS files collected per block type by the wp_enqueue_scripts callback in acf-functions.php
@@ -392,6 +440,9 @@ function inline_main_critical_css()
     if ($include_splide) {
         $critical_css .= "\n/* Splide Critical CSS */\n" . file_get_contents($splide_css_file);
     }
+
+    // Styles of the cards the page renders, filled in by theme_start_card_css_buffer()
+    $critical_css .= "\n" . THEME_CARD_CSS_PLACEHOLDER . "\n";
 
     // Combine the block CSS per type, wrapped in a comment for debugging
     $block_critical_css = '';

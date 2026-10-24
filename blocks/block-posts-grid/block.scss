@@ -1,10 +1,6 @@
 @use "globals/variables" as v;
 @use "globals/mixins" as m;
-@use "template-parts/result-card";
-@use "template-parts/post-card";
-@use "template-parts/default-card";
-@use "template-parts/testimonial-card";
-@use "template-parts/team-card-grid";
+// The card styles are printed only for the cards the page renders (styles/cards/, see functions.php)
 
 .posts-grid {
   padding: var(--sp-xsm) 0;
