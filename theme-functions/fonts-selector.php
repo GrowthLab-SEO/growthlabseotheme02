@@ -1,10 +1,5 @@
 <?php
-
-// ─── THEME DEFAULTS ───────────────────────────────────────────────────────────
-$default_fonts = [
-    'primary'   => 'Mona Sans',
-    'secondary' => 'Roboto Serif',
-];
+// The default fonts ($default_fonts) are defined in theme-functions/theme-config.php, which loads first
 
 // ─── CORE FUNCTION: reads the Font Library + theme fonts ─────────────────────
 if (! function_exists('theme_get_all_fonts')) {
@@ -17,23 +12,24 @@ if (! function_exists('theme_get_all_fonts')) {
      * It does NOT read the resolver's 'theme' sub-key, to avoid race
      * conditions with the wp_theme_json_data_theme filter: in some contexts
      * (e.g. customize_register) that filter has not run yet and the resolver
-     * returns the data of the theme.json file on disk.
+     * returns the data from the theme.json file on disk.
      *
      * @return array<string, array{ name: string, font_family: string, slug: string }>
      *   Keyed by slug. Custom fonts from the Font Library come first.
      */
     function theme_get_all_fonts(): array
     {
-        // 1. The theme's base fonts — always available, keyed by slug
+        // 1. Theme base fonts (the defaults of theme-config.php) — always available, keyed by slug
+        global $default_fonts;
         $fonts = [
             'primary' => [
-                'name'        => 'Mona Sans',
-                'font_family' => '"Mona Sans", sans-serif',
+                'name'        => $default_fonts['primary'],
+                'font_family' => '"' . $default_fonts['primary'] . '", sans-serif',
                 'slug'        => 'primary',
             ],
             'secondary' => [
-                'name'        => 'Roboto Serif',
-                'font_family' => '"Roboto Serif", serif',
+                'name'        => $default_fonts['secondary'],
+                'font_family' => '"' . $default_fonts['secondary'] . '", serif',
                 'slug'        => 'secondary',
             ],
         ];
@@ -59,7 +55,7 @@ if (! function_exists('theme_get_all_fonts')) {
             ];
         }
 
-        // custom first, then the theme's
+        // custom first, then the theme fonts
         return array_merge($custom_fonts, $fonts);
     }
 }
@@ -190,7 +186,7 @@ if (! function_exists('register_font_setting')) {
             $choices = [];
             foreach ($all_fonts as $slug => $data) {
                 // Use the font name as the stored value (same as before)
-                // to stay compatible with existing get_theme_mod values.
+                // to stay compatible with the existing get_theme_mod values.
                 $choices[$data['name']] = $data['name'];
             }
         }
@@ -222,30 +218,8 @@ if (! function_exists('theme_get_default_font_faces')) {
      */
     function theme_get_default_font_faces(): array
     {
-        return [
-            'Roboto Serif' => [
-                ['weight' => '100', 'style' => 'normal', 'file' => 'roboto-serif-v17-latin/roboto-serif-v17-latin-100.woff2', 'display' => 'swap'],
-                ['weight' => '100', 'style' => 'italic', 'file' => 'roboto-serif-v17-latin/roboto-serif-v17-latin-100italic.woff2', 'display' => 'swap'],
-                ['weight' => '300', 'style' => 'normal', 'file' => 'roboto-serif-v17-latin/roboto-serif-v17-latin-300.woff2', 'display' => 'swap'],
-                ['weight' => '300', 'style' => 'italic', 'file' => 'roboto-serif-v17-latin/roboto-serif-v17-latin-300italic.woff2', 'display' => 'swap'],
-                ['weight' => '400', 'style' => 'normal', 'file' => 'roboto-serif-v17-latin/roboto-serif-v17-latin-regular.woff2', 'display' => 'swap'],
-                ['weight' => '400', 'style' => 'italic', 'file' => 'roboto-serif-v17-latin/roboto-serif-v17-latin-italic.woff2', 'display' => 'swap'],
-                ['weight' => '500', 'style' => 'normal', 'file' => 'roboto-serif-v17-latin/roboto-serif-v17-latin-500.woff2', 'display' => 'swap'],
-                ['weight' => '500', 'style' => 'italic', 'file' => 'roboto-serif-v17-latin/roboto-serif-v17-latin-500italic.woff2', 'display' => 'swap'],
-                ['weight' => '600', 'style' => 'normal', 'file' => 'roboto-serif-v17-latin/roboto-serif-v17-latin-600.woff2', 'display' => 'swap'],
-                ['weight' => '600', 'style' => 'italic', 'file' => 'roboto-serif-v17-latin/roboto-serif-v17-latin-600italic.woff2', 'display' => 'swap'],
-                ['weight' => '700', 'style' => 'normal', 'file' => 'roboto-serif-v17-latin/roboto-serif-v17-latin-700.woff2', 'display' => 'swap'],
-                ['weight' => '700', 'style' => 'italic', 'file' => 'roboto-serif-v17-latin/roboto-serif-v17-latin-700italic.woff2', 'display' => 'swap'],
-            ],
-            'Mona Sans' => [
-                ['weight' => '400', 'style' => 'normal', 'file' => 'mona-sans-v4-latin/mona-sans-v4-latin-regular.woff2', 'display' => 'swap'],
-                ['weight' => '400', 'style' => 'italic', 'file' => 'mona-sans-v4-latin/mona-sans-v4-latin-italic.woff2', 'display' => 'swap'],
-                ['weight' => '600', 'style' => 'normal', 'file' => 'mona-sans-v4-latin/mona-sans-v4-latin-600.woff2', 'display' => 'swap'],
-                ['weight' => '600', 'style' => 'italic', 'file' => 'mona-sans-v4-latin/mona-sans-v4-latin-600italic.woff2', 'display' => 'swap'],
-                ['weight' => '700', 'style' => 'normal', 'file' => 'mona-sans-v4-latin/mona-sans-v4-latin-700.woff2', 'display' => 'swap'],
-                ['weight' => '700', 'style' => 'italic', 'file' => 'mona-sans-v4-latin/mona-sans-v4-latin-700italic.woff2', 'display' => 'swap'],
-            ],
-        ];
+        // This theme's files (theme-config.php)
+        return (array) theme_get_config('font_faces');
     }
 }
 
@@ -331,8 +305,8 @@ if (! function_exists('theme_get_fonts_css')) {
 if (! function_exists('_theme_resolve_font_family')) {
     /**
      * Given a font name (stored in theme_mod), returns the full CSS value
-     * (with fallback) if it is in the library, or builds a simple one with
-     * the given generic fallback.
+     * (with fallback) if it is in the library, or builds a simple one
+     * with the generic fallback passed in.
      *
      * @internal
      */
@@ -459,16 +433,8 @@ if (! function_exists('theme_get_above_fold_font_variants')) {
      */
     function theme_get_above_fold_font_variants(string $hero_style, string $first_block = ''): array
     {
-        $homepage_heroes = ['home', 'home_2', 'home_3', 'home_4', 'home_5', 'home_6'];
-
-        $variants = [
-            // Homepage hero titles use the secondary font: 400, and 700 for the <strong>/<b> parts
-            ['role' => 'secondary', 'weight' => '700', 'style' => 'normal', 'hero_styles' => $homepage_heroes, 'when' => 'hero_title_bold'],
-            ['role' => 'secondary', 'weight' => '400', 'style' => 'normal', 'hero_styles' => $homepage_heroes],
-            // Default hero title, header menu, callout and hero text
-            ['role' => 'primary', 'weight' => '700', 'style' => 'normal'],
-            ['role' => 'primary', 'weight' => '400', 'style' => 'normal'],
-        ];
+        // Measured on this theme's templates (theme-config.php)
+        $variants = (array) theme_get_config('above_fold_font_variants');
 
         $variants = array_values(array_filter($variants, fn($variant) =>
             (empty($variant['hero_styles']) || in_array($hero_style, $variant['hero_styles'], true))
@@ -496,22 +462,8 @@ if (! function_exists('theme_get_first_block_font_variants')) {
     {
         if ($block_name === '') return [];
 
-        $map = [
-            'acf/contact-form'      => ['s400', 'p400', 'p700'],
-            'acf/content-box-grid'  => ['s500', 's400', 'p400'],
-            'acf/content-intro'     => ['s500', 's200', 'p400'],
-            'acf/cta-box'           => ['s700', 's400'],
-            'acf/faq'               => ['s700', 's400', 'p400'],
-            'acf/featured-video'    => ['s700', 's400', 'p400'],
-            'acf/logos-carousel'    => ['s400'],
-            'acf/office-locations'  => ['s700', 's500', 's400', 'p400', 'p700', 'p600'],
-            'acf/posts-carousel'    => ['s700', 's500', 'p400', 'p700'],
-            'acf/posts-grid'        => ['s400', 'p400', 'p700'],
-            'acf/selling-points'    => ['s700', 's400', 'p400'],
-            'acf/two-columns'       => ['s400', 'p400', 'p700'],
-            'core'                  => ['p400', 'p700'],
-            'default'               => ['s700', 's400', 'p400'],
-        ];
+        // Measured on this theme's blocks (theme-config.php)
+        $map = (array) theme_get_config('first_block_font_variants');
 
         $key   = str_starts_with($block_name, 'core/') ? 'core' : (isset($map[$block_name]) ? $block_name : 'default');
         $roles = ['p' => 'primary', 's' => 'secondary'];

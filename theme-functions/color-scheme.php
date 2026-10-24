@@ -1,23 +1,5 @@
 <?php
-// Define default colors
-$default_colors = [
-    'primary' => [
-        'default' => '#15253f',
-        'dark'    => '#08182f',
-        'light'   => '#2C3D5B'
-    ],
-    'secondary' => [
-        'default' => '#F4F3EE',
-        'dark'    => '#E7E5DF',
-        'light'   => '#FFFFFF'
-    ],
-    'tertiary' => [
-        'default' => '#BC9061',
-        'dark'    => '#9D7A55',
-        'light'   => '#DCAB77'
-    ],
-    'text' => '#15253f'
-];
+// The default colors ($default_colors) are defined in theme-functions/theme-config.php, which loads first
 
 if (!function_exists('theme_customize_register')) {
     function theme_customize_register($wp_customize)

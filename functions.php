@@ -25,6 +25,7 @@ $GLOBALS['breakpoints'] = [
 
 // Include Theme Functions
 $includes = [
+    'theme-functions/theme-config.php', // this theme's design data, read by the files below
     'theme-functions/theme-optimization.php',
     'theme-functions/color-scheme.php',
     'theme-functions/fonts-selector.php',
