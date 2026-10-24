@@ -168,9 +168,9 @@ exports.default = series(theme.build, theme.watch);
  * Its stylesheets can @use this theme's partials, e.g. @use "globals/variables" as v;
  *
  * Which child themes to build, by priority:
- *   npm run build:child -- --child=../growthlabseotheme03-child   (the option can be repeated)
+ *   npm run build:child -- --child=../growthlabseotheme02-child   (the option can be repeated)
  *   CHILD_THEMES="../a-child;../b-child" npm run build:child
- *   child-themes.json in this folder: ["../growthlabseotheme03-child"]  (git-ignored: the paths are local)
+ *   child-themes.json in this folder: ["../growthlabseotheme02-child"]  (git-ignored: the paths are local)
  */
 function childThemeRoots() {
   const fromArgs = process.argv.filter((arg) => arg.startsWith("--child=")).map((arg) => arg.slice(8));
