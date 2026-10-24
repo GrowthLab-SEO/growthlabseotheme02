@@ -119,10 +119,14 @@ Arguments each template part reads from `$args` (`get_template_part('template-pa
 | `posts-pagination` | all | `classes`, `end_size`, `mid_size`, `page_arg`, `paged`, `query`, `query_arg` |
 | `splide-navigation` | all | `classes`, `nav_link` |
 | `social-networks` | all | `social_networks` |
-| `posts-filters` | 02, 03 | `classes` |
+| `posts-filters` | all | `classes` |
 | `footer-form` | 03 | `title`, `tag`, `link`, `form_html`, `form` |
 | `footer-locations` | 03 | `offices` |
 | `hero-default`, `hero-homepage`, `hero-homepage-v2` … `v6` | all | `hero_title`, `hero_title_tag`, `hero_cta_button_default`, `hero_image_desktop_default`, `hero_image_tablet_default`, `hero_image_mobile_default` |
+
+The blog filters build the cards of their results from the theme's own post card: the blog, archive and search
+templates print it once inside a `<template>` with placeholder values (`theme_print_posts_filters_card_template()`).
+An override of `post-card.php` is used for the filtered results too, as long as it prints the values it receives.
 
 The card template parts load their own styles: when a page loads `template-parts/post-card` (from the parent or from
 an override), the theme prints the post card styles. Keep the file names if you override them.
@@ -172,6 +176,8 @@ aspect ratio that prevents layout shifts, lazy load below the fold and preload t
 | `get_phone_href($phone)`, `get_flat_number($phone)` | Phone links. |
 | `get_yt_code($url)`, `get_youtube_thumbnail($video_id, $size)` | YouTube helpers. |
 | `get_text_domain()` | The theme text domain. |
+| `transform_inline_font_sizes($html)` | Makes the font sizes chosen in the WYSIWYG for parts of a title scale on small screens (see `--font-scale`). |
+| `theme_get_config($key)` | Design data of the theme (`theme-functions/theme-config.php`). |
 
 Languages: theme-01 is bilingual (`filterContentByLanguage()`, `get_bilingual_text()`, options with the `_es` suffix);
 themes 02 and 03 use `get_current_language()`, `get_current_language_options()` and `get_languages_map()`.
@@ -185,6 +191,11 @@ themes 02 and 03 use `get_current_language()`, `get_current_language_options()` 
 | `theme_font_preload_max_bytes` | `$bytes` (300 KB) | Font files bigger than this are never preloaded. |
 | `theme_font_variant_condition` | `$result, $condition` | Custom conditions for the `when` key of the font variants. |
 | `theme_hero_css_files` | `$files, $hero_style` | Hero stylesheets printed for the page. |
+| `theme_page_hero_title` | `$title` | Fallback hero title (blog, archives, search), e.g. to translate it. |
+| `theme_main_script_data` | `$data` | Data of the main script (`siteData`), e.g. its texts. |
+| `theme_styled_select_data` | `$data` | Data of the styled selects script (its placeholder text). |
+| `<theme>_splide_blocks` | `$blocks` | Blocks that render a carousel (its script and styles load only with them). |
+| `<theme>_request_uses_splide` | `$uses_splide` | Whether the page needs the carousel script, e.g. for a carousel outside the blocks. |
 
 ## 5. SCSS: variables, mixins and reusable classes
 
@@ -238,6 +249,7 @@ Printed in the `<head>` from the Customizer (colors and fonts) and from the them
 | `--font-primary`, `--font-secondary` | Font family lists | `font-family: var(--font-primary);` |
 | `--sp-xsm`, `--sp-sm`, `--sp-md`, `--sp-lg` | 1.6rem, 3.2rem, 4.8rem, 6.4rem (02 also `--sp-xlg`: 9rem) | Spacing. |
 | `--container` (02, 03) | 1240px | Content max width. |
+| `--font-scale` | 0.75 (mobile), 0.9 (tablet), 1 (from 1024px) | Scale of the font sizes chosen in WYSIWYG titles. A component can set its own. |
 
 The colors are numbers, not colors: always wrap them in `rgb()` or `rgba()`. Using the properties instead of fixed
 values keeps the child theme working when the client changes the colors or fonts in the Customizer.
@@ -283,6 +295,9 @@ Most of the slowness found in live sites came from content and third-party code,
   it with a delay where possible. Each extra analytics or ads script costs main thread time on every page.
 - **Forms**: for a CRM form, set the form block's Form Type to "Custom code" and paste the embed code; don't hide a
   Gravity Form with CSS.
+- **Title sizes**: font sizes chosen in the WYSIWYG for parts of a title scale down on small screens, never below the
+  title's own size at that screen (unless the chosen size is smaller) nor below 12px. Prefer the title's own size and
+  use custom sizes for emphasis.
 - **Headings**: one `h1` per page (the hero title). "Posts Cards Default Title Tag" is the tag of the post cards in the
   listings: use `h2` or `p`, never `h1`.
 
