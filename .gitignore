@@ -140,3 +140,6 @@ vite.config.ts.timestamp-*
 
 # Local child theme paths for npm run build:child
 child-themes.json
+
+# Counts saved by npm run verify
+.verify-baseline.json

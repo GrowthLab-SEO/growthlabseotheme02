@@ -8,7 +8,8 @@
     "watch": "gulp",
     "build:child": "gulp buildChild",
     "watch:child": "gulp watchChild",
-    "create-child": "gulp createChild"
+    "create-child": "gulp createChild",
+    "verify": "node tools/verify.js"
   },
   "repository": {
     "type": "git",
