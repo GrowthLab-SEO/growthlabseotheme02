@@ -55,6 +55,14 @@ section {
   }
 }
 
+// The first section after the hero is usually in the first frame too. content-visibility: auto also clips what overflows
+// a section (paint containment) until the section is marked visible, so a block that overlaps the hero would show cut
+// and then jump: these sections render normally from the start.
+.hero + section,
+.hero + main > section:first-child {
+  content-visibility: visible;
+}
+
 /*Headings*/
 h1,
 h2,
