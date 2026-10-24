@@ -1,5 +1,5 @@
 /* posts-filters.js
- * Enqueued via functions.php — depends on postsFiltersData (wp_localize_script)
+ * Enqueued via functions.php â€” depends on postsFiltersData (wp_localize_script)
  *
  * wp_localize_script( 'posts-filters', 'postsFiltersData', array(
  *     'restUrl' => get_rest_url( null, 'wp/v2' ),
@@ -11,7 +11,7 @@
 document.addEventListener("DOMContentLoaded", function () {
   "use strict";
 
-  // ── DOM refs ──────────────────────────────────────────────────────────────
+  // â”€â”€ DOM refs â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const form = document.getElementById("postsFiltersForm");
   const resetBtn = document.getElementById("pfReset");
   const pillsWrap = document.getElementById("pfPills");
@@ -23,13 +23,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
   if (!form || !grid) return;
 
-  // ── Config ────────────────────────────────────────────────────────────────
+  // â”€â”€ Config â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const REST_URL = postsFiltersData.restUrl;
   const PER_PAGE = postsFiltersData.perPage || 9;
   const I18N = postsFiltersData.i18n || {};
   const DATE_LOCALE = document.documentElement.lang || undefined;
   // Cards built here use the same classes as the ones printed by the template (e.g. the horizontal layout)
   const CARD_CLASSES = grid.querySelector(".post-card")?.className || "post-card blog__card";
+  // The theme prints its post card with placeholder values (theme_print_posts_filters_card_template()), so the
+  // cards built here have the markup of the theme or child theme. Read once: the grid is replaced on every search.
+  const CARD_TEMPLATE = document.querySelector("template.posts-filters__card-template")?.innerHTML ?? "";
+  const CARD_LINK_PLACEHOLDER = "https://pf-link.invalid/";
   // Fills the %s placeholder of a translated string
   const sprintf = (text, value) => String(text).replace("%s", value);
 
@@ -48,7 +52,7 @@ document.addEventListener("DOMContentLoaded", function () {
     "December",
   ];
 
-  // ── State ─────────────────────────────────────────────────────────────────
+  // â”€â”€ State â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const state = {
     search: "",
     category: "",
@@ -60,25 +64,26 @@ document.addEventListener("DOMContentLoaded", function () {
 
   let debounceTimer = null;
 
-  // ── Helpers ───────────────────────────────────────────────────────────────
+  // â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   function pad(n) {
     return String(n).padStart(2, "0");
   }
 
-  // Parse in an inert document so markup from the API never executes
+  // Parse inside an inert <template> so markup from the API (e.g. <img onerror>) never executes
   function stripHTML(html) {
-    const doc = new DOMParser().parseFromString(html, "text/html");
-    return (doc.body.textContent || "").trim();
+    const tpl = document.createElement("template");
+    tpl.innerHTML = html;
+    return tpl.content.textContent.trim();
   }
 
-  // Escape a value for safe use in HTML text and attribute contexts
+  // Escape a value before interpolating it into HTML markup or attributes
   function escapeHtml(value) {
     return String(value ?? "")
       .replace(/&/g, "&amp;")
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#39;");
+      .replace(/'/g, "&#039;");
   }
 
   function monthNumber(name) {
@@ -92,7 +97,7 @@ document.addEventListener("DOMContentLoaded", function () {
     state.year = document.getElementById("pf-year").value;
   }
 
-  // ── Build REST query params ───────────────────────────────────────────────
+  // â”€â”€ Build REST query params â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   function buildParams() {
     const params = new URLSearchParams({
       per_page: PER_PAGE,
@@ -120,7 +125,7 @@ document.addEventListener("DOMContentLoaded", function () {
     return params;
   }
 
-  // ── Fetch & render ────────────────────────────────────────────────────────
+  // â”€â”€ Fetch & render â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   let currentRequest = null;
 
   async function fetchAndRender() {
@@ -156,7 +161,39 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const DEFAULT_IMAGE = postsFiltersData.defaultImage ?? "";
 
-  // ── Render posts ──────────────────────────────────────────────────────────
+  // A card from the theme template. Every value is escaped already.
+  function cardFromTemplate({ title, excerpt, link, date, categoryName, featuredUrl }) {
+    const tpl = document.createElement("template");
+    tpl.innerHTML = CARD_TEMPLATE
+      .split("%%pf-title%%").join(title)
+      .split("%%pf-excerpt%%").join(excerpt)
+      .split("%%pf-date%%").join(date)
+      .split("%%pf-category%%").join(categoryName)
+      .split(CARD_LINK_PLACEHOLDER).join(link);
+    const card = tpl.content.querySelector(".post-card");
+    if (!card) return "";
+
+    if (!categoryName) card.querySelectorAll(".post-card__cat").forEach((el) => el.remove());
+
+    // The featured image instead of the default image (or icon) of the template
+    if (featuredUrl) {
+      const wrapper = card.querySelector(".post-card__pic-wrapper");
+      const current = wrapper?.querySelector(".post-card__pic, picture, img, svg");
+      if (current) {
+        const img = document.createElement("img");
+        img.className = "post-card__pic";
+        img.loading = "lazy";
+        img.alt = stripHTML(title);
+        img.setAttribute("src", stripHTML(featuredUrl));
+        current.replaceWith(img);
+        // The lazy loading fallback of the replaced image
+        wrapper.querySelectorAll("noscript").forEach((el) => el.remove());
+      }
+    }
+    return card.outerHTML;
+  }
+
+  // â”€â”€ Render posts â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   function renderPosts(posts) {
     if (!posts.length) {
       grid.innerHTML =
@@ -167,31 +204,37 @@ document.addEventListener("DOMContentLoaded", function () {
     grid.innerHTML = posts
       .map((post) => {
         const date = new Date(post.date);
-        const dateStr = escapeHtml(
-          date.toLocaleDateString(DATE_LOCALE, {
-            month: "long",
-            day: "numeric",
-            year: "numeric",
-          }),
-        );
+        const dateStr = date.toLocaleDateString(DATE_LOCALE, {
+          month: "long",
+          day: "numeric",
+          year: "numeric",
+        });
 
-        // Decode the rendered title to plain text, then escape every value
+        // Every value from the API is reduced to plain text and escaped before interpolation
         const title = escapeHtml(stripHTML(post.title?.rendered ?? ""));
         const excerpt = escapeHtml(
           stripHTML(post.excerpt?.rendered ?? "").slice(0, 200),
         );
         const link = escapeHtml(post.link ?? "#");
-
+        // Extract category
+        const categoryTerms = post._embedded?.["wp:term"]?.find(terms => 
+          terms.some(t => t.taxonomy === "category")
+        ) ?? [];
+        const categoryName =
+          categoryTerms.length > 0 ? escapeHtml(stripHTML(categoryTerms[0].name)) : "";
         const featuredUrl = escapeHtml(
           post._embedded?.["wp:featuredmedia"]?.[0]?.source_url ?? "",
         );
-        const defaultImage = escapeHtml(DEFAULT_IMAGE);
+
+        if (CARD_TEMPLATE) {
+          return cardFromTemplate({ title, excerpt, link, date: escapeHtml(dateStr), categoryName, featuredUrl });
+        }
 
         let pictureHTML;
         if (featuredUrl) {
           pictureHTML = `<img class="post-card__pic" src="${featuredUrl}" alt="${title}" loading="lazy">`;
         } else if (DEFAULT_IMAGE) {
-          pictureHTML = `<img class="post-card__pic" src="${defaultImage}" alt="${title}" loading="lazy">`;
+          pictureHTML = `<img class="post-card__pic" src="${escapeHtml(DEFAULT_IMAGE)}" alt="${title}" loading="lazy">`;
         } else {
           pictureHTML = `<div class="post-card__pic post-card__pic--placeholder"></div>`;
         }
@@ -199,26 +242,30 @@ document.addEventListener("DOMContentLoaded", function () {
         return `
             <article class="${escapeHtml(CARD_CLASSES)}">
                 <div class="post-card__wrapper">
-                    <a href="${link}" class="post-card__pic-wrapper" target="_self">
+                    <a href="${link}" class="post-card__pic-wrapper" target="_self" aria-label="${title}">
                         ${pictureHTML}
+                        ${categoryName ? `<span class="post-card__cat">${categoryName}</span>` : ""}
                     </a>
                     <div class="post-card__inner">
-                        <span class="post-card__meta">${dateStr}</span>
+                        <span class="post-card__meta">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                            </svg>
+                            ${escapeHtml(dateStr)}
+                        </span>
                         <p class="post-card__title">${title}</p>
                         <p class="post-card__content">${excerpt}</p>
-                        <a href="${link}" target="_self" class="post-card__link">
+                        <a href="${link}" target="_self" class="post-card__link" aria-label="${sprintf(escapeHtml(I18N.readMoreAbout || "Read more about %s"), title)}">
                             <span>
-                            ${escapeHtml(I18N.readMore || "Read More")}
-                            <svg xmlns="http://www.w3.org/2000/svg" width="70" height="44" viewBox="-5 0 75 44">
-  <!-- Circle arc center at (35,22), radius 18 -->
-  <path d="M 19.41 13 A 18 18 0 1 1 19.41 31" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
-  
-  <!-- Arrow: tip moved 3px right → tip at x=38, tail at x=-18 -->
-  <line x1="-18" y1="22" x2="38" y2="22" stroke="currentColor" stroke-width="1.2"/>
-  
-  <!-- Arrow head, tip at x=38 -->
-  <polyline points="32,16 38,22 32,28" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round"/>
-</svg>
+                                ${escapeHtml(I18N.readMore || "Read More")}
+                                <svg xmlns="http://www.w3.org/2000/svg" width="70" height="44" viewBox="-5 0 75 44">
+                                    <path d="M 19.41 13 A 18 18 0 1 1 19.41 31" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+                                    <line x1="-18" y1="22" x2="38" y2="22" stroke="currentColor" stroke-width="1.2"/>
+                                    <polyline points="32,16 38,22 32,28" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round"/>
+                                </svg>
                             </span>
                         </a>
                     </div>
@@ -228,7 +275,7 @@ document.addEventListener("DOMContentLoaded", function () {
       .join("");
   }
 
-  // ── SVGs (same as the posts-pagination.php template part) ────────────────
+  // â”€â”€ SVGs (same as the posts-pagination.php template part) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const SVG_PREV = `
         <svg width="54" height="54" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path fill-rule="evenodd" clip-rule="evenodd" d="M18.75 9.99981C18.75 9.83405 18.6842 9.67508 18.5669 9.55787C18.4497 9.44066 18.2908 9.37481 18.125 9.37481H3.3837L7.3175 5.44231C7.4349 5.32495 7.5008 5.16578 7.5008 4.99981C7.5008 4.83384 7.4349 4.67467 7.3175 4.55731C7.2001 4.43995 7.041 4.37402 6.875 4.37402C6.709 4.37402 6.5499 4.43995 6.4325 4.55731L1.4325 9.55731C1.3743 9.61537 1.3281 9.68434 1.2966 9.76027C1.2651 9.8362 1.2489 9.9176 1.2489 9.99981C1.2489 10.082 1.2651 10.1634 1.2966 10.2394C1.3281 10.3153 1.3743 10.3843 1.4325 10.4423L6.4325 15.4423C6.5499 15.5597 6.709 15.6256 6.875 15.6256C7.041 15.6256 7.2001 15.5597 7.3175 15.4423C7.4349 15.325 7.5008 15.1658 7.5008 14.9998C7.5008 14.8338 7.4349 14.6747 7.3175 14.5573L3.3837 10.6248H18.125C18.2908 10.6248 18.4497 10.559 18.5669 10.4418C18.6842 10.3245 18.75 10.1656 18.75 9.99981Z" fill="currentColor"/>
@@ -241,8 +288,8 @@ document.addEventListener("DOMContentLoaded", function () {
         </svg>
         <span class="arrow__placeholder">${escapeHtml(I18N.next || "Next")}</span>`;
 
-  // ── Render pagination ─────────────────────────────────────────────────────
-  // Replicates the exact markup of template-parts/posts-pagination.php
+  // â”€â”€ Render pagination â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // Mirrors the exact markup of template-parts/posts-pagination.php
   function renderPagination() {
     if (!pgWrap) {
       pgWrap = document.createElement("div");
@@ -263,7 +310,7 @@ document.addEventListener("DOMContentLoaded", function () {
       items.push({ type: "prev", page: state.page - 1 });
     }
 
-    // Numbers with dots (mid_size: 2, end_size: 1 — same as the template)
+    // Numbers with dots (mid_size: 2, end_size: 1 â€” same as the template)
     const MID = 2;
     const END = 1;
 
@@ -341,7 +388,7 @@ document.addEventListener("DOMContentLoaded", function () {
           const span = document.createElement("span");
           span.className =
             "page-numbers pagination__link dots pagination__link--dots";
-          span.textContent = "…";
+          span.textContent = "â€¦";
           li.appendChild(span);
           break;
         }
@@ -375,7 +422,7 @@ document.addEventListener("DOMContentLoaded", function () {
     grid.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
-  // ── Render active pills ───────────────────────────────────────────────────
+  // â”€â”€ Render active pills â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   function renderPills() {
     pillsWrap.innerHTML = "";
 
@@ -426,7 +473,7 @@ document.addEventListener("DOMContentLoaded", function () {
     fetchAndRender();
   }
 
-  // ── Events ────────────────────────────────────────────────────────────────
+  // â”€â”€ Events â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   form.addEventListener("submit", (e) => {
     e.preventDefault();
     readForm();

@@ -24,7 +24,7 @@ $hide_sidebar = $post_id && get_field("hide_sidebar", $post_id);
 
                     $card_class = !$hide_sidebar ? "blog__card--horizontal post-card--horizontal" : "";
 
-                    get_template_part('template-parts/post', 'card', array(
+                    $card_args = array(
                         "classes" => "blog__card " . $card_class,
                         "picture" => get_the_post_thumbnail_url(),
                         "meta" => get_the_date(),
@@ -33,7 +33,11 @@ $hide_sidebar = $post_id && get_field("hide_sidebar", $post_id);
                         "excerpt" => get_the_excerpt(),
                         "link_url" => get_the_permalink(),
                         "link_target" => '_self',
-                    ));
+                    );
+                    get_template_part('template-parts/post', 'card', $card_args);
+
+                    // The blog filters build their cards from this one (placeholders instead of the post values)
+                    if ($GLOBALS['wp_query']->current_post === 0) theme_print_posts_filters_card_template($card_args);
                 }
                 ?>
 

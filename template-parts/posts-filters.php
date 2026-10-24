@@ -27,20 +27,20 @@ $newest_post = get_posts(array(
 $year_start = !empty($oldest_post) ? (int) get_the_date('Y', $oldest_post[0]) : (int) date('Y');
 $year_end   = !empty($newest_post) ? (int) get_the_date('Y', $newest_post[0]) : (int) date('Y');
 
-// posts-filters.js reads the English month name from the option value, so only the visible label is translated
+// The value stays in English: js/posts-filters.js maps it to the month number
 $months = array(
-    'January'   => __('January', 'growthlabseotheme02'),
-    'February'  => __('February', 'growthlabseotheme02'),
-    'March'     => __('March', 'growthlabseotheme02'),
-    'April'     => __('April', 'growthlabseotheme02'),
-    'May'       => __('May', 'growthlabseotheme02'),
-    'June'      => __('June', 'growthlabseotheme02'),
-    'July'      => __('July', 'growthlabseotheme02'),
-    'August'    => __('August', 'growthlabseotheme02'),
-    'September' => __('September', 'growthlabseotheme02'),
-    'October'   => __('October', 'growthlabseotheme02'),
-    'November'  => __('November', 'growthlabseotheme02'),
-    'December'  => __('December', 'growthlabseotheme02'),
+    1 => array('value' => 'January', 'label' => __('January', 'growthlabseotheme02')),
+    2 => array('value' => 'February', 'label' => __('February', 'growthlabseotheme02')),
+    3 => array('value' => 'March', 'label' => __('March', 'growthlabseotheme02')),
+    4 => array('value' => 'April', 'label' => __('April', 'growthlabseotheme02')),
+    5 => array('value' => 'May', 'label' => __('May', 'growthlabseotheme02')),
+    6 => array('value' => 'June', 'label' => __('June', 'growthlabseotheme02')),
+    7 => array('value' => 'July', 'label' => __('July', 'growthlabseotheme02')),
+    8 => array('value' => 'August', 'label' => __('August', 'growthlabseotheme02')),
+    9 => array('value' => 'September', 'label' => __('September', 'growthlabseotheme02')),
+    10 => array('value' => 'October', 'label' => __('October', 'growthlabseotheme02')),
+    11 => array('value' => 'November', 'label' => __('November', 'growthlabseotheme02')),
+    12 => array('value' => 'December', 'label' => __('December', 'growthlabseotheme02')),
 );
 
 $extra_classes = isset($args['classes']) ? esc_attr($args['classes']) : '';
@@ -52,7 +52,6 @@ $extra_classes = isset($args['classes']) ? esc_attr($args['classes']) : '';
 
         <!-- Search -->
         <div class="posts-filters__group posts-filters__group--search">
-            <label class="screen-reader-text" for="pf-search"><?= esc_html__('Search posts', 'growthlabseotheme02') ?></label>
             <div class="posts-filters__input-wrap">
                 <div class="posts-filters__icon">
                     <svg aria-hidden="true" width="16" height="16"
@@ -61,6 +60,7 @@ $extra_classes = isset($args['classes']) ? esc_attr($args['classes']) : '';
                         <line x1="21" y1="21" x2="16.65" y2="16.65" />
                     </svg>
                 </div>
+                <label class="screen-reader-text" for="pf-search"><?= esc_html__('Search posts', 'growthlabseotheme02') ?></label>
                 <input
                     class="posts-filters__input"
                     type="text"
@@ -74,8 +74,8 @@ $extra_classes = isset($args['classes']) ? esc_attr($args['classes']) : '';
         <!-- Category -->
         <?php if (!empty($categories)): ?>
             <div class="posts-filters__group">
-                <label class="screen-reader-text" for="pf-category"><?= esc_html__('Category', 'growthlabseotheme02') ?></label>
                 <div class="posts-filters__select-wrap">
+                    <label class="screen-reader-text" for="pf-category"><?= esc_html__('Category', 'growthlabseotheme02') ?></label>
                     <select class="posts-filters__select" id="pf-category" name="category">
                         <option value=""><?= esc_html__('All categories', 'growthlabseotheme02') ?></option>
                         <?php foreach ($categories as $cat): ?>
@@ -94,13 +94,13 @@ $extra_classes = isset($args['classes']) ? esc_attr($args['classes']) : '';
 
         <!-- Month -->
         <div class="posts-filters__group">
-            <label class="screen-reader-text" for="pf-month"><?= esc_html__('Month', 'growthlabseotheme02') ?></label>
             <div class="posts-filters__select-wrap">
+                <label class="screen-reader-text" for="pf-month"><?= esc_html__('Month', 'growthlabseotheme02') ?></label>
                 <select class="posts-filters__select" id="pf-month" name="month">
                     <option value=""><?= esc_html__('All months', 'growthlabseotheme02') ?></option>
-                    <?php foreach ($months as $value => $name): ?>
-                        <option value="<?= esc_attr($value) ?>">
-                            <?= esc_html($name) ?>
+                    <?php foreach ($months as $month): ?>
+                        <option value="<?= esc_attr($month['value']) ?>">
+                            <?= esc_html($month['label']) ?>
                         </option>
                     <?php endforeach ?>
                 </select>
@@ -113,12 +113,12 @@ $extra_classes = isset($args['classes']) ? esc_attr($args['classes']) : '';
 
         <!-- Year -->
         <div class="posts-filters__group">
-            <label class="screen-reader-text" for="pf-year"><?= esc_html__('Year', 'growthlabseotheme02') ?></label>
             <div class="posts-filters__select-wrap">
+                <label class="screen-reader-text" for="pf-year"><?= esc_html__('Year', 'growthlabseotheme02') ?></label>
                 <select class="posts-filters__select" id="pf-year" name="year">
                     <option value=""><?= esc_html__('All years', 'growthlabseotheme02') ?></option>
                     <?php for ($y = $year_end; $y >= $year_start; $y--): ?>
-                        <option value="<?= (int) $y ?>"><?= (int) $y ?></option>
+                        <option value="<?= $y ?>"><?= $y ?></option>
                     <?php endfor ?>
                 </select>
                 <svg class="posts-filters__chevron" aria-hidden="true" width="12" height="12"

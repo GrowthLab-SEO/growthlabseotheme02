@@ -918,3 +918,22 @@ if (!function_exists('transform_inline_font_sizes')) {
         return $output;
     }
 }
+
+// A post card with placeholder values for the blog filters (js/posts-filters.js), which fills a copy of it for every
+// post it loads: the cards it builds then have the markup of this theme's (or the child theme's) post card. Listing
+// templates call it with the arguments of their cards.
+if (!function_exists('theme_print_posts_filters_card_template')) {
+    function theme_print_posts_filters_card_template(array $card_args)
+    {
+        echo '<template class="posts-filters__card-template">';
+        get_template_part('template-parts/post', 'card', array_merge($card_args, array(
+            'picture'  => '',
+            'cat'      => '%%pf-category%%',
+            'meta'     => '%%pf-date%%',
+            'title'    => '%%pf-title%%',
+            'excerpt'  => '%%pf-excerpt%%',
+            'link_url' => 'https://pf-link.invalid/',
+        )));
+        echo '</template>';
+    }
+}
