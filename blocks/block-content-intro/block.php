@@ -25,7 +25,7 @@ if (get_field('toggle_block')):
         <div class="content-intro__wrapper container">
             <?php if ($title): ?>
                 <div class="content-intro__title tx-center">
-                    <?= wp_kses_post($title) ?>
+                    <?= transform_inline_font_sizes(wp_kses_post($title)) ?>
                 </div>
             <?php endif ?>
 

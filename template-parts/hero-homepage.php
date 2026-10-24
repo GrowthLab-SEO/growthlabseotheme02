@@ -41,7 +41,7 @@ if (!$bg_mobile) $bg_mobile = [];
             } ?>
 
             <div class="hero__title">
-                <?= wp_kses_post($args["hero_title"] ?? "") ?>
+                <?= transform_inline_font_sizes(wp_kses_post($args["hero_title"] ?? "")) ?>
             </div>
 
             <?php if ($cta_button): ?>

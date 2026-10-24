@@ -1,0 +1,15 @@
+@use "variables" as v;
+
+// Scale of the font sizes chosen in the editor for parts of a title (see transform_inline_font_sizes()). A component
+// can set its own --font-scale.
+:root {
+  --font-scale: 0.75;
+
+  @media (min-width: v.$tablet) {
+    --font-scale: 0.9;
+  }
+
+  @media (min-width: v.$ldpi) {
+    --font-scale: 1;
+  }
+}

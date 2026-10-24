@@ -831,7 +831,10 @@ function phonenumber($atts, $content = null)
 add_shortcode('phonenumber', 'phonenumber');
 
 if (!function_exists('transform_inline_font_sizes')) {
-    // Converts inline font-size styles into custom CSS variables
+    // Font sizes chosen in the editor for parts of a title (inline font-size) scale down on smaller screens: the size
+    // becomes a custom property (--fs) and the font size scales it by --font-scale (styles/globals/_font-scale.scss),
+    // never below the title's own size at that screen (1em: its clamp() minimum or its mobile size) unless the chosen
+    // size is smaller, and never below 12px
     function transform_inline_font_sizes(
         string $html,
         string $font_size_var = '--fs'
@@ -867,6 +870,11 @@ if (!function_exists('transform_inline_font_sizes')) {
 
             $style = $element->getAttribute('style');
 
+            // Already transformed
+            if (str_contains($style, $font_size_var . ':')) {
+                continue;
+            }
+
             if (
                 !preg_match(
                     '/font-size\s*:\s*([^;]+)/i',
@@ -894,10 +902,9 @@ if (!function_exists('transform_inline_font_sizes')) {
 
             // Add the variable and the new rule
             $style .= sprintf(
-                '%s:%s;font-size:calc(var(%s) * var(--font-scale, 1));',
+                '%1$s:%2$s;font-size:max(1.2rem, min(var(%1$s), 1em), calc(var(%1$s) * var(--font-scale, 1)));',
                 $font_size_var,
-                $font_size,
-                $font_size_var
+                $font_size
             );
 
             $element->setAttribute('style', $style);

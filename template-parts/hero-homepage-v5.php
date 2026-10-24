@@ -24,7 +24,7 @@ if (!$bg_mobile) $bg_mobile = [];
         <div class="hero__content tx-center">
             <?php print_title($hero_tagline, $hero_tagline_tag, "content-box__tagline"); ?>
             <div class="hero__title">
-                <?= wp_kses_post($args["hero_title"] ?? "") ?>
+                <?= transform_inline_font_sizes(wp_kses_post($args["hero_title"] ?? "")) ?>
             </div>
             <?php print_title($hero_subtitle, $hero_subtitle_tag, "hero__subtitle"); ?>
 
