@@ -1,0 +1,16 @@
+// Child theme styles: built to styles/main-min.css and printed inline after the parent styles.
+// The parent partials are available through the build: variables (breakpoints) and mixins.
+// Split long stylesheets into partials (_name.scss) next to this file and @use them here.
+@use "globals/variables" as v;
+@use "globals/mixins" as m;
+
+// Example: a section with the Additional CSS class "is-client-highlight"
+//
+// .is-client-highlight {
+//   padding: var(--sp-md) 0;
+//   background-color: rgb(var(--secondary));
+//
+//   @media (min-width: v.$ldpi) {
+//     padding: var(--sp-lg) 0;
+//   }
+// }

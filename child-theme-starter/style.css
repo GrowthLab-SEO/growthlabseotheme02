@@ -1,0 +1,12 @@
+/*
+Theme Name: {{name}}
+Template: {{parent}}
+Description: Child theme of {{parent}}.
+Version: 1.0.0
+Text Domain: {{parent}}-{{slug}}
+*/
+
+/*
+ * This file is printed inline in the <head>, after the parent styles and styles/main-min.css.
+ * Keep it for the theme header and quick fixes: write the child theme styles in styles/main.scss.
+ */

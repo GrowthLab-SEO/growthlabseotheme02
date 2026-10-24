@@ -5,7 +5,10 @@
   "main": "index.js",
   "scripts": {
     "build": "gulp build",
-    "watch": "gulp"
+    "watch": "gulp",
+    "build:child": "gulp buildChild",
+    "watch:child": "gulp watchChild",
+    "create-child": "gulp createChild"
   },
   "repository": {
     "type": "git",
