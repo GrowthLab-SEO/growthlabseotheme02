@@ -59,6 +59,11 @@
     min-width: 235px;
     margin-bottom: 0;
     flex: 1 0 calc(50% - var(--sp-xsm) / 2);
+
+    // Also when the block styles load before the main styles (e.g. in a block widget), over .location-card's margin
+    &.location-card {
+      margin-bottom: 0;
+    }
   }
 }
 

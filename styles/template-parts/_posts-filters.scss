@@ -237,3 +237,8 @@
     }
   }
 }
+
+// The main stylesheet, printed after this one, gives [type="button"] a native appearance (normalize)
+.posts-filters button[type] {
+  appearance: none;
+}
