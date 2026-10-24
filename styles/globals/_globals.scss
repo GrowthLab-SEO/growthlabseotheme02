@@ -421,7 +421,7 @@ img.bg-image {
     }
   }
 
-  li {
+  ul > li {
     &::before {
       content: "\25AA";
       // Decorative: no text for screen readers (browsers without the alt syntax keep the line above)
