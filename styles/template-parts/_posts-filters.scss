@@ -124,7 +124,8 @@
     border-bottom-left-radius: 0;
     flex: 0 0 calc(100% - 4rem);
 
-    &:focus {
+    // Mouse focus keeps the soft shadow; keyboard focus gets the theme focus outline
+    &:focus:not(:focus-visible) {
       outline: 0;
       box-shadow: inset 0 0 1px 1px rgba(var(--text), 0.4);
     }
@@ -148,7 +149,8 @@
     font-size: 16px;
     line-height: 1.15;
 
-    &:focus {
+    // Mouse focus keeps the soft shadow; keyboard focus gets the theme focus outline
+    &:focus:not(:focus-visible) {
       outline: 0;
       box-shadow: inset 0 0 1px 1px rgba(var(--text), 0.4);
     }
