@@ -33,12 +33,82 @@ function addMinSuffix(file) {
   file.basename += "-min";
 }
 
-function stylesTask(globs, outDir, name) {
+/*
+ * Hero styles split out of the main stylesheet. Each page shows one hero, so the rules of the homepage hero
+ * variants go to styles/heroes/<name>-min.css and the theme prints only the files of the page hero (see
+ * theme_get_hero_css_files() in functions.php). A selector goes to a file when it uses exactly one variant
+ * class; selectors with .hero--homepage only (shared by the home, v4 and v6 heroes) go to hero-homepage.
+ */
+const heroFiles = [
+  ["hero-v2", "hero--v2"],
+  ["hero-v3", "hero--v3"],
+  ["hero-v4", "hero--v4"],
+  ["hero-v5", "hero--v5"],
+  ["hero-v6", "hero--v6"],
+];
+
+function splitHeroes(outDir) {
+  const usesClass = (selector, className) => new RegExp(`\\.${className}(?![\\w-])`).test(selector);
+  const fileFor = (selector) => {
+    const variants = heroFiles.filter(([, className]) => usesClass(selector, className));
+    if (variants.length === 1) return variants[0][0];
+    if (variants.length === 0 && usesClass(selector, "hero--homepage")) return "hero-homepage";
+    return null;
+  };
+
+  return {
+    postcssPlugin: "split-heroes",
+    Once(root, { result, postcss: { root: newRoot } }) {
+      // Only the main stylesheet has the hero styles
+      if (path.basename(result.opts.from || "", path.extname(result.opts.from || "")) !== "main") return;
+
+      const outputs = {};
+
+      root.walkRules((rule) => {
+        if (rule.parent.type === "atrule" && /keyframes$/i.test(rule.parent.name)) return;
+
+        const moved = {};
+        const kept = [];
+        for (const selector of rule.selectors) {
+          const file = fileFor(selector);
+          if (file) (moved[file] = moved[file] || []).push(selector);
+          else kept.push(selector);
+        }
+        if (!Object.keys(moved).length) return;
+
+        for (const [file, selectors] of Object.entries(moved)) {
+          // The rule with its at-rule ancestors (media queries, supports)
+          let node = rule.clone({ selectors });
+          for (let parent = rule.parent; parent.type !== "root"; parent = parent.parent) {
+            node = parent.clone({ nodes: [] }).append(node);
+          }
+          (outputs[file] = outputs[file] || newRoot()).append(node);
+        }
+
+        if (kept.length) rule.selectors = kept;
+        else rule.remove();
+      });
+
+      // At-rules left empty by the moved rules
+      root.walkAtRules((atRule) => {
+        if (atRule.nodes && !atRule.nodes.length) atRule.remove();
+      });
+
+      fs.mkdirSync(outDir, { recursive: true });
+      for (const [file] of [...heroFiles, ["hero-homepage"]]) {
+        const css = outputs[file] ? outputs[file].toString().replace(/\n/g, "") : "";
+        fs.writeFileSync(path.join(outDir, `${file}-min.css`), css);
+      }
+    },
+  };
+}
+
+function stylesTask(globs, outDir, name, plugins = []) {
   const task = () =>
     src(globs, { allowEmpty: true })
       .pipe(sourcemaps.init())
       .pipe(sass(sassOptions).on("error", sass.logError))
-      .pipe(postcss([autoprefixer()]))
+      .pipe(postcss([autoprefixer(), ...plugins]))
       .pipe(rename(addMinSuffix))
       .pipe(sourcemaps.mapSources(relativeSource))
       .pipe(sourcemaps.write("./"))
@@ -63,7 +133,8 @@ function scriptsTask(globs, outDir, name) {
 function themeTasks(root, label) {
   const paths = themePaths(root);
   const tasks = {
-    styles: stylesTask(paths.scss_globals, `${root}/styles/`, `${label}:styles`),
+    // Child themes keep their hero rules in their own main stylesheet
+    styles: stylesTask(paths.scss_globals, `${root}/styles/`, `${label}:styles`, root === "." ? [splitHeroes(path.join(__dirname, "styles", "heroes"))] : []),
     stylesBlocks: stylesTask(paths.scss_blocks, `${root}/blocks/`, `${label}:styles-blocks`),
     scripts: scriptsTask(paths.js, `${root}/js/`, `${label}:scripts`),
     scriptsBlocks: scriptsTask(paths.js_blocks, `${root}/blocks/`, `${label}:scripts-blocks`),
