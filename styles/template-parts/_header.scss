@@ -363,9 +363,13 @@
     flex-direction: column;
     background-color: rgb(var(--primary));
     transition: all 0.5s cubic-bezier(1, 0.355, 0.355, 1);
+    // Closed, the off-canvas navigation stays out of the tab order; the transition keeps it visible until it
+    // finishes sliding out
+    visibility: hidden;
 
     &.active {
       left: 0;
+      visibility: visible;
     }
 
     @media (min-width: v.$tablet) {
@@ -385,6 +389,7 @@
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       background-color: transparent;
+      visibility: visible;
       transition: 0.3s ease;
     }
   }
@@ -561,7 +566,9 @@
         justify-content: center;
         align-items: center;
 
-        &:hover {
+        // Hover, or keyboard focus inside the item, opens its submenu
+        &:hover,
+        &:focus-within {
           .sub-menu {
             & > .menu-item {
               max-height: 350px;
@@ -569,7 +576,7 @@
           }
         }
 
-        &:has(.menu-item-has-children:hover) {
+        &:has(.menu-item-has-children:hover, .menu-item-has-children:focus-within) {
           overflow: visible;
         }
       }
