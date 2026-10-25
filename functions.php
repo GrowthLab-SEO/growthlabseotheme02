@@ -448,9 +448,31 @@ function inline_main_critical_css()
 
     echo '<style id="main-css">' . $critical_css . '</style>';
 }
-// After the stylesheets WordPress prints at priority 8 (core block styles, global styles, page templates), so the
-// theme styles win over them
+// After the stylesheets WordPress prints at priority 8 (core block styles, global styles), so the theme styles win
+// over them
 add_action('wp_head', 'inline_main_critical_css', 10);
+
+// In the themes whose styles were written for it (theme-config.php: template_styles_after_main), the page template
+// stylesheets print right after the main styles instead of with the other stylesheets, so their rules win over the
+// main rules of the same specificity (e.g. .widget__title over .h4)
+function growthlabseotheme02_late_template_styles(?array $handles = null)
+{
+    static $late = array();
+    if ($handles !== null) $late = $handles;
+    return $late;
+}
+add_action('wp_print_styles', function () {
+    if (!doing_action('wp_head') || !theme_get_config('template_styles_after_main')) return;
+    $handles = array_filter(
+        array('growthlabseotheme02-template-default', 'growthlabseotheme02-template-team-member', 'growthlabseotheme02-blog'),
+        fn($handle) => wp_style_is($handle)
+    );
+    foreach ($handles as $handle) wp_dequeue_style($handle);
+    growthlabseotheme02_late_template_styles($handles);
+});
+add_action('wp_head', function () {
+    if (growthlabseotheme02_late_template_styles()) wp_print_styles(growthlabseotheme02_late_template_styles());
+}, 11);
 
 function growthlabseotheme02_scripts()
 {
