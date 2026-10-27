@@ -13,7 +13,7 @@ The same guide ships with the three GrowthLab themes (`growthlabseotheme01`, `02
 | Child theme file | What the parent does |
 |---|---|
 | `style.css` | Theme header. Its CSS is printed **inline** in the `<head>`, after everything else of the theme. |
-| `styles/main.scss` → `styles/main-min.css` | Printed inline after the parent styles and before `style.css`. |
+| `styles/main.scss` → `styles/main-min.css` | Printed inline after all the parent styles (main, hero, cards, carousels and the blocks of the page) and before `style.css`, so a child rule wins over a parent rule of the same specificity. |
 | `js/main.js` → `js/main-min.js` | Enqueued deferred in the footer, after the parent scripts (only if the file exists). |
 | `blocks/<block>/block.json` | Registered like a parent block. A block with the same `name` as a parent block replaces it. Its `block-min.css` is inlined only on pages that use the block. |
 | `acf-json/` | ACF loads the child field groups with the parent ones and saves the groups edited on the site here. |
@@ -122,7 +122,12 @@ Arguments each template part reads from `$args` (`get_template_part('template-pa
 | `posts-filters` | all | `classes` |
 | `footer-form` | 03 | `title`, `tag`, `link`, `form_html`, `form` |
 | `footer-locations` | 03 | `offices` |
-| `hero-default`, `hero-homepage`, `hero-homepage-v2` … `v6` | all | `hero_title`, `hero_title_tag`, `hero_cta_button_default`, `hero_image_desktop_default`, `hero_image_tablet_default`, `hero_image_mobile_default` |
+| `hero-default`, `hero-homepage`, `hero-homepage-v2` … `v6` | all | `hero_title`, `hero_cta_button_default`, `hero_image_desktop_default`, `hero_image_tablet_default`, `hero_image_mobile_default`; theme-01 also `hero_title_tag` |
+
+Every hero is a `<section id="hero" class="hero …">` with a modifier per style, to scope hero rules: `hero--default`
+(inner pages), `hero--homepage` (styles 1, 4 and 6), `hero--v2` … `hero--v6`. Target one style by its own modifier:
+`.hero--homepage` doesn't cover styles 2, 3 and 5, so `:not(.hero--homepage)` is not "inner pages"; use
+`.hero--default`.
 
 The blog filters build the cards of their results from the theme's own post card: the blog, archive and search
 templates print it once inside a `<template>` with placeholder values (`theme_print_posts_filters_card_template()`).
