@@ -152,13 +152,33 @@ img_print_picture_tag(
     is_cover: false,          // fills its container (hero and section backgrounds)
     img_attr: '',             // extra <img> attributes
     is_priority: false,       // above the fold: eager loading and preload
-    fetch_priority: null      // force fetchpriority high (true) or never (false)
+    fetch_priority: null,     // force fetchpriority high (true) or never (false)
+    context: ''               // stable name of the image ("area/name"), for theme_picture_args
 );
 img_generate_picture_tag(/* same arguments */): string;
 ```
 
 Always print images with these functions: they choose the size per breakpoint, serve WebP when it exists, add the
 aspect ratio that prevents layout shifts, lazy load below the fold and preload the priority images.
+
+**Changing the sizes of a theme image** without overriding its template: every image the theme prints has a context,
+listed in `CATALOG.md` (Images), e.g. `hero/home_4/side-portrait` or `block/two-columns/image`. In the child theme's
+`functions.php`:
+
+```php
+// "*" matches one part of the context: the side portrait of every hero
+theme_set_picture_sizes('hero/*/side-portrait', max_size: 'large', min_size: 'content');
+
+// Any argument, with the filter (it receives the arguments, the context and the image)
+add_filter('theme_picture_args', function ($args, $context, $img) {
+    if ($context === 'block/two-columns/image') $args['max_size'] = 'content';
+    return $args;
+}, 10, 3);
+```
+
+Cover images (`is_cover`, e.g. hero backgrounds and the theme-03 side portraits) use the cover sizes and ignore
+`max_size` and `min_size`: set `is_cover: false` too to use them. Give your own images a context with the same
+`area/name` convention when other code may need to adjust them.
 
 **Content and fields** (`theme-functions/helpers.php`):
 
@@ -196,6 +216,7 @@ themes 02 and 03 use `get_current_language()`, `get_current_language_options()` 
 | `theme_font_preload_max_bytes` | `$bytes` (300 KB) | Font files bigger than this are never preloaded. |
 | `theme_font_variant_condition` | `$result, $condition` | Custom conditions for the `when` key of the font variants. |
 | `theme_hero_css_files` | `$files, $hero_style` | Hero stylesheets printed for the page. |
+| `theme_picture_args` | `$args, $context, $img` | Arguments of a theme image (sizes, cover, priority, classes…), by its context (see Images above). |
 | `theme_page_hero_title` | `$title` | Fallback hero title (blog, archives, search), e.g. to translate it. |
 | `theme_main_script_data` | `$data` | Data of the main script (`siteData`), e.g. its texts. |
 | `theme_styled_select_data` | `$data` | Data of the styled selects script (its placeholder text). |

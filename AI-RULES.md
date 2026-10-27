@@ -170,6 +170,8 @@ no layout changes to carousel internals. In addition, for AI-written code:
 
 - In the child's `functions.php` or its template parts and blocks, never in Code Snippets: the child theme is versioned
   and deployed with WP Pusher, snippets aren't.
+- Image sizes and loading of a theme image are changed by its context (`CATALOG.md`, Images) with
+  `theme_set_picture_sizes()` or the `theme_picture_args` filter, never by overriding the template that prints it.
 - Hooks and filters of `CHILD-THEMES.md` (section 4) before overriding a file. Override as few template parts as
   possible: an overridden file doesn't get the parent's later fixes.
 - No direct database queries, no `eval`, no writing files, no remote requests on page load.

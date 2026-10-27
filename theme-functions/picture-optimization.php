@@ -1070,6 +1070,9 @@ if (!function_exists('img_generate_picture_tag')) {
      * @param bool         $is_priority    Load right away (images visible on load, e.g. the hero).
      * @param bool|null    $fetch_priority fetchpriority="high" for priority images; null follows $is_priority.
      *                                     Pass false for priority images that aren't the LCP element (logo...).
+     * @param string       $context        Stable name of the image in the theme ("area/name", e.g.
+     *                                     "hero/home_4/side-portrait"), passed to the theme_picture_args filter so a
+     *                                     child theme can change its sizes or loading (theme_set_picture_sizes()).
      */
     function img_generate_picture_tag(
         array|string $img,
@@ -1083,10 +1086,29 @@ if (!function_exists('img_generate_picture_tag')) {
         bool         $is_cover       = false,
         array|string $img_attr       = '',
         bool         $is_priority    = false,
-        ?bool        $fetch_priority = null
+        ?bool        $fetch_priority = null,
+        string       $context        = ''
     ): string {
         if (empty($img)) return '';
         if (empty($GLOBALS['sizes'])) po_init_sizes();
+
+        // Child themes can change the arguments of an image by its context (or its classes, when it has none)
+        $defaults = compact('mobile_img', 'tablet_img', 'max_size', 'min_size', 'classes', 'id', 'alt_text', 'is_cover', 'img_attr', 'is_priority', 'fetch_priority');
+        $args = apply_filters('theme_picture_args', $defaults, $context, $img);
+        if (is_array($args) && $args !== $defaults) {
+            $args += $defaults;
+            $mobile_img     = $args['mobile_img'];
+            $tablet_img     = $args['tablet_img'];
+            $max_size       = (string) $args['max_size'];
+            $min_size       = (string) $args['min_size'];
+            $classes        = (string) $args['classes'];
+            $id             = (string) $args['id'];
+            $alt_text       = (string) $args['alt_text'];
+            $is_cover       = (bool) $args['is_cover'];
+            $img_attr       = $args['img_attr'];
+            $is_priority    = (bool) $args['is_priority'];
+            $fetch_priority = $args['fetch_priority'] === null ? null : (bool) $args['fetch_priority'];
+        }
 
         // Unknown size names are ignored
         if ($max_size !== 'full' && !in_array($max_size, $GLOBALS['sizes'], true)) $max_size = 'full';
@@ -1147,7 +1169,8 @@ if (!function_exists('img_print_picture_tag')) {
         bool         $is_cover       = false,
         array|string $img_attr       = '',
         bool         $is_priority    = false,
-        ?bool        $fetch_priority = null
+        ?bool        $fetch_priority = null,
+        string       $context        = ''
     ): void {
         echo img_generate_picture_tag(
             img: $img,
@@ -1161,7 +1184,34 @@ if (!function_exists('img_print_picture_tag')) {
             is_cover: $is_cover,
             img_attr: $img_attr,
             is_priority: $is_priority,
-            fetch_priority: $fetch_priority
+            fetch_priority: $fetch_priority,
+            context: $context
         );
+    }
+}
+
+if (!function_exists('theme_set_picture_sizes')) {
+    /**
+     * Sets the sizes of the theme images whose context matches $context, from a child theme's functions.php.
+     * $context accepts "*" as a wildcard ("hero/*\/side-portrait": the side portrait of every hero). The contexts
+     * are listed in CATALOG.md (Images). Size names are those of the theme (Settings > Media and add_image_size()).
+     *
+     * A cover image (backgrounds) uses the cover sizes and ignores max and min sizes: pass $is_cover false to use them.
+     *
+     * theme_set_picture_sizes('hero/*\/side-portrait', max_size: 'large', min_size: 'content');
+     */
+    function theme_set_picture_sizes(
+        string  $context,
+        ?string $max_size    = null,
+        ?string $min_size    = null,
+        ?bool   $is_cover    = null,
+        ?bool   $is_priority = null
+    ): void {
+        $pattern = '/^' . str_replace('\*', '[^\/]*', preg_quote($context, '/')) . '$/';
+        $changes = array_filter(compact('max_size', 'min_size', 'is_cover', 'is_priority'), fn($value) => $value !== null);
+
+        add_filter('theme_picture_args', function ($args, $image_context) use ($pattern, $changes) {
+            return $image_context !== '' && preg_match($pattern, $image_context) ? array_merge($args, $changes) : $args;
+        }, 10, 2);
     }
 }
