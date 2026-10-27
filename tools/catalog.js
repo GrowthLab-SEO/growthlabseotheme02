@@ -183,6 +183,55 @@ function shortcodesSection() {
   return out.join("\n");
 }
 
+// Every image the theme prints with a context (img_print_picture_tag / img_generate_picture_tag), with the arguments
+// that decide its sizes and loading
+function imagesSection() {
+  const rows = [];
+  const walk = (dir) =>
+    fs.readdirSync(path.join(root, dir), { withFileTypes: true }).forEach((e) => {
+      const rel = dir ? `${dir}/${e.name}` : e.name;
+      if (e.isDirectory()) {
+        if (!["node_modules", ".git", "child-theme-starter", "acf-json", "styles", "js", "fonts", "assets", "tools"].includes(e.name)) walk(rel);
+        return;
+      }
+      if (!e.name.endsWith(".php") || e.name === "picture-optimization.php") return;
+      const php = read(rel);
+      for (const m of php.matchAll(/img_(?:print|generate)_picture_tag\s*\(/g)) {
+        let depth = 0, i = m.index + m[0].length - 1;
+        for (; i < php.length; i++) { if (php[i] === "(") depth++; else if (php[i] === ")" && --depth === 0) break; }
+        const args = php.slice(m.index + m[0].length, i);
+        const context = args.match(/context:\s*'([^']+)'/)?.[1];
+        if (!context) continue;
+        const arg = (name) => args.match(new RegExp(`${name}:\\s*("[^"]*"|'[^']*'|[^,)\\s]+)`))?.[1]?.replace(/^["']|["']$/g, "");
+        // A size computed in the template (a variable or a condition) is shown as such
+        const size = (name, fallback) => {
+          const value = args.match(new RegExp(`${name}:\\s*([^,)]+)`))?.[1]?.trim();
+          if (!value) return `\`${fallback}\``;
+          return /^["'][\w-]+["']$/.test(value) ? `\`${value.slice(1, -1)}\`` : "set by the template";
+        };
+        const cover = arg("is_cover") === "true";
+        const sizes = cover ? "cover sizes" : `max ${size("max_size", "full")}, min ${size("min_size", "auto")}`;
+        const loading = arg("is_priority") === "true" ? "priority" : "lazy";
+        rows.push(`| \`${context}\` | \`${rel}\` | ${sizes} | ${loading} |`);
+      }
+    });
+  walk("");
+  const unique = [...new Set(rows)].sort();
+  return [
+    "## Images",
+    "",
+    "Every image the theme prints has a context. A child theme changes the sizes or loading of an image by its context " +
+      "in its `functions.php`, without overriding the template: `theme_set_picture_sizes('hero/*/side-portrait', " +
+      "max_size: 'large', min_size: 'content');` (`*` matches one part), or the `theme_picture_args` filter for any " +
+      "argument. Cover images use the cover sizes and ignore max and min sizes: pass `is_cover: false` to use them.",
+    "",
+    "| Context | File | Sizes | Loading |",
+    "|---|---|---|---|",
+    ...unique,
+    "",
+  ].join("\n");
+}
+
 // Template parts that print the Site Options logo symbol (the blocks say it in their own entry)
 function logoSymbolSection() {
   const parts = fs.readdirSync(path.join(root, "template-parts")).filter((f) => f.endsWith(".php") && printsLogoSymbol(`template-parts/${f}`));
@@ -334,6 +383,7 @@ const md = [
     optionGroups
   ),
   shortcodesSection(),
+  imagesSection(),
   logoSymbolSection(),
   designDefaultsSection(),
 ]

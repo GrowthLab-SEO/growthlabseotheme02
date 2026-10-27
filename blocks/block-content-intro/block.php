@@ -19,7 +19,7 @@ if (get_field('toggle_block')):
         <?= get_block_extract_attribute($extract_block_from_content ?? false, $place ?? '') ?>>
 
         <?php
-        if (isset($background_image) && $background_image && isset($background_type) && $background_type === 'image') img_print_picture_tag(img: $background_image, is_cover: true, classes: "content-intro__bg bg-image gradient-overlay");
+        if (isset($background_image) && $background_image && isset($background_type) && $background_type === 'image') img_print_picture_tag(img: $background_image, is_cover: true, classes: "content-intro__bg bg-image gradient-overlay", context: 'block/content-intro/background');
         ?>
 
         <div class="content-intro__wrapper container">
@@ -37,7 +37,8 @@ if (get_field('toggle_block')):
                         img: $columns['featured_image'],
                         max_size: "content",
                         min_size: "featured-small",
-                        classes: "col__image"
+                        classes: "col__image",
+                        context: 'block/content-intro/featured-image'
                     );
                     ?>
                 </div>

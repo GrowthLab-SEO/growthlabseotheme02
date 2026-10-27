@@ -17,9 +17,9 @@ $target_attr = !empty($args['link_target']) ? ' target="' . esc_attr($args['link
             echo "<div class='post-card__pic-wrapper'>";
         }
         if (isset($args['picture']) && $args['picture']) {
-            img_print_picture_tag(img: $args["picture"], max_size: "content", min_size: "featured-small", classes: "post-card__pic");
+            img_print_picture_tag(img: $args["picture"], max_size: "content", min_size: "featured-small", classes: "post-card__pic", context: 'card/post/picture');
         } elseif (get_field_options("options")["posts_default_image"] && !empty(get_field_options("options")["posts_default_image"])) {
-            img_print_picture_tag(img: get_field_options("options")["posts_default_image"], max_size: "content", min_size: "featured-small", classes: "post-card__pic");
+            img_print_picture_tag(img: get_field_options("options")["posts_default_image"], max_size: "content", min_size: "featured-small", classes: "post-card__pic", context: 'card/post/default-image');
         } else {
             echo get_theme_svg('assets/icons/icon-file-image.svg');
         }

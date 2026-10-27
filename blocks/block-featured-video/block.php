@@ -20,7 +20,7 @@ if (get_field('toggle_block')):
             $has_video = $is_youtube_video ? (bool) $video_id : !empty($video);
 
             if (isset($cover_image) && $cover_image) {
-                img_print_picture_tag(img: $cover_image, is_cover: true, classes: "featured-video__cover");
+                img_print_picture_tag(img: $cover_image, is_cover: true, classes: "featured-video__cover", context: 'block/featured-video/cover');
             } elseif ($video_id) {
                 $thumb = get_youtube_thumbnail($video_id, 'maxresdefault');
                 echo "<img data-src='" . esc_url($thumb) . "' alt='' class='featured-video__cover lazy-image'>";

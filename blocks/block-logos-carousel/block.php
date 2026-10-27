@@ -17,7 +17,8 @@ if (get_field('toggle_block')):
             img: $side_image,
             max_size: "cover-mobile",
             min_size: "featured-small",
-            classes: "logos-carousel__image"
+            classes: "logos-carousel__image",
+            context: 'block/logos-carousel/side-image'
         );
         ?>
 
@@ -46,7 +47,8 @@ if (get_field('toggle_block')):
                                             <?= img_generate_picture_tag(
                                                 img: $logo['logo'],
                                                 max_size: "thumbnail",
-                                                classes: "logo__pic"
+                                                classes: "logo__pic",
+                                                context: 'block/logos-carousel/logo'
                                             ); ?>
 
 

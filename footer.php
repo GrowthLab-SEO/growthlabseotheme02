@@ -83,7 +83,7 @@
           </div>
         <?php elseif (!empty($form_section['side_image'])): ?>
           <div class="contact-form-footer__side-image">
-            <?php img_print_picture_tag($form_section['side_image'], is_cover: false, max_size: "cover-desktop", min_size: "cover-mobile", classes: "side-image bg-image") ?>
+            <?php img_print_picture_tag($form_section['side_image'], is_cover: false, max_size: "cover-desktop", min_size: "cover-mobile", classes: "side-image bg-image", context: 'footer/form-side-image') ?>
           </div>
         <?php endif; ?>
 
@@ -135,7 +135,7 @@
           <?php if (!empty($content_section['logo']) || !empty($content_section['cta_button'])): ?>
 
             <div class="content-info-footer__col--social">
-              <?php if (!empty($content_section['logo'])) img_print_picture_tag(img: $content_section['logo'], classes: "footer-logo", max_size: "medium") ?>
+              <?php if (!empty($content_section['logo'])) img_print_picture_tag(img: $content_section['logo'], classes: "footer-logo", max_size: "medium", context: 'footer/logo') ?>
 
 
               <div class="content-info-footer__social">

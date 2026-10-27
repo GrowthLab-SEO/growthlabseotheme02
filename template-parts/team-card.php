@@ -11,8 +11,8 @@ $options = get_field_options("options");
         <div class='team-card__pic-wrapper'>
             <?php
             if (isset($args['picture']) && $args['picture']) {
-                img_print_picture_tag(img: $options["logo_symbol"], classes: "team-card__symbol");
-                img_print_picture_tag(img: $args["picture"], max_size: "content", min_size: "featured-small", classes: "team-card__pic");
+                img_print_picture_tag(img: $options["logo_symbol"], classes: "team-card__symbol", context: 'card/team/logo-symbol');
+                img_print_picture_tag(img: $args["picture"], max_size: "content", min_size: "featured-small", classes: "team-card__pic", context: 'card/team/picture');
             } else {
                 echo get_theme_svg('assets/icons/icon-file-image.svg');
             }

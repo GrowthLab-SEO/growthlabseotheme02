@@ -103,7 +103,7 @@ Prints the logo symbol of Site Options (`logo_symbol`).
 | Field | Label | Type | Options and notes |
 |---|---|---|---|
 | `lightdark_background` | Light/Dark Background | true_false | default: off |
-| `background_image` | Background Image | image | shown when ⚠ broken condition (field field_6912bfc9d31b0 is not in this group) |
+| `background_image` | Background Image | image |  |
 | `side_images` | Side Images | repeater (0-2 rows) |  |
 | ↳ `image` | Image | image |  |
 | `title` | Title | text |  |
@@ -118,7 +118,7 @@ Prints the logo symbol of Site Options (`logo_symbol`).
 | ↳ ↳ `question` | Question | text |  |
 | ↳ ↳ `question_tag` | Question Tag | select | `h1`, `h2`, `h3`, `h4`, `h5`, `h6`, `p`. default: `p` |
 | ↳ ↳ `answer` | Answer | wysiwyg |  |
-| `cta_link` | CTA Link | link | shown when ⚠ broken condition (field field_690e5f0c51fd3 is not in this group) |
+| `cta_link` | CTA Link | link |  |
 
 ### Featured Video (`acf/featured-video`)
 
@@ -146,7 +146,7 @@ Root classes: `block locations`. Files: `blocks/block-locations/`.
 | `pretitle_tag` | Pretitle Tag | select | `h1`, `h2`, `h3`, `h4`, `h5`, `h6`, `p`. default: `p` |
 | `title` | Title | text |  |
 | `title_tag` | Title Tag | select | `h1`, `h2`, `h3`, `h4`, `h5`, `h6`, `p`. default: `p` |
-| `main_content` | Main Content | wysiwyg | shown when ⚠ broken condition (field field_6927558d20842 is not in this group) |
+| `main_content` | Main Content | wysiwyg |  |
 | `show_all_locations` | Show All Locations | true_false | default: off |
 | `disable_accordion` | Disable Accordion | true_false | default: off |
 | `offices` | Offices | repeater | shown when show_all_locations off |
@@ -416,7 +416,7 @@ Fields of every page (and of the post types listed in each group): its hero, sid
 | `hide_sidebar` | Hide Sidebar | true_false | default: off |
 | `menus` | Menus | repeater | shown when hide_sidebar off |
 | ↳ `menu_title` | Menu Title | text |  |
-| ↳ `meu_text_content` | Meu Text Content | textarea |  |
+| ↳ `meu_text_content` | Menu Text Content | textarea |  |
 | ↳ `menu` | Menu | menu |  |
 
 ## Site Options
@@ -493,6 +493,53 @@ Site-wide content, in the admin menu Site Options: logos, phone numbers, offices
 They work in WYSIWYG fields and in the post content, not in Link, Text or URL fields (a button of a Link field can't follow Site Options: put the link in a WYSIWYG field with the shortcode instead, styled with its class attribute, e.g. `link_class="btn btn--primary"`).
 
 - `[phonenumber]`: prints the Main Phone Number of Site Options as a tel: link, so the number shown in the content follows Site Options. Attributes: link_class (classes of the link, e.g. "btn btn--primary" for a button), link_id, wrapper (element around the link: span, p, strong, h2...), target, and text (shown only when Site Options has no number). All attributes are escaped because any user who can edit posts (including contributors) can use it. Attributes: `target` (default '_self'), `link_id` (default ''), `link_class` (default ''), `wrapper` (default ''), `text` (default '').
+
+## Images
+
+Every image the theme prints has a context. A child theme changes the sizes or loading of an image by its context in its `functions.php`, without overriding the template: `theme_set_picture_sizes('hero/*/side-portrait', max_size: 'large', min_size: 'content');` (`*` matches one part), or the `theme_picture_args` filter for any argument. Cover images use the cover sizes and ignore max and min sizes: pass `is_cover: false` to use them.
+
+| Context | File | Sizes | Loading |
+|---|---|---|---|
+| `block/contact-form/side-image` | `blocks/block-contact-form/block.php` | cover sizes | lazy |
+| `block/content-intro/background` | `blocks/block-content-intro/block.php` | cover sizes | lazy |
+| `block/content-intro/featured-image` | `blocks/block-content-intro/block.php` | max `content`, min `featured-small` | lazy |
+| `block/cta-box/background` | `blocks/block-cta-box/block.php` | cover sizes | lazy |
+| `block/cta-box/side-image` | `blocks/block-cta-box/block.php` | max `large`, min `featured-small` | lazy |
+| `block/faq/background` | `blocks/block-faq/block.php` | cover sizes | lazy |
+| `block/faq/logo-symbol` | `blocks/block-faq/block.php` | max `medium`, min `auto` | lazy |
+| `block/faq/side-image` | `blocks/block-faq/block.php` | max `content`, min `featured-small` | lazy |
+| `block/featured-video/cover` | `blocks/block-featured-video/block.php` | cover sizes | lazy |
+| `block/logos-carousel/logo` | `blocks/block-logos-carousel/block.php` | max `thumbnail`, min `auto` | lazy |
+| `block/logos-carousel/side-image` | `blocks/block-logos-carousel/block.php` | max `cover-mobile`, min `featured-small` | lazy |
+| `block/posts-carousel/background` | `blocks/block-posts-carousel/block.php` | cover sizes | lazy |
+| `block/posts-grid/background` | `blocks/block-posts-grid/block.php` | cover sizes | lazy |
+| `block/selling-points/background` | `blocks/block-selling-points/block.php` | cover sizes | lazy |
+| `block/selling-points/icon` | `blocks/block-selling-points/block.php` | max `thumbnail`, min `auto` | lazy |
+| `block/two-columns/background` | `blocks/block-two-columns/block.php` | cover sizes | lazy |
+| `block/two-columns/image` | `blocks/block-two-columns/block.php` | max `large`, min `content` | lazy |
+| `card/default/picture` | `template-parts/default-card.php` | max `featured-small`, min `featured-small` | lazy |
+| `card/post/default-image` | `template-parts/post-card.php` | max `content`, min `featured-small` | lazy |
+| `card/post/picture` | `template-parts/post-card.php` | max `content`, min `featured-small` | lazy |
+| `card/team-grid/picture` | `template-parts/team-card-grid.php` | max `cover-mobile`, min `featured-small` | lazy |
+| `card/team/logo-symbol` | `template-parts/team-card.php` | max `full`, min `auto` | lazy |
+| `card/team/picture` | `template-parts/team-card.php` | max `content`, min `featured-small` | lazy |
+| `footer/form-side-image` | `footer.php` | max `cover-desktop`, min `cover-mobile` | lazy |
+| `footer/logo` | `footer.php` | max `medium`, min `auto` | lazy |
+| `hero/default/background` | `template-parts/hero-default.php` | cover sizes | priority |
+| `hero/home/background` | `template-parts/hero-homepage.php` | cover sizes | priority |
+| `hero/home/badge` | `template-parts/hero-homepage.php` | max `thumbnail`, min `auto` | lazy |
+| `hero/home/side-portrait` | `template-parts/hero-homepage.php` | max `cover-mobile-portrait`, min `featured-small` | priority |
+| `hero/home_2/background` | `template-parts/hero-homepage-v2.php` | cover sizes | priority |
+| `hero/home_3/background` | `template-parts/hero-homepage-v3.php` | cover sizes | priority |
+| `hero/home_4/background` | `template-parts/hero-homepage-v4.php` | cover sizes | priority |
+| `hero/home_4/side-portrait` | `template-parts/hero-homepage-v4.php` | max `cover-tablet`, min `featured-small` | priority |
+| `hero/home_5/background` | `template-parts/hero-homepage-v5.php` | cover sizes | priority |
+| `hero/home_6/background` | `template-parts/hero-homepage-v6.php` | cover sizes | priority |
+| `hero/home_6/side-portrait` | `template-parts/hero-homepage-v6.php` | max `large`, min `featured-small` | priority |
+| `separator/logo-symbol` | `template-parts/logo-separator.php` | max `medium`, min `auto` | lazy |
+| `single/post/featured-image` | `single.php` | max `large`, min `content` | lazy |
+| `single/team/headshot` | `single-team.php` | max `cover-mobile`, min `auto` | lazy |
+| `site/logo` | `header.php` | max `medium`, min `thumbnail` | priority |
 
 ## Logo symbol
 

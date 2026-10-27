@@ -18,7 +18,7 @@ $target_attr = !empty($args['link_target']) ? ' target="' . esc_attr($args['link
         echo "<div class='default-card__wrapper'>";
     }
     if (isset($args['picture']) && $args['picture'] && $args['picture'] !== '') {
-        img_print_picture_tag(img: $args["picture"], max_size: "featured-small", min_size: "featured-small", classes: "default-card__pic");
+        img_print_picture_tag(img: $args["picture"], max_size: "featured-small", min_size: "featured-small", classes: "default-card__pic", context: 'card/default/picture');
     } else {
         echo get_theme_svg('assets/icons/icon-file-image.svg');
     }

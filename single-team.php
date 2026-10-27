@@ -12,7 +12,7 @@ foreach (get_post_fields_with_defaults() as $key => $value) $$key = $value;
                 <aside role="complementary" class="single__sidebar single-team__sidebar formatted-text">
                     <?php
                     if (isset($headshot) && !empty($headshot)) {
-                        img_print_picture_tag(img: $headshot, max_size: "cover-mobile", classes: "single-team__picture");
+                        img_print_picture_tag(img: $headshot, max_size: "cover-mobile", classes: "single-team__picture", context: 'single/team/headshot');
                     }
                     ?>
 

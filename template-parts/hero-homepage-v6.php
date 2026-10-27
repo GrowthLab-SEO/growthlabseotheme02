@@ -26,7 +26,8 @@ if (!$bg_mobile) $bg_mobile = [];
         mobile_img: $bg_mobile,
         is_cover: true,
         classes: "hero__bg-image bg-image gradient-overlay",
-        is_priority: true
+        is_priority: true,
+        context: 'hero/home_6/background'
     ); ?>
 
     <div class="hero__wrapper container">
@@ -64,7 +65,7 @@ if (!$bg_mobile) $bg_mobile = [];
             </div>
         </div>
 
-        <?php if (!empty($hero_pictures['side_portrait'])) img_print_picture_tag(img: $hero_pictures['side_portrait'], max_size: "large", min_size: "featured-small", classes: "hero__side-portrait", is_priority: true); ?>
+        <?php if (!empty($hero_pictures['side_portrait'])) img_print_picture_tag(img: $hero_pictures['side_portrait'], max_size: "large", min_size: "featured-small", classes: "hero__side-portrait", is_priority: true, context: 'hero/home_6/side-portrait'); ?>
 
     </div>
 </section>

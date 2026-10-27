@@ -17,7 +17,7 @@ if (get_field('toggle_block')):
 
             <div class="contact-form-block__wrapper <?= $reverse_columns ? "reverse" : "" ?>">
 
-                <?php if (isset($side_image) && $side_image) img_print_picture_tag(img: $side_image, is_cover: true, classes: "contact-form-block__side-img") ?>
+                <?php if (isset($side_image) && $side_image) img_print_picture_tag(img: $side_image, is_cover: true, classes: "contact-form-block__side-img", context: 'block/contact-form/side-image') ?>
 
                 <div class="contact-form-block__inner container">
 

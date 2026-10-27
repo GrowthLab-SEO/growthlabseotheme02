@@ -13,7 +13,7 @@ if (get_field('toggle_block')):
         <?= get_block_extract_attribute($extract_block_from_content ?? false, $place ?? '') ?>>
 
         <?php
-        if (isset($background_image) && $background_image) img_print_picture_tag(img: $background_image, is_cover: true, classes: "faq__bg bg-image gradient-overlay");
+        if (isset($background_image) && $background_image) img_print_picture_tag(img: $background_image, is_cover: true, classes: "faq__bg bg-image gradient-overlay", context: 'block/faq/background');
         ?>
 
         <div class="faq__wrapper container">
@@ -24,14 +24,14 @@ if (get_field('toggle_block')):
                     <?php
 
                     foreach ($side_images as $image) {
-                        img_print_picture_tag(img: $image['image'], max_size: "content", min_size: "featured-small", classes: "faq__side-image");
+                        img_print_picture_tag(img: $image['image'], max_size: "content", min_size: "featured-small", classes: "faq__side-image", context: 'block/faq/side-image');
                     }
 
                     $options = get_field_options("options");
 
                     if ($options["logo_symbol"]) {
                         echo "<div class='faq__separator'>";
-                        img_print_picture_tag(img: $options["logo_symbol"], max_size: "medium");
+                        img_print_picture_tag(img: $options["logo_symbol"], max_size: "medium", context: 'block/faq/logo-symbol');
                         echo "</div>";
                     }
                     ?>

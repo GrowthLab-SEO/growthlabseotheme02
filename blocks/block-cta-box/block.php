@@ -18,13 +18,13 @@ if (get_field('toggle_block')):
         <?= get_block_extract_attribute($extract_block_from_content ?? false, $place ?? '') ?>>
 
         <?php
-        if (isset($background_image) && $background_image && isset($background_type) && $background_type === 'image') img_print_picture_tag(img: $background_image, is_cover: true, classes: "cta-box__bg bg-image gradient-overlay");
+        if (isset($background_image) && $background_image && isset($background_type) && $background_type === 'image') img_print_picture_tag(img: $background_image, is_cover: true, classes: "cta-box__bg bg-image gradient-overlay", context: 'block/cta-box/background');
         ?>
 
         <div class="cta-box__wrapper container">
 
             <?php
-            if ($box_style === "full" && $side_image) img_print_picture_tag(img: $side_image, max_size: "large", min_size: "featured-small", classes: "cta-box__side-img");
+            if ($box_style === "full" && $side_image) img_print_picture_tag(img: $side_image, max_size: "large", min_size: "featured-small", classes: "cta-box__side-img", context: 'block/cta-box/side-image');
             ?>
 
             <div class="cta-box__inner">

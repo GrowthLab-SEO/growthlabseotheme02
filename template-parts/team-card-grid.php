@@ -9,7 +9,7 @@ if (!defined('ABSPATH')) {
         <a href="<?= esc_url($args['link_url']) ?>"<?= !empty($args['link_target']) ? ' target="' . esc_attr($args['link_target']) . '"' . ($args['link_target'] === '_blank' ? ' rel="noopener noreferrer"' : '') : '' ?> class="team-card-grid__wrapper" aria-label="<?= esc_attr(wp_strip_all_tags($args['name'] ?? '')) ?>">
             <?php
             if (isset($args['picture']) && $args['picture'] && $args['picture'] !== '') {
-                img_print_picture_tag(img: $args["picture"], max_size: "cover-mobile", min_size: "featured-small", classes: "team-card-grid__pic");
+                img_print_picture_tag(img: $args["picture"], max_size: "cover-mobile", min_size: "featured-small", classes: "team-card-grid__pic", context: 'card/team-grid/picture');
             } else {
                 echo get_theme_svg('assets/icons/icon-file-image.svg');
             }

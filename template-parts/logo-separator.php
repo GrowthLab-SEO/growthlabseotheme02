@@ -11,7 +11,7 @@ foreach ($args as $key => $value) $$key = $value;
     $options = get_field_options("options");
 
     if ($options["logo_symbol"]) {
-        img_print_picture_tag(img: $options["logo_symbol"], max_size: "medium", classes: "logo-separator__logo");
+        img_print_picture_tag(img: $options["logo_symbol"], max_size: "medium", classes: "logo-separator__logo", context: 'separator/logo-symbol');
     } else {
         echo get_theme_svg('assets/img/ampersand-symbol.svg');
     } ?>
