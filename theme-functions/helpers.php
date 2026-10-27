@@ -779,8 +779,10 @@ if (!function_exists('get_youtube_thumbnail')) {
     }
 }
 
-// [phonenumber] shortcode: prints the main phone number from the site options as a tel: link.
-// All attributes are escaped because any user who can edit posts (including contributors) can use it.
+// [phonenumber] shortcode: prints the Main Phone Number of Site Options as a tel: link, so the number shown in the
+// content follows Site Options. Attributes: link_class (classes of the link, e.g. "btn btn--primary" for a button),
+// link_id, wrapper (element around the link: span, p, strong, h2...), target, and text (shown only when Site Options
+// has no number). All attributes are escaped because any user who can edit posts (including contributors) can use it.
 function phonenumber($atts, $content = null)
 {
     $atts = shortcode_atts(array(

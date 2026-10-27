@@ -2,7 +2,8 @@
  * Local check before pushing: npm run verify
  *
  * 1. PHP syntax of every theme file (php -l).
- * 2. Builds the theme and the child themes of child-themes.json (see gulpfile.js).
+ * 2. Builds the theme and the child themes of child-themes.json (see gulpfile.js) and CATALOG.md (tools/catalog.js;
+ *    with --skip-build it only checks that CATALOG.md is up to date).
  * 3. Loads the main pages of the local site (tools/verify-urls.php) with the parent theme and, when it exists, with
  *    the local "compat-test" child theme (mu-plugin gl-compat-child.php), and reports:
  *    - pages that fail, PHP errors and warnings printed in the page;
@@ -69,6 +70,17 @@ function build() {
     } catch (error) {
       problems.push(`npm run ${script} failed:\n${String(error.stdout || error.message).slice(-1500)}`);
     }
+  }
+}
+
+// 2b. CATALOG.md describes the blocks and fields of this version (tools/catalog.js); with --skip-build only check it
+function catalog() {
+  step("Catalog");
+  const mode = args.includes("--skip-build") ? ["--check"] : [];
+  try {
+    console.log(execFileSync("node", [path.join(root, "tools", "catalog.js"), ...mode], { cwd: root, stdio: "pipe" }).toString().trim());
+  } catch (error) {
+    problems.push(String(error.stderr || error.stdout || error.message).trim());
   }
 }
 
@@ -177,6 +189,7 @@ function compareBaseline(results) {
 (async () => {
   lintPhp();
   build();
+  catalog();
   const results = await checkPages();
   compareBaseline(results);
 

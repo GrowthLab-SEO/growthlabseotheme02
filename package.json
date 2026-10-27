@@ -4,7 +4,8 @@
   "description": "GrowthLab WordPress Theme",
   "main": "index.js",
   "scripts": {
-    "build": "gulp build",
+    "build": "gulp build && node tools/catalog.js",
+    "catalog": "node tools/catalog.js",
     "watch": "gulp",
     "build:child": "gulp buildChild",
     "watch:child": "gulp watchChild",
