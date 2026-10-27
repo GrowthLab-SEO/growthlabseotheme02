@@ -367,8 +367,8 @@ function inline_main_critical_css()
     $main_css_file = get_template_directory() . "/styles/main-min.css";
     $style_css_file = get_stylesheet_directory() . '/style.css';
 
-    // Compiled styles of the child theme (its styles/main.scss, built with this theme's gulpfile), printed between
-    // the parent styles and the child's style.css
+    // Compiled styles of the child theme (its styles/main.scss, built with this theme's gulpfile), printed after all the
+    // parent styles and before the child's style.css
     $child_css_file = is_child_theme() ? get_stylesheet_directory() . '/styles/main-min.css' : '';
     if ($child_css_file && !file_exists($child_css_file)) $child_css_file = '';
 
@@ -407,8 +407,6 @@ function inline_main_critical_css()
     if (false === $critical_css) {
         $critical_css = file_get_contents($main_css_file);
         foreach ($hero_css_files as $hero_css_file) $critical_css .= file_get_contents($hero_css_file);
-        if ($child_css_file) $critical_css .= file_get_contents($child_css_file);
-        $critical_css .= file_get_contents($style_css_file);
         $critical_css = $fonts_css . $color_scheme . $critical_css;
 
         if ($include_splide) {
@@ -431,6 +429,11 @@ function inline_main_critical_css()
         if (!empty($block_critical_css)) {
             $critical_css .= "\n/* Block Critical CSS */\n" . $block_critical_css;
         }
+
+        // The child theme styles go last, so a child rule wins over a parent rule (main, hero, card, carousel or block
+        // styles) of the same specificity
+        if ($child_css_file) $critical_css .= "\n" . file_get_contents($child_css_file);
+        $critical_css .= "\n" . file_get_contents($style_css_file);
 
         // The CSS is inline, so relative url()s would resolve against the page: theme assets use these placeholders
         $critical_css = str_replace('{child-theme-path}', get_stylesheet_directory_uri(), $critical_css);
