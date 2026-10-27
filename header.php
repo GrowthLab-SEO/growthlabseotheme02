@@ -41,7 +41,9 @@ if (!defined('ABSPATH')) {
     $hero_style = get_page_hero_style();
     ?>
 
-    <header role="banner" class="site-header <?= !is_404() && $hero_style !== "nohero" && $sticky_header ? "site-header--sticky" : "" ?>">
+    <header role="banner" class="site-header 
+    <?= !is_404() && $sticky_header ? "site-header--sticky" : "" ?>
+    <?= $hero_style === "nohero" ? "nohero" : "" ?>">
 
         <div class="site-header__wrapper">
 
@@ -104,7 +106,8 @@ if (!defined('ABSPATH')) {
                         <span aria-hidden="true"></span>
                     </button>
 
-                    <?php // wp_nav_menu() prints the nav.main-nav container itself ?>
+                    <?php // wp_nav_menu() prints the nav.main-nav container itself 
+                    ?>
                     <?php wp_nav_menu($menu_args); ?>
                 <?php endif ?>
 
@@ -145,7 +148,7 @@ if (!defined('ABSPATH')) {
                                         /* translators: %s: language name */
                                         $language_label = sprintf(__('Select %s language', 'growthlabseotheme02'), $language['name']);
                                     ?>
-                                        <a href="<?= esc_url($language['url']) ?>" class="language" aria-label="<?= esc_attr($language_label) ?>"<?= $language['code'] ? ' hreflang="' . esc_attr($language['code']) . '"' : '' ?><?= $language['current'] ? ' aria-current="true"' : '' ?>>
+                                        <a href="<?= esc_url($language['url']) ?>" class="language" aria-label="<?= esc_attr($language_label) ?>" <?= $language['code'] ? ' hreflang="' . esc_attr($language['code']) . '"' : '' ?><?= $language['current'] ? ' aria-current="true"' : '' ?>>
                                             <span<?= $language['code'] ? ' lang="' . esc_attr($language['code']) . '"' : '' ?>><?= esc_html($language['label']) ?></span>
                                         </a>
                                     <?php endforeach; ?>
@@ -172,7 +175,7 @@ if (!defined('ABSPATH')) {
 
             <?php if ($cta_button): ?>
                 <div class="site-header__cta <?= isset($cta_button_mobile_only) && $cta_button_mobile_only ? 'hide-on-mobile hide-on-tablet' : ''; ?>">
-                    <a href="<?= esc_url($cta_button['url'] ?? '') ?>" class="cta-button btn--tertiary"<?= !empty($cta_button['target']) ? ' target="' . esc_attr($cta_button['target']) . '"' . ($cta_button['target'] === '_blank' ? ' rel="noopener noreferrer"' : '') : '' ?> aria-label="<?= esc_attr($cta_button['title'] ?? '') ?>">
+                    <a href="<?= esc_url($cta_button['url'] ?? '') ?>" class="cta-button btn--tertiary" <?= !empty($cta_button['target']) ? ' target="' . esc_attr($cta_button['target']) . '"' . ($cta_button['target'] === '_blank' ? ' rel="noopener noreferrer"' : '') : '' ?> aria-label="<?= esc_attr($cta_button['title'] ?? '') ?>">
 
                         <span class="cta-button__text">
                             <?= esc_html($cta_button['title'] ?? '') ?>
@@ -184,7 +187,7 @@ if (!defined('ABSPATH')) {
 
             <?php if ($cta_button_mobile_only): ?>
                 <div class="site-header__cta--mobile-only hide-on-desktop">
-                    <a href="<?= esc_url($cta_button_mobile_only['url'] ?? '') ?>" class="cta-button btn--tertiary"<?= !empty($cta_button_mobile_only['target']) ? ' target="' . esc_attr($cta_button_mobile_only['target']) . '"' . ($cta_button_mobile_only['target'] === '_blank' ? ' rel="noopener noreferrer"' : '') : '' ?> aria-label="<?= esc_attr($cta_button_mobile_only['title'] ?? '') ?>">
+                    <a href="<?= esc_url($cta_button_mobile_only['url'] ?? '') ?>" class="cta-button btn--tertiary" <?= !empty($cta_button_mobile_only['target']) ? ' target="' . esc_attr($cta_button_mobile_only['target']) . '"' . ($cta_button_mobile_only['target'] === '_blank' ? ' rel="noopener noreferrer"' : '') : '' ?> aria-label="<?= esc_attr($cta_button_mobile_only['title'] ?? '') ?>">
 
                         <span class="cta-button__text">
                             <?= esc_html($cta_button_mobile_only['title'] ?? '') ?>

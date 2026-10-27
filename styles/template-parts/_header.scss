@@ -184,6 +184,11 @@
       }
     }
 
+    &.nohero {
+      position: sticky;
+      background-color: rgba(var(--primary));
+    }
+
     &.scrolling {
       background-color: rgb(var(--primary));
       border-bottom: 4px solid rgb(var(--tertiary));
@@ -576,7 +581,10 @@
           }
         }
 
-        &:has(.menu-item-has-children:hover, .menu-item-has-children:focus-within) {
+        &:has(
+          .menu-item-has-children:hover,
+          .menu-item-has-children:focus-within
+        ) {
           overflow: visible;
         }
       }
