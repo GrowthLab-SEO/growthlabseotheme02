@@ -2,6 +2,7 @@
   "name": "acf/posts-carousel",
   "textdomain": "growthlabseotheme02",
   "title": "Posts Carousel",
+  "description": "A carousel of cards with a title, subtitle, text and a link: case results, team members, blog posts, testimonials, chosen posts or pages, or custom items (picture, title, text, link). Each type has its own card. Needs: the posts it shows, entered as their post type.",
 
   "style": ["file:./block-min.css"],
   "viewScript": ["file:./block-min.js"],

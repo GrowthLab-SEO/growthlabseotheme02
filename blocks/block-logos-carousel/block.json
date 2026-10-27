@@ -2,6 +2,7 @@
   "name": "acf/logos-carousel",
   "textdomain": "growthlabseotheme02",
   "title": "Logos Carousel",
+  "description": "A carousel of logos, each with an optional link (press, awards, memberships, partners), under a title. Needs: the real logos; leave the block out when the client has none.",
 
   "style": ["file:./block-min.css"],
   "viewScript": ["file:./block-min.js"],

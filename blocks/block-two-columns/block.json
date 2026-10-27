@@ -2,6 +2,7 @@
   "name": "acf/two-columns",
   "textdomain": "growthlabseotheme02",
   "title": "Two Columns",
+  "description": "Text and an image side by side (the order can be reversed) under a title, over a light, dark or image background, with an optional logo separator on top. Needs: the text and an image.",
 
   "style": ["file:./block-min.css"],
   "category": "growthlabseotheme02-blocks",

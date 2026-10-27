@@ -2,6 +2,7 @@
   "name": "acf/featured-video",
   "textdomain": "growthlabseotheme02",
   "title": "Featured Video",
+  "description": "A video, uploaded or from YouTube, shown with a cover image and played in place or in a lightbox. Needs: the video and a cover image.",
   "style": ["file:./block-min.css"],
   "category": "growthlabseotheme02-blocks",
   "icon": "block-default",

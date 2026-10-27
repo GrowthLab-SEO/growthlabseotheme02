@@ -2,6 +2,7 @@
   "name": "acf/contact-form",
   "textdomain": "growthlabseotheme02",
   "title": "Contact Form",
+  "description": "A form beside a title, text and an optional side image, over a light, dark or image background. The form is a Gravity Form, a third-party embed code or none. Needs: the form and its intro text.",
   "style": ["file:./block-min.css"],
   "category": "growthlabseotheme02-blocks",
   "icon": "block-default",

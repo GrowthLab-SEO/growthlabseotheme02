@@ -2,6 +2,7 @@
   "name": "acf/faq",
   "textdomain": "growthlabseotheme02",
   "title": "FAQ",
+  "description": "Questions and answers that open one at a time, with a title, intro text, an optional side image and a link. Needs: the client's real questions and answers.",
  
   "style": ["file:./block-min.css"],
   "category": "growthlabseotheme02-blocks",

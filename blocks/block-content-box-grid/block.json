@@ -2,6 +2,7 @@
   "name": "acf/content-box-grid",
   "textdomain": "growthlabseotheme02",
   "title": "Content Box Grid",
+  "description": "A grid of text boxes, each with a title, an optional link and text, under a pretitle, a title and intro text. It can instead list the links of a WordPress menu (Is a Menu). For reasons, services or values. Needs: the text of each box.",
  
   "style": ["file:./block-min.css"],
   "category": "growthlabseotheme02-blocks",

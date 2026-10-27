@@ -2,6 +2,7 @@
   "name": "acf/cta-box",
   "textdomain": "growthlabseotheme02",
   "title": "CTA Box",
+  "description": "A call to action with a title and up to four buttons: a box with a side image (Simple Box, the logo symbol when there is no image) or a full section with text (Full Height Section), over a light, dark, image or video background. Needs: a title and at least one link.",
 
   "style": ["file:./block-min.css"],
   "category": "growthlabseotheme02-blocks",

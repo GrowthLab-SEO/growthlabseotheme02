@@ -2,6 +2,7 @@
   "name": "acf/office-locations",
   "textdomain": "growthlabseotheme02",
   "title": "Office Locations",
+  "description": "Office cards with city, address, phone, map and link, from the offices of Site Options (Show All Locations) or entered in the block, optionally as accordions. Needs: the offices; the Google Maps embed URL is optional.",
  
   "style": ["file:./block-min.css"],
   "category": "growthlabseotheme02-blocks",

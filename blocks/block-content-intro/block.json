@@ -2,6 +2,7 @@
   "name": "acf/content-intro",
   "textdomain": "growthlabseotheme02",
   "title": "Content Intro",
+  "description": "A featured image (left, right or below) beside a title and text, followed by a call-to-action box with text and up to two buttons. The usual first section of an inner page. Needs: title and text; the image is optional.",
 
   "style": ["file:./block-min.css"],
   "category": "growthlabseotheme02-blocks",

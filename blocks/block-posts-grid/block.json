@@ -2,6 +2,7 @@
   "name": "acf/posts-grid",
   "textdomain": "growthlabseotheme02",
   "title": "Posts Grid",
+  "description": "A grid of cards with a pretitle, title and text: case results, team members, blog posts or testimonials (all of them with pagination, or chosen ones), chosen posts or pages, or custom items (picture, title, text, link). Each type has its own card. Needs: the posts it shows, entered as their post type.",
 
   "style": ["file:./block-min.css"],
   "category": "growthlabseotheme02-blocks",
