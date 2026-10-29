@@ -3,6 +3,17 @@
 All notable changes to GrowthLab Theme 02. The version is in `style.css` and goes up with every update that is pushed:
 patch (1.0.x) for fixes, minor (1.x.0) for new features or changes editors can see.
 
+## 1.3.1 - 2026-10-29
+
+### Fixed
+- `npm run create-child` builds the new child theme right away. The theme loads only the compiled files of a child
+  theme, so a new one looked unstyled until `npm run build:child` ran, a step the instructions left out.
+- `README.md` and `CHILD-THEMES.md` list the steps to create a child theme in order: `npm install`, `create-child`,
+  activate it, then `build:child` after every change.
+
+### Check after updating
+- Nothing on the sites: this release changes the build tools and the docs only.
+
 ## 1.3.0 - 2026-10-27
 
 ### Added
