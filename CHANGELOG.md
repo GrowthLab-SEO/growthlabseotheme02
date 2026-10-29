@@ -3,6 +3,17 @@
 All notable changes to GrowthLab Theme 02. The version is in `style.css` and goes up with every update that is pushed:
 patch (1.0.x) for fixes, minor (1.x.0) for new features or changes editors can see.
 
+## 1.3.2 - 2026-10-29
+
+### Fixed
+- The build works with npm 6 (Node 14, the default on some servers): `postcss` is now a declared dependency. Before,
+  `npm run build` and `npm run create-child` failed with "PostCSS plugin autoprefixer requires PostCSS 8".
+- No Sass deprecation warning for the `if()` function in the title mixin (the compiled CSS is the same).
+
+### Check after updating
+- Where the theme is built on the server: run `npm install` again in the theme folder (a WP Pusher update replaces
+  the folder and its `node_modules`).
+
 ## 1.3.1 - 2026-10-29
 
 ### Fixed
