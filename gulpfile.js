@@ -236,10 +236,17 @@ function createChild(done) {
     }
   };
   copy(starter, target);
-
   console.log(`Created ${target}`);
-  console.log(`Build it with: npm run build:child -- --child=${path.relative(__dirname, target).split(path.sep).join("/")}`);
-  done();
+
+  // Build it right away: the parent loads the child's compiled files (styles/main-min.css), not its sources
+  const childPath = path.relative(__dirname, target).split(path.sep).join("/");
+  const root = target.split(path.sep).join("/");
+  return themeTasks(root, path.basename(target)).build((error) => {
+    if (error) return done(error);
+    console.log(`Built. Activate it under Appearance > Themes. After editing its styles or scripts:`);
+    console.log(`  npm run build:child -- --child=${childPath}    (or watch:child to rebuild on save)`);
+    done();
+  });
 }
 
 exports.createChild = createChild;
