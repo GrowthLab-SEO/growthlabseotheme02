@@ -34,11 +34,15 @@ The parent theme's gulp builds child themes too, so a child theme doesn't need i
 `node_modules`. Run every command from the **parent** theme folder.
 
 ```bash
-npm install                                   # once, in the parent theme
-npm run create-child -- --name="Client Name"  # creates ../<parent>-client-name from child-theme-starter/
-npm run build:child -- --child=../<parent>-client-name
-npm run watch:child -- --child=../<parent>-client-name   # rebuild on save
+npm install                                   # 1. once per parent theme folder (installs gulp and Sass)
+npm run create-child -- --name="Client Name"  # 2. creates ../<parent>-client-name from child-theme-starter/ and builds it
+                                              # 3. activate the child theme under Appearance > Themes
+npm run build:child -- --child=../<parent>-client-name   # 4. after every change to its styles, scripts or blocks
+npm run watch:child -- --child=../<parent>-client-name   #    or rebuild on save while you work
 ```
+
+Without step 1 the commands fail ("gulp" is not recognized). The parent loads only the child's compiled files
+(`styles/main-min.css`, `js/main-min.js`), so a change to a source file shows on the site only after a build.
 
 To avoid typing the path, create `child-themes.json` in the parent folder (git-ignored, paths are local):
 

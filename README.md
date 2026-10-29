@@ -101,6 +101,15 @@ Defined in `theme-functions/acf-functions.php`:
 - Each run writes a summary line to the PHP error log: `[ACF sync:growthlabseotheme02] OK — synced: N, skipped: N, warnings: N | ...`.
 - Multisite is not supported.
 
+### Creating a child theme
+
+Client sites always run a child theme. From this theme's folder (see [CHILD-THEMES.md](CHILD-THEMES.md) for the full guide):
+
+1. `npm install` once, to install gulp and Sass. Without it the next commands fail ("gulp" is not recognized).
+2. `npm run create-child -- --name="Client Name"` creates `../growthlabseotheme02-client-name` and builds it.
+3. Activate the child theme under Appearance > Themes.
+4. After every change to its styles, scripts or blocks: `npm run build:child -- --child=../growthlabseotheme02-client-name` (or `npm run watch:child -- --child=…` to rebuild on save). The theme loads the child's compiled files only, and they are committed with the child theme.
+
 ### Child theme notes
 
 - Child themes can add or override blocks: `blocks/*/block.json` in the child is registered after the parent, and a block with the same `name` replaces the parent one.
@@ -115,8 +124,8 @@ Defined in `theme-functions/acf-functions.php`:
 npm install
 npm run build   # build everything once (gulp build)
 npm run watch   # build once, then keep watching (gulp default task, same as npx gulp)
+npm run create-child -- --name="Client"         # new child theme from child-theme-starter/, built
 npm run build:child -- --child=../<child theme>   # build a child theme (also watch:child, see CHILD-THEMES.md)
-npm run create-child -- --name="Client"         # new child theme from child-theme-starter/
 npm run verify  # before pushing: PHP syntax, build, local pages with the parent and the compat-test child theme
 ```
 
