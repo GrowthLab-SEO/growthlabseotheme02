@@ -251,6 +251,7 @@ strong {
   }
 
   &--loaded {
+    content-visibility: visible;
     // Only adds the ::after with the texture image
     &::after {
       width: 100%;
