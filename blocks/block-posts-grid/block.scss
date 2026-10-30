@@ -73,6 +73,7 @@
 
   &__card {
     &.case-result {
+      width: stretch;
       min-width: 28rem;
       max-width: 58rem;
       height: fit-content;
