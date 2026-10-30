@@ -267,6 +267,11 @@ strong {
     }
   }
 
+  &:has(> .bg-gradient) {
+    display: flex;
+    flex-direction: column;
+  }
+
   .bg-gradient {
     background: none;
     background-color: transparent !important;
