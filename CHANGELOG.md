@@ -3,6 +3,36 @@
 All notable changes to GrowthLab Theme 02. The version is in `style.css` and goes up with every update that is pushed:
 patch (1.0.x) for fixes, minor (1.x.0) for new features or changes editors can see.
 
+## 1.4.0 - 2026-11-19
+
+### Added
+- Video background for every hero style. Page - Options, Hero Properties: "Use Video Background" switches between
+  Image and Video (Image by default). In Video mode, "Background Video" (MP4 or WebM) plays muted and in a loop under
+  the gradient overlay instead of the background images and the side portrait, whose fields are hidden; "Background
+  Video Poster" shows while it loads. Visitors who ask their system to reduce motion get the video paused on the
+  poster. Without a video file the hero keeps its images.
+- "Carousel Autoplay" switch, off by default, in Logos Carousel, Posts Carousel and Selling Points. Every carousel moves
+  every 6 seconds, pauses on hover and keyboard focus, and doesn't play for visitors who prefer reduced motion.
+  Child themes can change the interval with the `theme_carousel_autoplay_interval` filter.
+- Helpers `print_background_video()`, `get_carousel_autoplay_attr()` and `get_carousel_autoplay_interval()` (see
+  `CHILD-THEMES.md`).
+
+### Changed
+- Logos Carousel and Posts Carousel ("any" type) no longer play on their own (they moved every 3 seconds): they
+  follow the new "Carousel Autoplay" switch, off by default.
+- Posts Grid: case result cards stretch to the width of their column.
+- Gradient background sections and the gradient sections inside them are always rendered once their texture
+  loads (`content-visibility: visible`).
+
+### Check after updating
+- Apart from the carousels that played on their own (last item), nothing changes until an editor turns on a hero
+  video or a carousel autoplay.
+- Child themes that override a hero template part, a carousel block template or `footer.php` don't get the new
+  options until they copy the changes (the video and poster variables in the heroes, the autoplay attribute on the
+  carousel element).
+- Logos carousels (and Posts Carousels of the "any" type) that should keep moving: turn on "Carousel Autoplay" in
+  each block.
+
 ## 1.3.2 - 2026-10-29
 
 ### Fixed
