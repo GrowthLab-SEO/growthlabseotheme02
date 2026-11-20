@@ -17,10 +17,15 @@ if (!$bg_desktop) $bg_desktop = [];
 if (!$bg_tablet) $bg_tablet = [];
 if (!$bg_mobile) $bg_mobile = [];
 
+//Hero background video: when switched on it replaces the background images and the side portrait
+$use_video_bg = !empty($use_video_background);
+$bg_video = $use_video_bg && !empty($background_video) ? $background_video : null;
+
 ?>
 <section id="hero-homepage" class="hero hero--homepage hero--v6">
 
-    <?php if (!empty($bg_desktop)) img_print_picture_tag(
+    <?php if ($bg_video) print_background_video($bg_video, "hero__bg-image bg-image gradient-overlay", $background_video_poster ?? null);
+    elseif (!empty($bg_desktop)) img_print_picture_tag(
         img: $bg_desktop,
         tablet_img: $bg_tablet,
         mobile_img: $bg_mobile,
@@ -65,7 +70,7 @@ if (!$bg_mobile) $bg_mobile = [];
             </div>
         </div>
 
-        <?php if (!empty($hero_pictures['side_portrait'])) img_print_picture_tag(img: $hero_pictures['side_portrait'], max_size: "large", min_size: "featured-small", classes: "hero__side-portrait", is_priority: true, context: 'hero/home_6/side-portrait'); ?>
+        <?php if (!$use_video_bg && !empty($hero_pictures['side_portrait'])) img_print_picture_tag(img: $hero_pictures['side_portrait'], max_size: "large", min_size: "featured-small", classes: "hero__side-portrait", is_priority: true, context: 'hero/home_6/side-portrait'); ?>
 
     </div>
 </section>

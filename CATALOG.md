@@ -359,7 +359,7 @@ Fields of every page (and of the post types listed in each group): its hero, sid
 | `contact_phone` | Contact Phone | text | shown when custom_header on |
 | `top_callout_second_line` | Top Callout Second Line | text | shown when custom_header on |
 | `cta_button` | CTA Button | link | shown when custom_header on |
-| `cta_button_mobile_only` | CTA Button Mobile Only | link |  |
+| `cta_button_mobile_only` | CTA Button Mobile Only | link | shown when custom_header on |
 | `menu` | Menu | menu | shown when custom_header on |
 | `hero_style` | Hero Style | select | `home` Homepage Hero Style 1, `home_2` Homepage Hero Style 2, `home_3` Homepage Hero Style 3, `home_4` Homepage Hero Style 4, `home_5` Homepage Hero Style 5, `home_6` Homepage Hero Style 6, `default` Default Hero, `nohero` No Hero. default: `default` |
 | `hero_properties` | Hero Properties | group | shown when hero_style is not "No Hero" |
@@ -370,11 +370,14 @@ Fields of every page (and of the post types listed in each group): its hero, sid
 | ↳ `hero_subtitle_tag` | Hero Subtitle tag | select | `h1`, `h2`, `h3`, `h4`, `h5`, `h6`, `p`. default: `p`. shown when hero_style is not "Homepage Hero Style 1" and hero_style is not "Default Hero" |
 | ↳ `hero_cta_button` | Hero CTA Button | link |  |
 | ↳ `hero_cta_button_2` | Hero CTA Button 2 | link | shown when hero_style is "Homepage Hero Style 4" or hero_style is "Homepage Hero Style 6" |
+| ↳ `use_video_background` | Use Video Background | true_false | default: off. On: the hero background is a video. Off: background images (and the side portrait, in the styles that have one) |
+| ↳ `background_video` | Background Video | file | MP4 or WebM. It plays muted and in a loop, so keep it short and light (a few MB at most). shown when use_video_background on |
+| ↳ `background_video_poster` | Background Video Poster | image | Shown while the video loads, and instead of the video for visitors who ask their system to reduce motion. Use a frame of the video (WebP, 1920x1080). shown when use_video_background on |
 | ↳ `hero_pictures` | Hero Pictures | group |  |
-| ↳ ↳ `background_desktop` | Background Desktop | image |  |
-| ↳ ↳ `background_tablet` | Background Tablet | image |  |
-| ↳ ↳ `background_mobile` | Background Mobile | image |  |
-| ↳ ↳ `side_portrait` | Side Portrait | image | shown when hero_style is "Homepage Hero Style 1" or hero_style is "Homepage Hero Style 4" or hero_style is "Homepage Hero Style 6" |
+| ↳ ↳ `background_desktop` | Background Desktop | image | shown when use_video_background off |
+| ↳ ↳ `background_tablet` | Background Tablet | image | shown when use_video_background off |
+| ↳ ↳ `background_mobile` | Background Mobile | image | shown when use_video_background off |
+| ↳ ↳ `side_portrait` | Side Portrait | image | shown when hero_style is "Homepage Hero Style 1" and use_video_background off or hero_style is "Homepage Hero Style 4" and use_video_background off or hero_style is "Homepage Hero Style 6" and use_video_background off |
 | ↳ ↳ `badges` | Badges | repeater | shown when hero_style is "Homepage Hero Style 1" |
 | ↳ ↳ ↳ `badge` | Badge | image |  |
 | `custom_footer` | Custom Footer | true_false | default: off |

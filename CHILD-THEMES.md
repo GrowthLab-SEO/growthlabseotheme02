@@ -189,6 +189,7 @@ Cover images (`is_cover`, e.g. hero backgrounds and the theme-03 side portraits)
 | Function | Use |
 |---|---|
 | `print_title($title, $tag = 'p', $classes = '', $is_hero = false)` / `get_wrapped_title(...)` | Title wrapped in a validated tag (`h1`–`h6`, `p`, `span`, `div`). |
+| `print_background_video($video, $classes = '', $poster = null)` | Muted, looping, autoplaying background video (ACF file array, attachment ID or URL) in a `.bg-video` wrapper with the given classes, e.g. `hero__bg-image bg-image gradient-overlay`, and an optional poster image. Paused on the poster when the visitor prefers reduced motion. |
 | `get_page_field($selector)` | Field of the page whose "Page - Options" apply to the request (also on the blog index). |
 | `get_page_options_id()` | ID of that page. |
 | `get_field_options($field_name, $format_value = true)` | Site Options field. |

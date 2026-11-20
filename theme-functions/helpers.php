@@ -620,6 +620,43 @@ if (!function_exists('get_page_hero_style')) {
     }
 }
 
+// Prints a background video: muted, looping and inline, so browsers autoplay it like a background image. The
+// wrapper takes the classes of the background picture it replaces (e.g. "bg-image gradient-overlay"), so the overlays
+// of the section apply to it the same way. $video is an ACF file array, an attachment ID or a URL; $poster (same
+// formats, an image) shows while the video loads. Visitors who ask their system to reduce motion get the video
+// paused on its poster: the inline script right after it runs before playback starts and follows later changes
+// of the setting. preload="metadata" keeps their browser from downloading the whole file (autoplay still loads it
+// for everyone else).
+if (!function_exists('print_background_video')) {
+    function print_background_video($video, $classes = '', $poster = null)
+    {
+        if (is_array($video)) {
+            $url = $video['url'] ?? '';
+            $mime = $video['mime_type'] ?? '';
+        } else {
+            $url = is_numeric($video) ? wp_get_attachment_url((int) $video) : (string) $video;
+            $mime = is_numeric($video) ? get_post_mime_type((int) $video) : '';
+        }
+        if (!$url) return;
+
+        if (is_array($poster)) $poster_url = $poster['sizes']['cover-desktop'] ?? ($poster['url'] ?? '');
+        else $poster_url = is_numeric($poster) ? wp_get_attachment_image_url((int) $poster, 'cover-desktop') : (string) $poster;
+
+        $type = $mime ? ' type="' . esc_attr($mime) . '"' : '';
+        $poster_attr = $poster_url ? ' poster="' . esc_url($poster_url) . '"' : '';
+        echo '<div class="' . esc_attr(trim("bg-video $classes")) . '" aria-hidden="true">'
+            . '<video autoplay muted loop playsinline disablepictureinpicture preload="metadata"' . $poster_attr . '>'
+            . '<source src="' . esc_url($url) . '"' . $type . '>'
+            . '</video>';
+        wp_print_inline_script_tag(
+            '(function(v){var q=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)");if(!v||!v.pause||!q)return;'
+            . 'function s(){if(q.matches){v.removeAttribute("autoplay");v.pause()}else{var p=v.play();p&&p.catch(function(){})}}'
+            . 's();q.addEventListener&&q.addEventListener("change",s)})(document.currentScript&&document.currentScript.previousElementSibling);'
+        );
+        echo '</div>';
+    }
+}
+
 // Name of the first block rendered in the current post's content (the one right after the hero), skipping
 // synced pattern wrappers and ACF blocks switched off with their toggle_block field. '' when there is none.
 if (!function_exists('get_first_content_block_name')) {

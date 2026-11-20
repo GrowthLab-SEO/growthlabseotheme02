@@ -319,6 +319,27 @@ img.bg-image {
   object-position: center;
 }
 
+// Background video (print_background_video()): it fills its section like picture.bg-image
+.bg-video {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  display: block;
+  overflow: hidden;
+  video {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    z-index: -1;
+    display: block;
+    object-fit: cover;
+    object-position: center;
+  }
+}
+
 .gradient-overlay {
   &::after {
     content: "";

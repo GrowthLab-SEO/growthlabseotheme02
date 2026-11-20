@@ -539,6 +539,90 @@
                     "allow_in_bindings": 0
                 },
                 {
+                    "key": "field_6a1d3c2e5b7a1",
+                    "label": "Use Video Background",
+                    "name": "use_video_background",
+                    "aria-label": "",
+                    "type": "true_false",
+                    "instructions": "On: the hero background is a video. Off: background images (and the side portrait, in the styles that have one).",
+                    "required": 0,
+                    "conditional_logic": 0,
+                    "wrapper": {
+                        "width": "",
+                        "class": "",
+                        "id": ""
+                    },
+                    "message": "",
+                    "default_value": 0,
+                    "allow_in_bindings": 0,
+                    "ui_on_text": "Video",
+                    "ui_off_text": "Image",
+                    "ui": 1
+                },
+                {
+                    "key": "field_6a1d3c2e5b7a2",
+                    "label": "Background Video",
+                    "name": "background_video",
+                    "aria-label": "",
+                    "type": "file",
+                    "instructions": "MP4 or WebM. It plays muted and in a loop, so keep it short and light (a few MB at most).",
+                    "required": 0,
+                    "conditional_logic": [
+                        [
+                            {
+                                "field": "field_6a1d3c2e5b7a1",
+                                "operator": "==",
+                                "value": "1"
+                            }
+                        ]
+                    ],
+                    "wrapper": {
+                        "width": "",
+                        "class": "",
+                        "id": ""
+                    },
+                    "return_format": "array",
+                    "library": "all",
+                    "min_size": "",
+                    "max_size": "",
+                    "mime_types": "mp4,webm",
+                    "allow_in_bindings": 0
+                },
+                {
+                    "key": "field_6a1d3c2e5b7a3",
+                    "label": "Background Video Poster",
+                    "name": "background_video_poster",
+                    "aria-label": "",
+                    "type": "image",
+                    "instructions": "Shown while the video loads, and instead of the video for visitors who ask their system to reduce motion. Use a frame of the video (WebP, 1920x1080).",
+                    "required": 0,
+                    "conditional_logic": [
+                        [
+                            {
+                                "field": "field_6a1d3c2e5b7a1",
+                                "operator": "==",
+                                "value": "1"
+                            }
+                        ]
+                    ],
+                    "wrapper": {
+                        "width": "",
+                        "class": "",
+                        "id": ""
+                    },
+                    "return_format": "array",
+                    "library": "all",
+                    "min_width": "",
+                    "min_height": "",
+                    "min_size": "",
+                    "max_width": "",
+                    "max_height": "",
+                    "max_size": "",
+                    "mime_types": "",
+                    "allow_in_bindings": 0,
+                    "preview_size": "medium"
+                },
+                {
                     "key": "field_6908d6a6c0fdf",
                     "label": "Hero Pictures",
                     "name": "hero_pictures",
@@ -562,7 +646,15 @@
                             "type": "image",
                             "instructions": "",
                             "required": 0,
-                            "conditional_logic": 0,
+                            "conditional_logic": [
+                                [
+                                    {
+                                        "field": "field_6a1d3c2e5b7a1",
+                                        "operator": "!=",
+                                        "value": "1"
+                                    }
+                                ]
+                            ],
                             "wrapper": {
                                 "width": "",
                                 "class": "",
@@ -588,7 +680,15 @@
                             "type": "image",
                             "instructions": "",
                             "required": 0,
-                            "conditional_logic": 0,
+                            "conditional_logic": [
+                                [
+                                    {
+                                        "field": "field_6a1d3c2e5b7a1",
+                                        "operator": "!=",
+                                        "value": "1"
+                                    }
+                                ]
+                            ],
                             "wrapper": {
                                 "width": "",
                                 "class": "",
@@ -614,7 +714,15 @@
                             "type": "image",
                             "instructions": "",
                             "required": 0,
-                            "conditional_logic": 0,
+                            "conditional_logic": [
+                                [
+                                    {
+                                        "field": "field_6a1d3c2e5b7a1",
+                                        "operator": "!=",
+                                        "value": "1"
+                                    }
+                                ]
+                            ],
                             "wrapper": {
                                 "width": "",
                                 "class": "",
@@ -646,6 +754,11 @@
                                         "field": "field_6908d895c0fe4",
                                         "operator": "==",
                                         "value": "home"
+                                    },
+                                    {
+                                        "field": "field_6a1d3c2e5b7a1",
+                                        "operator": "!=",
+                                        "value": "1"
                                     }
                                 ],
                                 [
@@ -653,6 +766,11 @@
                                         "field": "field_6908d895c0fe4",
                                         "operator": "==",
                                         "value": "home_4"
+                                    },
+                                    {
+                                        "field": "field_6a1d3c2e5b7a1",
+                                        "operator": "!=",
+                                        "value": "1"
                                     }
                                 ],
                                 [
@@ -660,6 +778,11 @@
                                         "field": "field_6908d895c0fe4",
                                         "operator": "==",
                                         "value": "home_6"
+                                    },
+                                    {
+                                        "field": "field_6a1d3c2e5b7a1",
+                                        "operator": "!=",
+                                        "value": "1"
                                     }
                                 ]
                             ],
@@ -1301,7 +1424,7 @@
                             "name": "google_maps_embed_code",
                             "aria-label": "",
                             "type": "text",
-                            "instructions": "Paste the embed URL only (starts with https:\/\/www.google.com\/maps\/embed)\r\nNot the full <iframe> code - just the src URL.",
+                            "instructions": "Paste the embed URL only (starts with https://www.google.com/maps/embed)\r\nNot the full <iframe> code - just the src URL.",
                             "required": 0,
                             "conditional_logic": 0,
                             "wrapper": {
@@ -1512,7 +1635,7 @@
                         "facebook_url": "Facebook",
                         "youtube_url": "Youtube",
                         "tiktok_url": "TikTok",
-                        "twitterx_url": "Twitter\/X",
+                        "twitterx_url": "Twitter/X",
                         "instagram_url": "Instagram",
                         "linkedin_url": "LinkedIn"
                     },
@@ -1689,5 +1812,5 @@
     "display_title": "",
     "allow_ai_access": false,
     "ai_description": "",
-    "modified": 1793132289
+    "modified": 1795139469
 }
