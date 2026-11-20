@@ -190,6 +190,7 @@ Cover images (`is_cover`, e.g. hero backgrounds and the theme-03 side portraits)
 |---|---|
 | `print_title($title, $tag = 'p', $classes = '', $is_hero = false)` / `get_wrapped_title(...)` | Title wrapped in a validated tag (`h1`–`h6`, `p`, `span`, `div`). |
 | `print_background_video($video, $classes = '', $poster = null)` | Muted, looping, autoplaying background video (ACF file array, attachment ID or URL) in a `.bg-video` wrapper with the given classes, e.g. `hero__bg-image bg-image gradient-overlay`, and an optional poster image. Paused on the poster when the visitor prefers reduced motion. |
+| `get_carousel_autoplay_attr($enabled)` / `get_carousel_autoplay_interval()` | `data-splide` attribute for a carousel's `.splide` element when its "Carousel Autoplay" field is on, and the shared interval (6000 ms, filter `theme_carousel_autoplay_interval`). |
 | `get_page_field($selector)` | Field of the page whose "Page - Options" apply to the request (also on the blog index). |
 | `get_page_options_id()` | ID of that page. |
 | `get_field_options($field_name, $format_value = true)` | Site Options field. |
@@ -221,6 +222,7 @@ themes 02 and 03 use `get_current_language()`, `get_current_language_options()` 
 | `theme_font_preload_max_bytes` | `$bytes` (300 KB) | Font files bigger than this are never preloaded. |
 | `theme_font_variant_condition` | `$result, $condition` | Custom conditions for the `when` key of the font variants. |
 | `theme_hero_css_files` | `$files, $hero_style` | Hero stylesheets printed for the page. |
+| `theme_carousel_autoplay_interval` | `$interval` | Milliseconds between slides of the carousels with "Carousel Autoplay" on (default 6000). |
 | `theme_picture_args` | `$args, $context, $img` | Arguments of a theme image (sizes, cover, priority, classes…), by its context (see Images above). |
 | `theme_page_hero_title` | `$title` | Fallback hero title (blog, archives, search), e.g. to translate it. |
 | `theme_main_script_data` | `$data` | Data of the main script (`siteData`), e.g. its texts. |

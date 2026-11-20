@@ -620,6 +620,34 @@ if (!function_exists('get_page_hero_style')) {
     }
 }
 
+// Autoplay interval of every carousel, in milliseconds: long enough to read a card or a testimonial before it moves.
+// Filter: theme_carousel_autoplay_interval.
+if (!function_exists('get_carousel_autoplay_interval')) {
+    function get_carousel_autoplay_interval()
+    {
+        return (int) apply_filters('theme_carousel_autoplay_interval', 6000);
+    }
+}
+
+// data-splide attribute of a carousel whose "Carousel Autoplay" field is on ('' when off). Splide merges it over the
+// options of the block script, so every carousel plays at the same pace. It pauses on hover and focus, and Splide
+// keeps it paused for visitors who prefer reduced motion. rewind lets "slide" carousels start over at the end.
+if (!function_exists('get_carousel_autoplay_attr')) {
+    function get_carousel_autoplay_attr($enabled)
+    {
+        if (!$enabled) return '';
+
+        $options = array(
+            'autoplay' => true,
+            'interval' => get_carousel_autoplay_interval(),
+            'pauseOnHover' => true,
+            'pauseOnFocus' => true,
+            'rewind' => true,
+        );
+        return ' data-splide="' . esc_attr(wp_json_encode($options)) . '"';
+    }
+}
+
 // Prints a background video: muted, looping and inline, so browsers autoplay it like a background image. The
 // wrapper takes the classes of the background picture it replaces (e.g. "bg-image gradient-overlay"), so the overlays
 // of the section apply to it the same way. $video is an ACF file array, an attachment ID or a URL; $poster (same

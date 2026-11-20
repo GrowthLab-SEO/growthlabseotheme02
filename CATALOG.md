@@ -168,6 +168,7 @@ Root classes: `block logos-carousel`. Files: `blocks/block-logos-carousel/`.
 
 | Field | Label | Type | Options and notes |
 |---|---|---|---|
+| `carousel_autoplay` | Carousel Autoplay | true_false | default: off. Moves to the next slide every 6 seconds. It pauses while the visitor hovers or focuses the carousel, and doesn't play for visitors who ask their system to reduce motion |
 | `side_image` | Side Image | image |  |
 | `title` | Title | text |  |
 | `title_tag` | Title Tag | select | `h1`, `h2`, `h3`, `h4`, `h5`, `h6`, `p`. default: `p` |
@@ -183,6 +184,7 @@ Root classes: `block posts-carousel`. Files: `blocks/block-posts-carousel/`.
 
 | Field | Label | Type | Options and notes |
 |---|---|---|---|
+| `carousel_autoplay` | Carousel Autoplay | true_false | default: off. Moves to the next slide every 6 seconds. It pauses while the visitor hovers or focuses the carousel, and doesn't play for visitors who ask their system to reduce motion |
 | `background_image` | Background Image | image |  |
 | `carousel_type` | Carousel Type | select | `custom` Custom Items, `case-result` Case Results, `team` Team Members, `post` Blog Posts, `testimonial` Testimonials |
 | `pretitle` | Pretitle | text | shown when carousel_type is not "Team Members" |
@@ -242,6 +244,7 @@ Root classes: `block selling-points`. Files: `blocks/block-selling-points/`.
 
 | Field | Label | Type | Options and notes |
 |---|---|---|---|
+| `carousel_autoplay` | Carousel Autoplay | true_false | default: off. Moves to the next slide every 6 seconds. It pauses while the visitor hovers or focuses the carousel, and doesn't play for visitors who ask their system to reduce motion |
 | `background_type` | Background Type | select | `light` Light, `dark` Dark, `image` Image. default: `dark` |
 | `background_image` | Background Image | image |  |
 | `title` | Title | text |  |

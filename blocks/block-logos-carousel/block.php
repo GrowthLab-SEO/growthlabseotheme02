@@ -29,7 +29,7 @@ if (get_field('toggle_block')):
             if (!empty($logos)):
             ?>
                 <div class="logos-carousel__carousel">
-                    <div class="splide">
+                    <div class="splide"<?= get_carousel_autoplay_attr($carousel_autoplay ?? false) ?>>
                         <div class="splide__track">
                             <div class="splide__list">
                                 <?php foreach ($logos as $logo):

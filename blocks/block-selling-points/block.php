@@ -37,7 +37,7 @@ if (get_field('toggle_block')):
 
             <?php if (!empty($items)): ?>
                 <div class="selling-points__carousel">
-                    <div class="splide">
+                    <div class="splide"<?= get_carousel_autoplay_attr($carousel_autoplay ?? false) ?>>
                         <div class="splide__track">
                             <div class="splide__list selling-points__grid">
 

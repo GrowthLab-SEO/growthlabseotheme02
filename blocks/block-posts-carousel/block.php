@@ -81,7 +81,7 @@ if (get_field('toggle_block')):
 
             <div class="posts-carousel__carousel" data-type="<?= esc_attr($carousel_type) ?>">
 
-                <div class="splide">
+                <div class="splide"<?= get_carousel_autoplay_attr($carousel_autoplay ?? false) ?>>
                     <div class="splide__track">
                         <div class="splide__list">
 

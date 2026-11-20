@@ -156,6 +156,27 @@
             "save_other_choice": 0
         },
         {
+            "key": "field_6a1d4b7e0c1a1",
+            "label": "Carousel Autoplay",
+            "name": "carousel_autoplay",
+            "aria-label": "",
+            "type": "true_false",
+            "instructions": "Moves to the next slide every 6 seconds. It pauses while the visitor hovers or focuses the carousel, and doesn't play for visitors who ask their system to reduce motion.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "message": "",
+            "default_value": 0,
+            "allow_in_bindings": 0,
+            "ui_on_text": "",
+            "ui_off_text": "",
+            "ui": 1
+        },
+        {
             "key": "field_698bd517ef657",
             "label": "Side Image",
             "name": "side_image",
@@ -335,7 +356,7 @@
             {
                 "param": "block",
                 "operator": "==",
-                "value": "acf\/logos-carousel"
+                "value": "acf/logos-carousel"
             }
         ]
     ],
@@ -349,5 +370,5 @@
     "description": "",
     "show_in_rest": 0,
     "display_title": "",
-    "modified": 1770771769
+    "modified": 1795139918
 }
