@@ -3,6 +3,16 @@
 All notable changes to GrowthLab Theme 02. The version is in `style.css` and goes up with every update that is pushed:
 patch (1.0.x) for fixes, minor (1.x.0) for new features or changes editors can see.
 
+## 1.4.1 - 2026-11-27
+
+### Fixed
+- Paragraphs and spans inside list items display inline, so the item text stays on the same line as its bullet or
+  number instead of dropping below it.
+
+### Check after updating
+- Lists whose items wrap their text in a `p` or `span`: the text now sits next to the marker. Child themes that
+  styled those elements as blocks on purpose keep their own rule.
+
 ## 1.4.0 - 2026-11-19
 
 ### Added
