@@ -198,6 +198,7 @@ li a {
 li {
   p,
   span {
+    display: inline;
     font-family: var(--font-primary);
     color: rgb(var(--text));
     font-size: 1.6rem;
